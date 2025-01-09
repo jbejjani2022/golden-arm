@@ -17,4 +17,5 @@ Then add
 Longer term, nice to have
 - Merch shop
 - When user makes reservation, provide option to subscribe to weekly screening email updates
-- A nice calendar UI showing past and upcoming screenings. GCal integration - can add to your own calendar
+- A nice calendar UI showing past and upcoming screenings. GCal integration
+- 'Golden Arm Wrapped' - at end of semester, send all attendees a recap of their top genres, actors, directors
