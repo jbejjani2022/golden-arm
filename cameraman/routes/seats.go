@@ -46,9 +46,3 @@ func GetSeats(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": availableSeats})
 }
-
-// Resets all seats to available
-func ResetSeats(c *gin.Context) {
-	// TODO: Reset all seats to available
-	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Seats reset successfully"})
-}
