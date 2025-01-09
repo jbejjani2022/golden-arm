@@ -1,4 +1,4 @@
-# The frontend of `golden-arm`.
+# The frontend of the `golden-arm`
 
 Cameraman's canvas.
 
