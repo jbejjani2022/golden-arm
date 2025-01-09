@@ -43,7 +43,7 @@ func GetDBConn() *bun.DB {
 			log.Fatalf("Failed to connect to the database: %v", err)
 		}
 
-		log.Println("Successfully connected to the database.")
+		log.Println("✅ Successfully connected to the database.")
 	})
 
 	return db
@@ -51,24 +51,33 @@ func GetDBConn() *bun.DB {
 
 func CreateTables() {
 	db := GetDBConn()
+	ctx := context.Background()
 
 	// Create the Movie table
-	_, err := db.NewCreateTable().Model(&Movie{}).IfNotExists().Exec(context.Background())
-	if err != nil {
-		log.Fatalf("Failed to create Movie table: %v", err)
+	if _, err := db.NewCreateTable().
+		Model(&Movie{}).
+		IfNotExists().
+		Exec(ctx); err != nil {
+		log.Fatalf("Failed to create movie table: %v", err)
 	}
 
-	// Create the Menu table
-	_, err = db.NewCreateTable().Model(&Menu{}).IfNotExists().Exec(context.Background())
-	if err != nil {
-		log.Fatalf("Failed to create Menu table: %v", err)
+	// Create the Menu table with a foreign key to the Movie table
+	if _, err := db.NewCreateTable().
+		Model(&Menu{}).
+		IfNotExists().
+		ForeignKey(`("movie_id") REFERENCES "movies"("id") ON DELETE CASCADE`).
+		Exec(ctx); err != nil {
+		log.Fatalf("Failed to create menu table: %v", err)
 	}
 
-	// Create the Reservation table
-	_, err = db.NewCreateTable().Model(&Reservation{}).IfNotExists().Exec(context.Background())
-	if err != nil {
-		log.Fatalf("Failed to create Reservation table: %v", err)
+	// Create the Reservation table with a foreign key to the Movie table
+	if _, err := db.NewCreateTable().
+		Model(&Reservation{}).
+		IfNotExists().
+		ForeignKey(`("movie_id") REFERENCES "movies"("id") ON DELETE CASCADE`).
+		Exec(ctx); err != nil {
+		log.Fatalf("Failed to create reservation table: %v", err)
 	}
 
-	fmt.Println("✅ Tables created successfully")
+	log.Println("✅ Tables created successfully.")
 }

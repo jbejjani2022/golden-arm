@@ -8,9 +8,9 @@ import (
 
 type Movie struct {
 	ID        uuid.UUID `bun:"type:uuid,pk,default:gen_random_uuid()"`
-	Title     string    `bun:"title"`
-	Date      time.Time `bun:"date"`       // Date of movie screening
-	PosterURL string    `bun:"poster_url"` // Public URL to movie poster image stored in AWS S3
+	Title     string    `bun:"title,notnull"`
+	Date      time.Time `bun:"date,notnull"` // Date of movie screening
+	PosterURL string    `bun:"poster_url"`   // Public URL to movie poster image stored in AWS S3
 }
 
 type Menu struct {
@@ -25,10 +25,10 @@ type Menu struct {
 type Reservation struct {
 	ID         uuid.UUID `bun:"type:uuid,pk,default:gen_random_uuid()"`
 	MovieID    uuid.UUID `bun:"type:uuid,notnull"`
-	SeatNumber string    `bun:"seat_number"`
+	SeatNumber string    `bun:"seat_number,notnull"`
 	// Movie-goer information
-	Name  string `bun:"name"`
-	Email string `bun:"email"`
+	Name  string `bun:"name,notnull"`
+	Email string `bun:"email,notnull"`
 
 	// Foreign key relation to Movie
 	Movie Movie `bun:"rel:belongs-to,join:movie_id=id"`

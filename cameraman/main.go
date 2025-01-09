@@ -42,6 +42,8 @@ func main() {
 	router.NoRoute(internal.Handle404)
 	router.NoMethod(internal.Handle405)
 
+	// schema.CreateTables()
+
 	// Routes
 	router.GET("/api/movie", routes.GetMovie)
 	router.GET("/api/movie/archive", routes.GetMovieArchive)
