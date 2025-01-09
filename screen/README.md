@@ -2,7 +2,15 @@
 
 Cameraman's canvas.
 
-# sv
+## Setup
+
+Make sure you've installed Node.js and npm. You can confirm this by checking the versions with
+```
+node -v
+npm -v
+```
+
+## sv
 
 Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
 
