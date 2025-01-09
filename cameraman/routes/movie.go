@@ -12,8 +12,9 @@ type MovieRequest struct {
 	Date      string `json:"date"`
 }
 
-// Gets most recent movie added to database
-// i.e. the current week's screening
+// Gets movie whose screening date is closest in the future
+// Returns an error if all movies are in the past
+// e.g. get the current week's screening
 func GetMovie(c *gin.Context) {
 	// TODO: fetch current movie from database
 	var currentMovie = gin.H{
@@ -25,7 +26,7 @@ func GetMovie(c *gin.Context) {
 }
 
 // Adds new movie to database
-// i.e. sets the upcoming screening
+// e.g. set the upcoming screening
 func SetMovie(c *gin.Context) {
 	var newMovie MovieRequest
 	if err := c.ShouldBindJSON(&newMovie); err != nil {
