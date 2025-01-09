@@ -6,8 +6,8 @@ Bare minimum for launch
     - On submission, receive email confirmation of res
 - Admin endpoints
     - Support uploading screening information
-        - Movie title, date, poster, menu
-    - View reservation data for past and upcoming screenings
+        - Movie title, date, poster image, menu image
+    - Get reservation data for past and upcoming screenings
 
 Then add
 - A page for film festival being launched spring semester
