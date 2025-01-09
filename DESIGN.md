@@ -1,5 +1,5 @@
 Bare minimum for launch
-- Home page with upcoming screening
+- Home page with upcoming screening and menu
 - Page with past screenings and menus; 'Golden Arm Archive'
 - Seat reservation page
     - Input name, email
