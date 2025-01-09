@@ -1,29 +1,57 @@
 package main
 
 import (
+	"golden-arm/internal"
 	"golden-arm/routes"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	// TODO: load environment variables
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
 
-	r := gin.Default()
+	router := gin.Default()
+	// Error-handling middleware
+	router.Use(func(c *gin.Context) {
+		c.Next()
+		if len(c.Errors) > 0 {
+			err := c.Errors[len(c.Errors)-1].Err // Process the last error only
 
-	// TODO: error handling middleware
+			switch err {
+			case internal.ErrBadRequest:
+				internal.Handle400(c)
+			case internal.ErrUnauthorized:
+				internal.Handle401(c)
+			case internal.ErrNotFound:
+				internal.Handle404(c)
+			case internal.ErrMethodNotAllowed:
+				internal.Handle405(c)
+			case internal.ErrNotImplemented:
+				internal.Handle501(c)
+			default:
+				internal.Handle500(c)
+			}
+			// Abort after handling to prevent further processing
+			c.Abort()
+		}
+	})
+	router.NoRoute(internal.Handle404)
+	router.NoMethod(internal.Handle405)
 
 	// Routes
-	r.GET("/api/movie", routes.GetMovie)
-	r.GET("/api/movie/archive", routes.GetMovieArchive)
-	r.GET("/api/menu", routes.GetMenu)
-	r.GET("/api/menu/archive", routes.GetMenuArchive)
-	r.GET("/api/seats", routes.GetSeats)
+	router.GET("/api/movie", routes.GetMovie)
+	router.GET("/api/movie/archive", routes.GetMovieArchive)
+	router.GET("/api/menu", routes.GetMenu)
+	router.GET("/api/menu/archive", routes.GetMenuArchive)
+	router.GET("/api/seats", routes.GetSeats)
 
-	r.POST("/api/movie", routes.SetMovie)
-	r.POST("/api/menu", routes.SetMenu)
-	r.POST("/api/reserve", routes.Reserve)
-	r.POST("/api/reset-seats", routes.ResetSeats)
+	router.POST("/api/reserve", routes.Reserve)
+	router.POST("/api/movie", routes.SetMovie)
+	router.POST("/api/menu", routes.SetMenu)
 
-	r.Run(":8080")
+	router.Run(":8080")
 }
