@@ -61,15 +61,6 @@ func CreateTables() {
 		log.Fatalf("Failed to create movie table: %v", err)
 	}
 
-	// Create the Menu table with a foreign key to the Movie table
-	if _, err := db.NewCreateTable().
-		Model(&Menu{}).
-		IfNotExists().
-		ForeignKey(`("movie_id") REFERENCES "movies"("id") ON DELETE CASCADE`).
-		Exec(ctx); err != nil {
-		log.Fatalf("Failed to create menu table: %v", err)
-	}
-
 	// Create the Reservation table with a foreign key to the Movie table
 	if _, err := db.NewCreateTable().
 		Model(&Reservation{}).
