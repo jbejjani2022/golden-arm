@@ -33,4 +33,5 @@ type Comment struct {
 	Name    string    `bun:"name,notnull"`
 	Email   string    `bun:"email,notnull"`
 	Comment string    `bun:"comment,notnull"`
+	Date    time.Time `bun:"date,notnull"`
 }

@@ -10,6 +10,7 @@ type CommentRequest struct {
 	Name    string `json:"name"`
 	Email   string `json:"email"`
 	Comment string `json:"comment"`
+	Date    string `json:"date"`
 }
 
 // Gets all movie-goer comments / suggestions

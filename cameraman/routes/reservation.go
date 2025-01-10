@@ -9,6 +9,7 @@ import (
 type ReservationRequest struct {
 	MovieID    int    `json:"movie_id" binding:"required"`
 	SeatNumber int    `json:"seat_number" binding:"required"`
+	Date       string `json:"date" binding:"required"`
 	Name       string `json:"name" binding:"required"`
 	Email      string `json:"email" binding:"required,email"`
 }
