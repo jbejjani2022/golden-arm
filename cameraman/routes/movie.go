@@ -19,19 +19,6 @@ type MovieRequest struct {
 	MenuUrl   string    `json:"menu_url"`
 }
 
-// Gets movie whose screening date is closest in the future
-// Returns an error if all movies are in the past
-// e.g. get the current week's screening
-func GetMovie(c *gin.Context) {
-	// TODO: fetch current movie from database
-	var currentMovie = gin.H{
-		"title":      "Interstellar",
-		"poster_url": "/assets/interstellar.jpg",
-		"date":       "2024-12-01",
-	}
-	c.JSON(http.StatusOK, gin.H{"success": true, "data": currentMovie})
-}
-
 // Adds new movie to database
 // e.g. set the upcoming screening
 func AddMovie(c *gin.Context) {
@@ -77,6 +64,46 @@ func AddMovie(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Movie added successfully"})
+}
+
+// Gets movie closest in the future; e.g. get the upcoming screening info
+// If none, gets most recent past screening
+func GetMovie(c *gin.Context) {
+	if !internal.CheckAuthorization(c) {
+		c.AbortWithError(http.StatusUnauthorized, internal.ErrUnauthorized)
+		return
+	}
+
+	var nextMovie schema.Movie
+	db := schema.GetDBConn()
+	ctx := context.Background()
+
+	// Try to find the closest upcoming movie
+	err := db.NewSelect().
+		Model(&nextMovie).
+		Where("date > ?", time.Now()).
+		Order("date ASC"). // closest future date
+		Limit(1).
+		Scan(ctx)
+
+	if err != nil {
+		// Try to find the most recent past movie
+		err = db.NewSelect().
+			Model(&nextMovie).
+			Where("date <= ?", time.Now()).
+			Order("date DESC"). // most recent past date
+			Limit(1).
+			Scan(ctx)
+
+		// No movies in the database
+		if err != nil {
+			fmt.Printf("Error fetching movie: %v", err)
+			c.AbortWithError(http.StatusNotFound, internal.ErrNotFound)
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": nextMovie})
 }
 
 // Gets all past movies screened
