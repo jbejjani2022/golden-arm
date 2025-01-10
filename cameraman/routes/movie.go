@@ -1,15 +1,22 @@
 package routes
 
 import (
+	"context"
+	"fmt"
+	"golden-arm/internal"
+	"golden-arm/schema"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type MovieRequest struct {
-	Title     string `json:"title"`
-	PosterUrl string `json:"poster_url"`
-	Date      string `json:"date"`
+	Title     string    `json:"title"`
+	Date      time.Time `json:"date"`
+	PosterUrl string    `json:"poster_url"`
+	MenuUrl   string    `json:"menu_url"`
 }
 
 // Gets movie whose screening date is closest in the future
@@ -27,16 +34,49 @@ func GetMovie(c *gin.Context) {
 
 // Adds new movie to database
 // e.g. set the upcoming screening
-func SetMovie(c *gin.Context) {
-	var newMovie MovieRequest
-	if err := c.ShouldBindJSON(&newMovie); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+func AddMovie(c *gin.Context) {
+	if !internal.CheckAuthorization(c) {
+		c.AbortWithError(http.StatusUnauthorized, internal.ErrUnauthorized)
 		return
 	}
 
-	// TODO: enter new movie into database
+	var newMovie MovieRequest
+	fmt.Println("here")
+	if err := c.ShouldBindJSON(&newMovie); err != nil {
+		fmt.Println(err)
+		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
+		return
+	}
 
-	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Movie updated successfully"})
+	movie := schema.Movie{
+		ID:        uuid.New(),
+		Title:     newMovie.Title,
+		Date:      newMovie.Date,
+		PosterURL: newMovie.PosterUrl,
+		MenuURL:   newMovie.MenuUrl,
+	}
+
+	db := schema.GetDBConn()
+	ctx := context.Background()
+
+	// Perform an upsert operation based on the Date field
+	// e.g. if a movie already exists with identical Date value, update the remaining fields
+	err := db.NewInsert().
+		Model(&movie).
+		On("CONFLICT (date) DO UPDATE").
+		Set("title = EXCLUDED.title").
+		Set("poster_url = EXCLUDED.poster_url").
+		Set("menu_url = EXCLUDED.menu_url").
+		Returning("id").
+		Scan(ctx, &movie.ID)
+
+	if err != nil {
+		fmt.Println(err)
+		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Movie added successfully"})
 }
 
 // Gets all past movies screened
