@@ -70,5 +70,13 @@ func CreateTables() {
 		log.Fatalf("Failed to create reservation table: %v", err)
 	}
 
+	// Create the Comment table
+	if _, err := db.NewCreateTable().
+		Model(&Comment{}).
+		IfNotExists().
+		Exec(ctx); err != nil {
+		log.Fatalf("Failed to create comment table: %v", err)
+	}
+
 	log.Println("✅ Tables created successfully.")
 }

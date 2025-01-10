@@ -47,13 +47,12 @@ func main() {
 	// Routes
 	router.GET("/api/movie", routes.GetMovie)
 	router.GET("/api/movie/archive", routes.GetMovieArchive)
-	router.GET("/api/menu", routes.GetMenu)
-	router.GET("/api/menu/archive", routes.GetMenuArchive)
 	router.GET("/api/seats", routes.GetSeats)
+	router.GET("/api/comments", routes.GetComments)
 
 	router.POST("/api/reserve", routes.Reserve)
 	router.POST("/api/movie", routes.SetMovie)
-	router.POST("/api/menu", routes.SetMenu)
+	router.POST("/api/menu", routes.SubmitComment)
 
 	router.Run(":8080")
 }

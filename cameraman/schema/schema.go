@@ -26,3 +26,11 @@ type Reservation struct {
 	// Foreign key relation to Movie
 	Movie Movie `bun:"rel:belongs-to,join:movie_id=id"`
 }
+
+// Feedback from movie-goers; e.g. suggestion for future screening
+type Comment struct {
+	ID      uuid.UUID `bun:"type:uuid,pk,default:gen_random_uuid()"`
+	Name    string    `bun:"name,notnull"`
+	Email   string    `bun:"email,notnull"`
+	Comment string    `bun:"comment,notnull"`
+}
