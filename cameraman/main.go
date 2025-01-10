@@ -15,6 +15,7 @@ func main() {
 	}
 
 	router := gin.Default()
+
 	// Error-handling middleware
 	router.Use(func(c *gin.Context) {
 		c.Next()
@@ -51,8 +52,8 @@ func main() {
 	router.GET("/api/comments", routes.GetComments)
 
 	router.POST("/api/reserve", routes.Reserve)
-	router.POST("/api/movie", routes.SetMovie)
-	router.POST("/api/menu", routes.SubmitComment)
+	router.POST("/api/movie", routes.AddMovie)
+	router.POST("/api/comment", routes.SubmitComment)
 
 	router.Run(":8080")
 }
