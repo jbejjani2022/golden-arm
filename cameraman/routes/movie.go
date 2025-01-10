@@ -71,7 +71,7 @@ func AddMovie(c *gin.Context) {
 		Scan(ctx, &movie.ID)
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("Error adding movie to database: %v", err)
 		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
 		return
 	}
@@ -81,18 +81,27 @@ func AddMovie(c *gin.Context) {
 
 // Gets all past movies screened
 func GetMovieArchive(c *gin.Context) {
-	// TODO: fetch movie archive from database
-	var movieArchive = []gin.H{
-		{
-			"title":      "Interstellar",
-			"poster_url": "/assets/interstellar.jpg",
-			"date":       "2024-12-01",
-		},
-		{
-			"title":      "The Dark Knight",
-			"poster_url": "/assets/dark_knight.jpg",
-			"date":       "2024-11-24",
-		},
+	if !internal.CheckAuthorization(c) {
+		c.AbortWithError(http.StatusUnauthorized, internal.ErrUnauthorized)
+		return
 	}
+
+	var movieArchive []schema.Movie
+	db := schema.GetDBConn()
+	ctx := context.Background()
+
+	// Select all movies whose screening date is strictly in the past
+	err := db.NewSelect().
+		Model(&movieArchive).
+		Where("date < ?", time.Now()).
+		Order("date DESC").
+		Scan(ctx)
+
+	if err != nil {
+		fmt.Printf("Error fetching movie archive: %v", err)
+		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": movieArchive})
 }
