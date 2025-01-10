@@ -28,7 +28,6 @@ func AddMovie(c *gin.Context) {
 	}
 
 	var newMovie MovieRequest
-	fmt.Println("here")
 	if err := c.ShouldBindJSON(&newMovie); err != nil {
 		fmt.Println(err)
 		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
