@@ -140,3 +140,53 @@ func GetMovieArchive(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": movieArchive})
 }
+
+/*
+Deletes movie from database
+
+	curl -X DELETE http://localhost:8080/api/movie/00000000-0000-0000-0000-000000000000 \
+	-H "Authorization: Bearer YOUR API KEY"
+*/
+func DeleteMovie(c *gin.Context) {
+	if !internal.CheckAuthorization(c) {
+		c.AbortWithError(http.StatusUnauthorized, internal.ErrUnauthorized)
+		return
+	}
+
+	// Ensure movie_id is provided and is a valid UUID
+	param := c.Param("movie_id")
+	if param == "" {
+		fmt.Println("movie_id path parameter is required")
+		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
+		return
+	}
+	movieID, err := uuid.Parse(param)
+	if err != nil {
+		fmt.Println("movie_id must be a valid UUID")
+		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
+		return
+	}
+
+	db := schema.GetDBConn()
+	ctx := context.Background()
+
+	// Delete the movie from the database
+	result, err := db.NewDelete().
+		Model((*schema.Movie)(nil)).
+		Where("id = ?", movieID).
+		Exec(ctx)
+
+	if err != nil {
+		fmt.Printf("Error deleting movie: %v", err)
+		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
+		return
+	}
+
+	if rowsAffected, _ := result.RowsAffected(); rowsAffected == 0 {
+		fmt.Println("Movie not found")
+		c.AbortWithError(http.StatusNotFound, internal.ErrNotFound)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Movie deleted successfully"})
+}

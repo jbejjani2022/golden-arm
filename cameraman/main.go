@@ -48,13 +48,15 @@ func main() {
 	// Routes
 	router.GET("/api/movie", routes.GetMovie)
 	router.GET("/api/movie/archive", routes.GetMovieArchive)
-	router.GET("/api/reserved", routes.GetReservedSeats)
-	router.GET("/api/reservations", routes.GetReservations)
+	router.GET("/api/reserved/:movie_id", routes.GetReservedSeats)
+	router.GET("/api/reservations/:movie_id", routes.GetReservations)
 	router.GET("/api/comments", routes.GetComments)
 
 	router.POST("/api/reserve", routes.Reserve)
 	router.POST("/api/movie", routes.AddMovie)
 	router.POST("/api/comment", routes.SubmitComment)
+
+	router.DELETE("/api/movie/:movie_id", routes.DeleteMovie)
 
 	router.Run(":8080")
 }

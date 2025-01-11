@@ -98,12 +98,19 @@ func Reserve(c *gin.Context) {
 /*
 Gets the seats that have been reserved for a movie
 
-	curl -X GET http://localhost:8080/api/reserved?movie_id=00000000-0000-0000-0000-000000000000
+	curl -X GET http://localhost:8080/api/reserved/00000000-0000-0000-0000-000000000000
 */
 func GetReservedSeats(c *gin.Context) {
-	movieID := c.Query("movie_id")
-	if movieID == "" {
-		fmt.Println("movie_id query parameter is required")
+	// Ensure movie_id is provided and is a valid UUID
+	param := c.Param("movie_id")
+	if param == "" {
+		fmt.Println("movie_id path parameter is required")
+		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
+		return
+	}
+	movieID, err := uuid.Parse(param)
+	if err != nil {
+		fmt.Println("movie_id must be a valid UUID")
 		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
 		return
 	}
@@ -132,7 +139,7 @@ func GetReservedSeats(c *gin.Context) {
 /*
 Gets full reservation data for a movie including names and emails
 
-	curl -X GET http://localhost:8080/api/reservations?movie_id=00000000-0000-0000-0000-000000000000 \
+	curl -X GET http://localhost:8080/api/reservations/00000000-0000-0000-0000-000000000000 \
 	-H "Authorization: Bearer YOUR API KEY"
 */
 func GetReservations(c *gin.Context) {
@@ -141,9 +148,16 @@ func GetReservations(c *gin.Context) {
 		return
 	}
 
-	movieID := c.Query("movie_id")
-	if movieID == "" {
-		fmt.Println("movie_id query parameter is required")
+	// Ensure movie_id is provided and is a valid UUID
+	param := c.Param("movie_id")
+	if param == "" {
+		fmt.Println("movie_id path parameter is required")
+		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
+		return
+	}
+	movieID, err := uuid.Parse(param)
+	if err != nil {
+		fmt.Println("movie_id must be a valid UUID")
 		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
 		return
 	}
@@ -160,7 +174,7 @@ func GetReservations(c *gin.Context) {
 
 // Helper function returning all reservation data for a movie
 // Returns error if movie does not exist
-func getReservations(movieID string) ([]schema.Reservation, error) {
+func getReservations(movieID uuid.UUID) ([]schema.Reservation, error) {
 	db := schema.GetDBConn()
 	ctx := context.Background()
 
