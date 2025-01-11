@@ -116,6 +116,35 @@ func GetMovie(c *gin.Context) {
 }
 
 /*
+Gets all movies in the database
+
+	curl -X GET http://localhost:8080/api/movie/all -H "Authorization: Bearer YOUR API KEY"
+*/
+func GetAllMovies(c *gin.Context) {
+	if !internal.CheckAuthorization(c) {
+		c.AbortWithError(http.StatusUnauthorized, internal.ErrUnauthorized)
+		return
+	}
+
+	var movies []schema.Movie
+	db := schema.GetDBConn()
+	ctx := context.Background()
+
+	// Fetch all movies from the database
+	err := db.NewSelect().
+		Model(&movies).
+		Order("date DESC").
+		Scan(ctx)
+	if err != nil {
+		fmt.Printf("Error fetching movies: %v", err)
+		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": movies})
+}
+
+/*
 Gets all past movies screened
 
 	curl -X GET http://localhost:8080/api/movie/archive

@@ -47,6 +47,7 @@ func main() {
 
 	// Routes
 	router.GET("/api/movie", routes.GetMovie)
+	router.GET("/api/movie/all", routes.GetAllMovies)
 	router.GET("/api/movie/archive", routes.GetMovieArchive)
 	router.GET("/api/reserved/:movie_id", routes.GetReservedSeats)
 	router.GET("/api/reservations/:movie_id", routes.GetReservations)
