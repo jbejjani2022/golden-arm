@@ -33,6 +33,7 @@ func AdminLogin(c *gin.Context) {
 	// change localhost to site domain
 	// change `secure` from false to true to only send cookie over https
 	c.SetCookie("isAdmin", "true", 3600, "/", "localhost", false, true)
+	c.SetCookie("apiKey", os.Getenv("API_KEY"), 3600, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Login successful"})
 }
