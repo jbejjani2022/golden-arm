@@ -19,8 +19,19 @@ type MovieRequest struct {
 	MenuUrl   string    `json:"menu_url"`
 }
 
-// Adds new movie to database
-// e.g. set the upcoming screening
+/*
+Adds new movie to database
+e.g. set the upcoming screening
+
+	curl -X POST http://localhost:8080/api/movie -H "Authorization: Bearer YOUR API KEY" \
+	-H "Content-Type: application/json" -d
+	'{
+		"title": "Interstellar",
+		"date": "2025-01-10T00:00:00Z",
+		"poster_url": "https://example.com/poster.jpg",
+		"menu_url": "https://example.com/menu.jpg"
+	}'
+*/
 func AddMovie(c *gin.Context) {
 	if !internal.CheckAuthorization(c) {
 		c.AbortWithError(http.StatusUnauthorized, internal.ErrUnauthorized)
@@ -65,14 +76,13 @@ func AddMovie(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Movie added successfully"})
 }
 
-// Gets movie closest in the future; e.g. get the upcoming screening info
-// If none, gets most recent past screening
-func GetMovie(c *gin.Context) {
-	if !internal.CheckAuthorization(c) {
-		c.AbortWithError(http.StatusUnauthorized, internal.ErrUnauthorized)
-		return
-	}
+/*
+Gets movie closest in the future; e.g. get the upcoming screening info
+If none, gets most recent past screening
 
+	curl -X GET http://localhost:8080/api/movie
+*/
+func GetMovie(c *gin.Context) {
 	var nextMovie schema.Movie
 	db := schema.GetDBConn()
 	ctx := context.Background()
@@ -105,13 +115,12 @@ func GetMovie(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": nextMovie})
 }
 
-// Gets all past movies screened
-func GetMovieArchive(c *gin.Context) {
-	if !internal.CheckAuthorization(c) {
-		c.AbortWithError(http.StatusUnauthorized, internal.ErrUnauthorized)
-		return
-	}
+/*
+Gets all past movies screened
 
+	curl -X GET http://localhost:8080/api/movie/archive
+*/
+func GetMovieArchive(c *gin.Context) {
 	var movieArchive []schema.Movie
 	db := schema.GetDBConn()
 	ctx := context.Background()
