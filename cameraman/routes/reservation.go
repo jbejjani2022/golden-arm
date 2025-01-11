@@ -210,3 +210,53 @@ func getReservations(movieID uuid.UUID) ([]schema.Reservation, error) {
 
 	return reservations, nil
 }
+
+/*
+Deletes reservation from database
+
+	curl -X DELETE http://localhost:8080/api/reservation/00000000-0000-0000-0000-000000000000 \
+	-H "Authorization: Bearer YOUR API KEY"
+*/
+func DeleteReservation(c *gin.Context) {
+	if !internal.CheckAuthorization(c) {
+		c.AbortWithError(http.StatusUnauthorized, internal.ErrUnauthorized)
+		return
+	}
+
+	// Ensure reservation_id is provided and is a valid UUID
+	param := c.Param("reservation_id")
+	if param == "" {
+		fmt.Println("reservation_id path parameter is required")
+		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
+		return
+	}
+	resID, err := uuid.Parse(param)
+	if err != nil {
+		fmt.Println("reservation_id must be a valid UUID")
+		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
+		return
+	}
+
+	db := schema.GetDBConn()
+	ctx := context.Background()
+
+	// Delete the reservation from the database
+	result, err := db.NewDelete().
+		Model((*schema.Reservation)(nil)).
+		Where("id = ?", resID).
+		Exec(ctx)
+
+	if err != nil {
+		fmt.Printf("Error deleting reservation: %v", err)
+		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
+		return
+	}
+
+	if rowsAffected, _ := result.RowsAffected(); rowsAffected == 0 {
+		fmt.Println("Reservation not found")
+		c.AbortWithError(http.StatusNotFound, internal.ErrNotFound)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Reservation deleted successfully"})
+}

@@ -19,7 +19,7 @@ type CommentRequest struct {
 }
 
 /*
-Gets all movie-goer comments / suggestions
+Gets all movie-goer comments
 
 	curl -X GET http://localhost:8080/api/comments -H "Authorization: Bearer YOUR API KEY"
 */
@@ -87,4 +87,54 @@ func SubmitComment(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Comment submitted"})
+}
+
+/*
+Deletes comment from database
+
+	curl -X DELETE http://localhost:8080/api/comment/00000000-0000-0000-0000-000000000000 \
+	-H "Authorization: Bearer YOUR API KEY"
+*/
+func DeleteComment(c *gin.Context) {
+	if !internal.CheckAuthorization(c) {
+		c.AbortWithError(http.StatusUnauthorized, internal.ErrUnauthorized)
+		return
+	}
+
+	// Ensure comment_id is provided and is a valid UUID
+	param := c.Param("comment_id")
+	if param == "" {
+		fmt.Println("comment_id path parameter is required")
+		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
+		return
+	}
+	commentID, err := uuid.Parse(param)
+	if err != nil {
+		fmt.Println("commen_id must be a valid UUID")
+		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
+		return
+	}
+
+	db := schema.GetDBConn()
+	ctx := context.Background()
+
+	// Delete the comment from the database
+	result, err := db.NewDelete().
+		Model((*schema.Comment)(nil)).
+		Where("id = ?", commentID).
+		Exec(ctx)
+
+	if err != nil {
+		fmt.Printf("Error deleting comment: %v", err)
+		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
+		return
+	}
+
+	if rowsAffected, _ := result.RowsAffected(); rowsAffected == 0 {
+		fmt.Println("Comment not found")
+		c.AbortWithError(http.StatusNotFound, internal.ErrNotFound)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Comment deleted successfully"})
 }

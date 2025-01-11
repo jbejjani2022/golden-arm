@@ -57,6 +57,8 @@ func main() {
 	router.POST("/api/comment", routes.SubmitComment)
 
 	router.DELETE("/api/movie/:movie_id", routes.DeleteMovie)
+	router.DELETE("/api/reservation/:reservation_id", routes.DeleteReservation)
+	router.DELETE("/api/comment/:comment_id", routes.DeleteComment)
 
 	router.Run(":8080")
 }
