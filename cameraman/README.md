@@ -17,6 +17,11 @@ DB_USER="?"
 DB_PASS="?"
 DB_PORT="?"
 DB_NAME="?"
+
+API_KEY="?"
+
+SMTP_USERNAME="?"
+SMTP_PASSWORD="?"
 ```
 
 Execute `go run .` to start a local development server.
