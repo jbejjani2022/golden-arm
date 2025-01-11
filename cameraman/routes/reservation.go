@@ -1,13 +1,18 @@
 package routes
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
+	"embed"
 	"errors"
 	"fmt"
 	"golden-arm/internal"
 	"golden-arm/schema"
+	"html/template"
 	"net/http"
+	"net/smtp"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -19,6 +24,16 @@ type ReservationRequest struct {
 	SeatNumber int       `json:"seat_number" binding:"required"`
 	Name       string    `json:"name" binding:"required"`
 	Email      string    `json:"email" binding:"required,email"`
+}
+
+// Confirmation email
+type EmailData struct {
+	To         string
+	Name       string
+	MovieTitle string
+	MovieDate  string
+	SeatNumber int
+	PosterURL  string
 }
 
 /*
@@ -90,9 +105,74 @@ func Reserve(c *gin.Context) {
 		return
 	}
 
-	// TODO: send confirmation email
+	fmt.Printf("Reservation saved: %v\n", res)
+
+	// Send confirmation email
+	// Load movie details
+	var movie schema.Movie
+	err = db.NewSelect().
+		Model(&movie).
+		Where("id = ?", res.MovieID).
+		Scan(ctx)
+	if err != nil {
+		fmt.Println("Error loading movie details: ", err)
+		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
+		return
+	}
+	// Prepare email data
+	var data EmailData
+	data.To = res.Email
+	data.Name = res.Name
+	data.MovieTitle = movie.Title
+	data.MovieDate = movie.Date.Format("Monday, January 2 3:04 PM")
+	data.SeatNumber = res.SeatNumber
+	data.PosterURL = movie.PosterURL
+
+	if err := sendConfirmationEmail(data); err != nil {
+		fmt.Printf("Error sending confirmation email: %v", err)
+		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Reservation confirmed"})
+}
+
+//go:embed templates/*
+var emailTemplate embed.FS
+
+func sendConfirmationEmail(data EmailData) error {
+	// Parse and fill the HTML email template
+	tmpl, err := template.ParseFS(emailTemplate, "templates/email.html")
+	if err != nil {
+		return fmt.Errorf("failed to parse email template: %w", err)
+	}
+
+	var body bytes.Buffer
+	if err := tmpl.Execute(&body, data); err != nil {
+		return fmt.Errorf("failed to execute email template: %w", err)
+	}
+
+	// Configure SMTP settings
+	smtpHost := "smtp.gmail.com"
+	smtpPort := "587" // Common port for TLS
+	smtpUsername := os.Getenv("SMTP_USERNAME")
+	smtpPassword := os.Getenv("SMTP_PASSWORD")
+
+	// Prepare email message
+	from := smtpUsername
+	subject := fmt.Sprintf("You're set to watch \"%s\" @ The Golden Arm: %s", data.MovieTitle, data.MovieDate)
+	message := fmt.Sprintf("Subject: %s\r\nFrom: %s\r\nTo: %s\r\nContent-Type: text/html\r\n\r\n%s",
+		subject, from, data.To, body.String())
+
+	// Connect to the SMTP server
+	auth := smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost)
+	err = smtp.SendMail(smtpHost+":"+smtpPort, auth, from, []string{data.To}, []byte(message))
+	if err != nil {
+		return fmt.Errorf("failed to send email: %w", err)
+	}
+
+	fmt.Printf("Confirmation email sent to %s\n", data.To)
+	return nil
 }
 
 /*
