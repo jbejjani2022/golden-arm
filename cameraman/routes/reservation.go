@@ -56,9 +56,9 @@ func Reserve(c *gin.Context) {
 		return
 	}
 
-	// Validate that seat number is in range [1, 10] (how many seats does golden arm actually have?)
-	if newRes.SeatNumber < 1 || newRes.SeatNumber > 10 {
-		fmt.Println("Seat number must be between 1 and 10")
+	// Validate that seat number is in range [1, 18] (how many seats does golden arm actually have?)
+	if newRes.SeatNumber < 1 || newRes.SeatNumber > 18 {
+		fmt.Println("Seat number must be between 1 and 18")
 		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
 		return
 	}

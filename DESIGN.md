@@ -16,6 +16,7 @@ Then add
 
 Longer term, nice to have
 - Merch shop
+- Scrape roombook / eliot website for other golden arm reservations and add to calendar
 - When user makes reservation, provide option to subscribe to weekly screening email updates
 - A nice calendar UI showing past and upcoming screenings. GCal integration
 - 'Golden Arm Wrapped' - at end of semester, send all attendees a recap of their top genres, actors, directors
