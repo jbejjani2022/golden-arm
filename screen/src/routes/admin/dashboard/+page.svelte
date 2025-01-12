@@ -205,7 +205,7 @@
     </form>
   </div>
 {/if}
-<br>
+<br><br>
 <!-- Comments Table -->
 <h2>Comments</h2>
 {#if comments.length > 0}
