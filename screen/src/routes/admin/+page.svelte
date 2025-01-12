@@ -16,8 +16,6 @@
         const result = await response.json();
   
         if (result.success) {
-          // Set a cookie for session validation
-          document.cookie = `isAdmin=true; path=/;`;
           goto('/admin/dashboard');
         } else {
           error = 'Are you really a Golden Arm operator?';

@@ -38,10 +38,23 @@
         return date.toLocaleString('en-US', options);
     }
   
-    const logout = () => {
-      document.cookie = 'isAdmin=; Max-Age=0'; // Clear the cookie
-      goto('/admin');
-    };
+    const logout = async () => {
+      try {
+        const response = await fetch('/api/admin/logout', {
+          method: 'POST',
+        });
+
+        if (response.ok) {
+          // Redirect to the login page
+          goto('/admin');
+        } else {
+          console.error('Logout failed');
+        }
+      } catch (err) {
+        console.error('Error during logout:', err);
+      }
+  };
+
 </script>
   
 <h1>Hey Golden Arm Operator</h1>

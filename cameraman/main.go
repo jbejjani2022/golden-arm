@@ -57,6 +57,7 @@ func main() {
 	router.POST("/api/movie", routes.AddMovie)
 	router.POST("/api/comment", routes.SubmitComment)
 	router.POST("/api/admin/login", routes.AdminLogin)
+	router.POST("/api/admin/logout", routes.AdminLogout)
 
 	router.DELETE("/api/movie/:movie_id", routes.DeleteMovie)
 	router.DELETE("/api/reservation/:reservation_id", routes.DeleteReservation)

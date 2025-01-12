@@ -37,3 +37,10 @@ func AdminLogin(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Login successful"})
 }
+
+func AdminLogout(c *gin.Context) {
+	c.SetCookie("isAdmin", "", -1, "/", "localhost", false, true)
+	c.SetCookie("apiKey", "", -1, "/", "localhost", false, true)
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Logout successful"})
+}
