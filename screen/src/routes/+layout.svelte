@@ -62,6 +62,15 @@
     text-decoration: underline;
   }
 
+  :global(.link) {
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  :global(.link:hover) {
+    text-decoration: underline;
+  }
+
   /* Global Button Styling */
   :global(button) {
     padding: 10px 15px;
@@ -101,7 +110,7 @@
       color: black;
       padding: 20px;
       border-radius: 8px;
-      width: 500px;
+      width: 400px;
       text-align: center; /* Center text */
       display: flex;
       flex-direction: column;  /* Arrange elements vertically */

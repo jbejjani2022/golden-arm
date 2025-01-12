@@ -35,7 +35,8 @@
   );
 
   let selectedSeat: Seat | null = null;
-  let showModal = false;
+  let showResModal = false;
+  let showCommentModal = false;
   let name = '';
   let email = '';
   let comment = '';
@@ -55,11 +56,11 @@
   }
 
   const confirmReservation = () => {
-    showModal = true;
+    showResModal = true;
   }
 
   const cancelReservation = () => {
-    showModal = false;
+    showResModal = false;
   }
 
   const handleReservation = async () => {
@@ -67,33 +68,7 @@
       alert("Please enter your name and email.");
       return;
     }
-    if (comment) {
-      // User made a movie suggestion, send to server
-      try {
-        const response = await fetch(`/api/comment`, {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json" 
-          },
-          body: JSON.stringify({
-            name,
-            email,
-            comment,
-          })
-        });
-
-        const result = await response.json();
-        if (result.success) {
-          console.log("Comment submitted!");
-        } else {
-          console.log("Failed to submit comment.");
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Something went wrong while submitting the comment.");
-      }
-    }
-
+    showResModal = false;
     // Send the reservation
     try {
       const response = await fetch(`/api/reserve`, {
@@ -110,19 +85,55 @@
       });
 
       const result = await response.json();
-      showModal = false;
       if (result.success) {
-        if (comment) {
-          alert("Reservation confirmed! And thanks for the movie suggestion!");
-        } else {
-          alert("Reservation confirmed!");
-        }
+        alert("Reservation confirmed!");
+        confirmComment();
       } else {
         alert("Failed to confirm reservation.");
       }
     } catch (err) {
       console.error(err);
       alert("Something went wrong while confirming the reservation.");
+    }
+  }
+
+  const confirmComment = () => {
+    showCommentModal = true;
+  }
+
+  const cancelComment = () => {
+    showCommentModal = false;
+  }
+
+  const handleComment = async () => {
+    if (!comment) {
+      alert("Please tell us what you'd like to see next!");
+      return;
+    }
+    showCommentModal = false;
+    // Send suggestion to server
+    try {
+      const response = await fetch(`/api/comment`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json" 
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          comment,
+        })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert("Thank you for your suggestion!");
+      } else {
+        alert("Failed to submit comment.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong while submitting the comment.");
     }
   }
 </script>
@@ -152,7 +163,7 @@
 </div>
 <button class="reserve-button" on:click={confirmReservation} disabled={!selectedSeat}>Confirm</button>
 
-{#if showModal}
+{#if showResModal}
 <div class="modal">
   <div class="modal-content">
       <h2>Seat {selectedSeat?.id}</h2>
@@ -164,12 +175,21 @@
         <label for="email">Email: </label>
         <input type="email" id="email" bind:value={email} placeholder="Enter your email" required />
       </div>
-      <div class="form-group">
-        <label for="comment">What would you like us to screen next?</label>
-        <input type="text" id="comment" bind:value={comment} placeholder="Enter any movie suggestions!" required />
-      </div>
       <button type="submit" on:click={handleReservation}>Reserve</button>
       <button type="button" class="cancel-button" on:click={cancelReservation}>Cancel</button>
+  </div>
+</div>
+{/if}
+
+{#if showCommentModal}
+<div class="modal">
+  <div class="modal-content">
+      <h2>What would you like to see next at The Golden Arm?</h2>
+      <div class="form-group">
+        <input type="text" id="comment" bind:value={comment} placeholder="Enter your suggestions!" required />
+      </div>
+      <button type="submit" on:click={handleComment}>Send</button>
+      <button type="button" class="cancel-button" on:click={cancelComment}>Cancel</button>
   </div>
 </div>
 {/if}

@@ -73,7 +73,10 @@
   <main class="homepage">
     <section class="theater-info">
       <h1>The Golden Arm</h1>
-      <p>Eliot's student-run theater showcasing weekly films.</p>
+      <p>
+        Eliot's student-run theater showcasing weekly films.
+        Check out our <a href="/archives" class="link" target="_blank" rel="noopener noreferrer">archives</a>.
+      </p>
     </section>
   
     {#if error}
