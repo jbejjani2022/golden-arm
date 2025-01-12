@@ -70,7 +70,7 @@
   </script>
   
   <!-- Home Page Layout -->
-  <main class="homepage">
+  <main>
     <section class="theater-info">
       <h1>The Golden Arm</h1>
       <p>
@@ -130,13 +130,6 @@
   </main>
   
   <style>
-    .homepage {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-      text-align: center;
-    }
-  
     .theater-info h1 {
       font-size: 36px;
       margin-bottom: 10px;
@@ -151,11 +144,6 @@
     .movie-info h2 {
       font-size: 28px;
       margin: 20px 0;
-    }
-  
-    .movie-info p {
-      font-size: 16px;
-      color: #ddd;
     }
   
     .poster img,

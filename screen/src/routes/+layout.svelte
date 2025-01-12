@@ -27,10 +27,13 @@
 
   /* Dark theme styling */
   :global(body) {
-    margin: 0;
+    margin: 0 auto;
     font-family: Arial, sans-serif;
     background-color: var(--dark);
     color: #f0f0f0;
+    max-width: 800px;
+    padding: 20px;
+    text-align: center;
   }
 
   /* Make the page container fill the viewport */
