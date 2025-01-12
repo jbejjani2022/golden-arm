@@ -1,5 +1,27 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { onMount } from 'svelte';
+  import { formatDate } from '$lib';
+  
+  let movie: any = null;
+  let error: string = '';
+
+  // Fetch movie information
+  onMount(async () => {
+    try {
+      const response = await fetch(`/api/movie/${page.params.movie_id}`);
+      const data = await response.json();
+
+      if (data.success) {
+        movie = data.data;
+      } else {
+        error = 'Failed to load the movie data.';
+      }
+    } catch (err) {
+      console.error(err);
+      error = 'Something went wrong while fetching the movie data.';
+    }
+  });
 
   // Define the Seat interface
   interface Seat {
@@ -60,9 +82,9 @@
         });
 
         const result = await response.json();
+        showModal = false;
         if (result.success) {
           alert("Reservation confirmed!");
-          showModal = false;
         } else {
           alert("Failed to confirm reservation.");
         }
@@ -75,7 +97,13 @@
 </script>
 
 <main class="reservation-page">
-<h1>Select Your Seat</h1>
+{#if movie}
+<h1>The Golden Arm's Screening of "{movie.Title}"</h1>
+<h2>{formatDate(movie.Date)}</h2>
+{:else}
+<p>Loading movie information...</p>
+{/if}
+<h3>Select Your Seat</h3>
 <div class="grid">
   {#each seats as row}
     <div class="row">
@@ -96,7 +124,7 @@
 {#if showModal}
 <div class="modal">
   <div class="modal-content">
-      <h2>Enter Your Information</h2>
+      <h2>Seat {selectedSeat?.id}</h2>
       <div class="form-group">
         <label for="name">Name: </label>
         <input type="text" id="name" bind:value={name} placeholder="Enter your name" required />
@@ -106,7 +134,7 @@
         <label for="email">Email: </label>
         <input type="email" id="email" bind:value={email} placeholder="Enter your email" required />
       </div>
-      <button type="submit" on:click={handleReservation}>Submit</button>
+      <button type="submit" on:click={handleReservation}>Reserve</button>
       <button type="button" class="cancel-button" on:click={cancelReservation}>Cancel</button>
   </div>
 </div>

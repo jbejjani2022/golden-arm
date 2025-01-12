@@ -118,15 +118,9 @@ func GetNextMovie(c *gin.Context) {
 /*
 Gets movie info by ID
 
-	curl -X GET http://localhost:8080/api/movie/00000000-0000-0000-0000-000000000000 \
-	-H "Authorization: Bearer YOUR API KEY"
+	curl -X GET http://localhost:8080/api/movie/00000000-0000-0000-0000-000000000000
 */
 func GetMovie(c *gin.Context) {
-	if !internal.CheckAuthorization(c) {
-		c.AbortWithError(http.StatusUnauthorized, internal.ErrUnauthorized)
-		return
-	}
-
 	// Ensure movie_id is provided and is a valid UUID
 	param := c.Param("movie_id")
 	if param == "" {

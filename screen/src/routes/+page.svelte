@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatDate } from '$lib';
+	  import { formatDate } from '$lib';
     import { onMount } from 'svelte';
   
     let movie: any = null;
