@@ -82,7 +82,7 @@ If none, gets most recent past screening
 
 	curl -X GET http://localhost:8080/api/movie
 */
-func GetMovie(c *gin.Context) {
+func GetNextMovie(c *gin.Context) {
 	var nextMovie schema.Movie
 	db := schema.GetDBConn()
 	ctx := context.Background()
@@ -113,6 +113,50 @@ func GetMovie(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": nextMovie})
+}
+
+/*
+Gets movie info by ID
+
+	curl -X GET http://localhost:8080/api/movie/00000000-0000-0000-0000-000000000000 \
+	-H "Authorization: Bearer YOUR API KEY"
+*/
+func GetMovie(c *gin.Context) {
+	if !internal.CheckAuthorization(c) {
+		c.AbortWithError(http.StatusUnauthorized, internal.ErrUnauthorized)
+		return
+	}
+
+	// Ensure movie_id is provided and is a valid UUID
+	param := c.Param("movie_id")
+	if param == "" {
+		fmt.Println("movie_id path parameter is required")
+		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
+		return
+	}
+	movieID, err := uuid.Parse(param)
+	if err != nil {
+		fmt.Println("movie_id must be a valid UUID")
+		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
+		return
+	}
+
+	var movie schema.Movie
+	db := schema.GetDBConn()
+	ctx := context.Background()
+
+	// Fetch the movie from the database
+	err = db.NewSelect().
+		Model(&movie).
+		Where("id = ?", movieID).
+		Scan(ctx)
+	if err != nil {
+		fmt.Printf("Error fetching movie: %v", err)
+		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": movie})
 }
 
 /*

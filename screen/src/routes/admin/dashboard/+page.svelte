@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
+    import { formatDate } from '$lib';
 
     let movies: Array<any> = [];
     let comments: Array<any> = [];
@@ -36,19 +37,6 @@
             error = 'Something went wrong while fetching the comment data.';
         }
     });
-
-    function formatDate(dateString: string): string {
-      const date = new Date(dateString);
-      const options: Intl.DateTimeFormatOptions = {
-            month: '2-digit',
-            day: '2-digit',
-            year: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true,
-        };
-        return date.toLocaleString('en-US', options);
-    }
   
     // Add Movie form data and handling
     let showForm = false;
@@ -77,9 +65,6 @@
 
         const result = await response.json();
         if (result.success) {
-          // Reload the page to fetch new data
-          showForm = false;
-          goto('/admin/dashboard');
           window.location.reload();
         } else {
           error = 'Failed to add movie.';
@@ -101,8 +86,6 @@
           });
 
           if (response.ok) {
-            // Refresh the page to reflect changes
-            goto('/admin/dashboard');
             window.location.reload();
           } else {
             console.error('Failed to delete movie');
@@ -124,8 +107,6 @@
           });
 
           if (response.ok) {
-            // Refresh the page to reflect changes
-            goto('/admin/dashboard');
             window.location.reload();
           } else {
             console.error('Failed to delete comment');
@@ -173,8 +154,7 @@
             <th>ID</th>
             <th>Title</th>
             <th>Screening Date</th>
-            <th>Poster URL</th>
-            <th>Menu URL</th>
+            <th>Assets</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -184,10 +164,12 @@
                 <td>{movie.ID}</td>
                 <td>{movie.Title}</td>
                 <td>{formatDate(movie.Date)}</td>
-                <td><a href={movie.PosterURL} target="_blank">View Poster</a></td>
-                <td><a href={movie.MenuURL} target="_blank">View Menu</a></td>
                 <td>
-                    <!-- X button to delete movie -->
+                  <a href={movie.PosterURL} target="_blank">Poster</a>,
+                  <a href={movie.MenuURL} target="_blank">Menu</a>
+                </td>
+                <td>
+                    <a href={`/admin/dashboard/reservations/${movie.ID}`} style="margin-left: 10px;">Reservations</a>
                     <button on:click={() => deleteMovie(movie.ID)} style="color: red; border: none; background: none; cursor: pointer;">X</button>
                 </td>
             </tr>

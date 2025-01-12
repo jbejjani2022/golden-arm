@@ -248,6 +248,9 @@ func GetReservations(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
 		return
 	}
+	if reservations == nil {
+		reservations = []schema.Reservation{}
+	}
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": reservations})
 }
