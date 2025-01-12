@@ -26,6 +26,12 @@
     color: #f0f0f0;
   }
 
+  /* Admin pages override */
+  :global(body.admin-page) {
+    background-color: #ffffff;
+    color: black;
+  }
+
   /* Global Footer Styling */
   .global-footer {
     position: fixed;

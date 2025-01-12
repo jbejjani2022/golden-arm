@@ -1,18 +1,15 @@
 <script lang="ts">
     // Add any global logic or imports here
-  </script>
+</script>
   
-  <main>
-    <slot></slot> <!-- This will render the content of the page -->
-  </main>
-  
-  <style>
-    /* Dark theme styling */
-    :global(body) {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: white;
-      color: black;
-    }
-  </style>
-  
+<main>
+    <slot></slot>
+</main>
+
+<style>
+  /* Apply a white background to all admin pages */
+  :global(body) {
+    background-color: white;
+    color: black;
+  }
+</style>

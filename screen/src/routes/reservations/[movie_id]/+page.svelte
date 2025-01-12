@@ -106,7 +106,7 @@
         <label for="email">Email: </label>
         <input type="email" id="email" bind:value={email} placeholder="Enter your email" required />
       </div>
-      <button type="submit">Submit</button>
+      <button type="submit" on:click={handleReservation}>Submit</button>
       <button type="button" class="cancel-button" on:click={cancelReservation}>Cancel</button>
   </div>
 </div>
