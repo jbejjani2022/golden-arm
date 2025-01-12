@@ -2,13 +2,11 @@
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
 
-    // Movie data storage
     let movies: Array<any> = [];
-
-    // Error message for fetching movies
+    let comments: Array<any> = [];
     let error: string = '';
 
-    // Fetch movie data on page load
+    // Fetch movie and comments data on page load
     onMount(async () => {
         try {
             const response = await fetch('/api/movie/all');
@@ -22,6 +20,20 @@
         } catch (err) {
             console.error(err);
             error = 'Something went wrong while fetching the movie data.';
+        }
+
+        try {
+            const response = await fetch('/api/comments');
+            const data = await response.json();
+
+            if (data.success) {
+                comments = data.data;
+            } else {
+                error = 'Failed to load comment data.';
+            }
+        } catch (err) {
+            console.error(err);
+            error = 'Something went wrong while fetching the comment data.';
         }
     });
 
@@ -101,6 +113,29 @@
       }
     };
 
+    // Delete comment handler
+    const deleteComment = async (commentId: string) => {
+      const confirmation = confirm('Are you sure you want to delete this comment?');
+
+      if (confirmation) {
+        try {
+          const response = await fetch(`/api/comment/${commentId}`, {
+            method: 'DELETE',
+          });
+
+          if (response.ok) {
+            // Refresh the page to reflect changes
+            goto('/admin/dashboard');
+            window.location.reload();
+          } else {
+            console.error('Failed to delete comment');
+          }
+        } catch (err) {
+          console.error('Error during comment deletion:', err);
+        }
+      }
+    };
+
     const logout = async () => {
       try {
         const response = await fetch('/api/admin/logout', {
@@ -122,7 +157,7 @@
   
 <h1>What's good, Golden Arm operator.</h1>
 
-<button on:click={logout}>Logout</button>
+<button class="logout-button" on:click={logout}>Logout</button>
 
 <!-- Display error message if data fetching fails -->
 {#if error}
@@ -130,6 +165,7 @@
 {/if}
 
 <!-- Movie Table -->
+<h2>Movies</h2>
 {#if movies.length > 0}
 <table>
     <thead>
@@ -139,7 +175,7 @@
             <th>Screening Date</th>
             <th>Poster URL</th>
             <th>Menu URL</th>
-            <th>Actions</th> <!-- New Actions column for delete button -->
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -159,9 +195,9 @@
     </tbody>
 </table>
 {:else}
-  <p>No movies available at the moment.</p>
+  <p>No movies available at the moment. Add some!</p>
 {/if}
-
+<br>
 <!-- Add Movie Button -->
 <button on:click={() => showForm = !showForm}>Add Movie</button>
 
@@ -187,7 +223,39 @@
     </form>
   </div>
 {/if}
-
+<br>
+<!-- Comments Table -->
+<h2>Comments</h2>
+{#if comments.length > 0}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Comment</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {#each comments as comment (comment.ID)}
+            <tr>
+                <td>{comment.ID}</td>
+                <td>{comment.Name}</td>
+                <td>{comment.Email}</td>
+                <td>{comment.Comment}</td>
+                <td>{formatDate(comment.Date)}</td>
+                <td>
+                    <button on:click={() => deleteComment(comment.ID)} style="color: red; border: none; background: none; cursor: pointer;">X</button>
+                </td>
+            </tr>
+        {/each}
+    </tbody>
+</table>
+{:else}
+  <p>No comments found.</p>
+{/if}
 
 <style>
   table {
@@ -240,6 +308,18 @@
     color: white;
     border: none;
     padding: 10px;
+  }
+
+  .logout-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 14px;
   }
 
 </style>
