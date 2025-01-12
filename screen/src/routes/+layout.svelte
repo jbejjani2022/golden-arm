@@ -36,6 +36,17 @@
     text-align: center;
   }
 
+  :global(.theater-info h1) {
+    font-size: 36px;
+    margin-bottom: 10px;
+  }
+  
+  :global(.theater-info p) {
+    font-size: 18px;
+    margin-bottom: 30px;
+    color: #bbb;
+  }
+
   /* Make the page container fill the viewport */
   .page-container {
     display: flex;

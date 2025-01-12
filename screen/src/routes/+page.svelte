@@ -119,7 +119,7 @@
             <input type="email" id="email" bind:value={email} placeholder="Enter your email" required />
           </div>
           <div class="form-group">
-            <label for="comment">What would you like us to screen next?</label>
+            <label for="comment">What should we screen next?</label>
             <input type="text" id="comment" bind:value={comment} placeholder="Enter any movie suggestions!" required />
           </div>
           <button type="submit" on:click={handleComment}>Send</button>
@@ -130,17 +130,6 @@
   </main>
   
   <style>
-    .theater-info h1 {
-      font-size: 36px;
-      margin-bottom: 10px;
-    }
-  
-    .theater-info p {
-      font-size: 18px;
-      margin-bottom: 30px;
-      color: #bbb;
-    }
-  
     .movie-info h2 {
       font-size: 28px;
       margin: 20px 0;

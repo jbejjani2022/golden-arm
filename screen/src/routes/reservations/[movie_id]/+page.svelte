@@ -186,7 +186,7 @@
   <div class="modal-content">
       <h2>What would you like to see next at The Golden Arm?</h2>
       <div class="form-group">
-        <input type="text" id="comment" bind:value={comment} placeholder="Enter your suggestions!" required />
+        <input type="text" id="comment" bind:value={comment} placeholder="Enter any movie suggestions!" required />
       </div>
       <button type="submit" on:click={handleComment}>Send</button>
       <button type="button" class="cancel-button" on:click={cancelComment}>Cancel</button>
