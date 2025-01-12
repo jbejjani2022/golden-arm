@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
     import { formatDate } from '$lib';
 
@@ -116,29 +115,9 @@
         }
       }
     };
-
-    const logout = async () => {
-      try {
-        const response = await fetch('/api/admin/logout', {
-          method: 'POST',
-        });
-
-        if (response.ok) {
-          // Redirect to the login page
-          goto('/admin');
-        } else {
-          console.error('Logout failed');
-        }
-      } catch (err) {
-        console.error('Error during logout:', err);
-      }
-  };
-
 </script>
   
 <h1>What's good, Golden Arm operator.</h1>
-
-<button class="logout-button" on:click={logout}>Logout</button>
 
 <!-- Display error message if data fetching fails -->
 {#if error}
@@ -250,6 +229,7 @@
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
+      align-items: center;
   }
 
   th, td {
@@ -260,49 +240,6 @@
 
   th {
       background-color: #f4f4f4;
-  }
-
-  a {
-      color: #3498db;
-      text-decoration: none;
-  }
-
-  a:hover {
-      text-decoration: underline;
-  }
-
-  .form-popup {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
-    border: 1px solid #ddd;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    z-index: 100;
-    width: 300px;
-  }
-
-  .form-popup input,
-  .form-popup button {
-    width: 100%;
-    margin-bottom: 10px;
-  }
-
-  .form-popup button {
-    cursor: pointer;
-    background-color: var(--gold);
-    color: white;
-    border: none;
-    padding: 10px;
-  }
-
-  .logout-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    padding: 10px 20px;
   }
 </style>
   

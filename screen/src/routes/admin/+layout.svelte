@@ -13,9 +13,17 @@
   :global(body) {
     background-color: white;
     color: black;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
   }
 
-  .admin-page {
-    padding: 20px;
+  :global(a) {
+      color: #3498db;
+      text-decoration: none;
+  }
+
+  :global(a:hover) {
+      text-decoration: underline;
   }
 </style>
