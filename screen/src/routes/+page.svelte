@@ -87,6 +87,7 @@
       <section class="movie-info">
         <h2>Coming soon: "{movie.Title}"</h2>
         <h3>{formatDate(movie.Date)}</h3>
+        <button class="home-button" on:click={() => goto(`/reservations/${movie.ID}`)}>Reserve a seat</button>
   
         <!-- Movie Poster -->
         <div class="poster">
@@ -98,8 +99,6 @@
           <h3>Menu</h3>
           <img src={movie.MenuURL} alt="Menu for {movie.Title}" />
         </div>
-        
-        <button class="home-button" on:click={() => goto(`/reservations/${movie.ID}`)}>Reserve a seat</button>
       </section>
     {:else}
       <p>Loading movie information...</p>
@@ -137,6 +136,7 @@
   
     .poster img,
     .menu img {
+      width: 75%;
       max-width: 100%;
       height: auto;
       border-radius: 8px;
@@ -149,7 +149,7 @@
       color: white;
       text-decoration: none;
       border-radius: 5px;
-      margin-top: 20px;
+      margin-bottom: 10px;
     }
   
     .error {
