@@ -38,6 +38,7 @@
   let showModal = false;
   let name = '';
   let email = '';
+  let comment = '';
 
   function toggleSeat(seat: Seat) {
     seats = seats.map(row =>
@@ -63,35 +64,65 @@
 
   const handleReservation = async () => {
     if (!name || !email) {
-      alert("Both name and email are required.");
+      alert("Please enter your name and email.");
       return;
     }
-    if (name && email) {
+    if (comment) {
+      // User made a movie suggestion, send to server
       try {
-        const response = await fetch(`/api/reserve`, {
+        const response = await fetch(`/api/comment`, {
           method: "POST",
           headers: { 
             "Content-Type": "application/json" 
           },
           body: JSON.stringify({
-            movie_id: page.params.movie_id,
-            seat_number: selectedSeat?.id,
             name,
             email,
+            comment,
           })
         });
 
         const result = await response.json();
-        showModal = false;
         if (result.success) {
-          alert("Reservation confirmed!");
+          console.log("Comment submitted!");
         } else {
-          alert("Failed to confirm reservation.");
+          console.log("Failed to submit comment.");
         }
       } catch (err) {
         console.error(err);
-        alert("Something went wrong while confirming the reservation.");
+        alert("Something went wrong while submitting the comment.");
       }
+    }
+
+    // Send the reservation
+    try {
+      const response = await fetch(`/api/reserve`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json" 
+        },
+        body: JSON.stringify({
+          movie_id: page.params.movie_id,
+          seat_number: selectedSeat?.id,
+          name,
+          email,
+        })
+      });
+
+      const result = await response.json();
+      showModal = false;
+      if (result.success) {
+        if (comment) {
+          alert("Reservation confirmed! And thanks for the movie suggestion!");
+        } else {
+          alert("Reservation confirmed!");
+        }
+      } else {
+        alert("Failed to confirm reservation.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong while confirming the reservation.");
     }
   }
 </script>
@@ -129,10 +160,13 @@
         <label for="name">Name: </label>
         <input type="text" id="name" bind:value={name} placeholder="Enter your name" required />
       </div>
-
       <div class="form-group">
         <label for="email">Email: </label>
         <input type="email" id="email" bind:value={email} placeholder="Enter your email" required />
+      </div>
+      <div class="form-group">
+        <label for="comment">What would you like us to screen next?</label>
+        <input type="text" id="comment" bind:value={comment} placeholder="Enter any movie suggestions!" required />
       </div>
       <button type="submit" on:click={handleReservation}>Reserve</button>
       <button type="button" class="cancel-button" on:click={cancelReservation}>Cancel</button>
@@ -175,7 +209,7 @@ h1 {
 }
 
 .seat.selected {
-  background-color: green;
+  background-color: var(--gold);
 }
 
 button {
@@ -198,78 +232,5 @@ button {
 
 .reserve-button:disabled {
   background-color: grey;
-}
-
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-    display: flex;
-    justify-content: center;  /* Horizontally center */
-    align-items: center;      /* Vertically center */
-    z-index: 1000;
-}
-
-.modal-content {
-    background-color: #fff;
-    color: black;
-    padding: 20px;
-    border-radius: 8px;
-    width: 300px;
-    text-align: center; /* Center text */
-    display: flex;
-    flex-direction: column;  /* Arrange elements vertically */
-    align-items: center;     /* Center items horizontally */
-}
-
-.modal-content input {
-    margin: 10px 0; /* Space between input fields */
-    padding: 8px;
-    width: 100%;
-    max-width: 250px; /* Limit input width */
-}
-
-.modal-content button {
-    padding: 10px 15px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    width: 100%;
-    max-width: 250px; /* Same as input field width */
-    margin-top: 10px; /* Space between inputs and button */
-}
-
-.modal-content button:hover {
-    background-color: #45a049;
-}
-
-.modal-content .cancel-button {
-  background-color: darkgrey;
-}
-
-.modal-content .cancel-button:hover {
-  background-color: grey;
-}
-
-.form-group {
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-}
-
-.form-group label {
-  margin-right: 10px;
-  width: auto;
-}
-
-.form-group input {
-  flex-grow: 1;
-  padding: 5px;
-  font-size: 14px;
 }
 </style>

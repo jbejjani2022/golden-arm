@@ -1,9 +1,11 @@
 <script lang="ts">
 	  import { formatDate } from '$lib';
     import { onMount } from 'svelte';
+    import { goto } from '$app/navigation';
   
     let movie: any = null;
     let error: string = '';
+    let showModal = false;
   
     // Fetch the next movie using the /api/movie/next endpoint
     onMount(async () => {
@@ -21,6 +23,50 @@
         error = 'Something went wrong while fetching the movie data.';
       }
     });
+
+    const confirmComment = () => {
+      showModal = true;
+    }
+  
+    const cancelComment = () => {
+      showModal = false;
+    }
+  
+    let name = '';
+    let email = '';
+    let comment = '';
+  
+    const handleComment = async () => {
+      if (!name || !email || !comment) {
+        alert("Please fill out the suggestion form.");
+        return;
+      }
+      // Send suggestion to server
+      try {
+        const response = await fetch(`/api/comment`, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json" 
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            comment,
+          })
+        });
+
+        const result = await response.json();
+        showModal = false;
+        if (result.success) {
+          alert("Thank you for your suggestion!");
+        } else {
+          alert("Failed to submit comment.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Something went wrong while submitting the comment.");
+      }
+    };
   </script>
   
   <!-- Home Page Layout -->
@@ -49,11 +95,34 @@
           <h3>Menu</h3>
           <img src={movie.MenuURL} alt="Menu for {movie.Title}" />
         </div>
-  
-        <a class="reserve-button" href={`/reservations/${movie.ID}`}>Reserve a seat</a>
+        
+        <button class="home-button" on:click={() => goto(`/reservations/${movie.ID}`)}>Reserve a seat</button>
       </section>
     {:else}
       <p>Loading movie information...</p>
+    {/if}
+    <br>
+    <p>We want your suggestions!</p>
+    <button class="home-button" on:click={confirmComment}>What should we screen next?</button>
+    {#if showModal}
+    <div class="modal">
+      <div class="modal-content">
+          <div class="form-group">
+            <label for="name">Name: </label>
+            <input type="text" id="name" bind:value={name} placeholder="Enter your name" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email: </label>
+            <input type="email" id="email" bind:value={email} placeholder="Enter your email" required />
+          </div>
+          <div class="form-group">
+            <label for="comment">What would you like us to screen next?</label>
+            <input type="text" id="comment" bind:value={comment} placeholder="Enter any movie suggestions!" required />
+          </div>
+          <button type="submit" on:click={handleComment}>Send</button>
+          <button type="button" class="cancel-button" on:click={cancelComment}>Cancel</button>
+      </div>
+    </div>
     {/if}
   </main>
   
@@ -94,24 +163,22 @@
       margin: 20px 0;
     }
   
-    .reserve-button {
+    .home-button {
       display: inline-block;
       padding: 12px 24px;
-      background-color: #e50914;
       color: white;
       text-decoration: none;
       border-radius: 5px;
-      font-weight: bold;
       margin-top: 20px;
-    }
-  
-    .reserve-button:hover {
-      background-color: #b20710;
     }
   
     .error {
       color: #ff5252;
       font-size: 16px;
+    }
+
+    .modal-content button {
+      color: black;
     }
   </style>
   

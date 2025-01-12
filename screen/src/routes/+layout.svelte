@@ -7,45 +7,55 @@
 </script>
 
 <main>
-  <slot></slot> <!-- This will render the content of the page -->
-
-   <!-- Only show footer if it's not the admin page -->
-  {#if !isAdmin}
+  <div class="page-container">
+    <slot></slot>
+    <!-- Show footer if it's not the admin page -->
+    {#if !isAdmin}
     <footer class="global-footer">
       <p>Visit <a href="https://www.instagram.com/eliotgoldenarm/" target="_blank" rel="noopener noreferrer">@eliotgoldenarm</a> on Instagram.</p>
     </footer>
   {/if}
+  </div>
 </main>
 
 <style>
+  :root {
+    --gold: #d3ab0c;
+    --dark-gold: #a28200;
+    --dark: #202020;
+  }
+
   /* Dark theme styling */
   :global(body) {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #202020;
+    background-color: var(--dark);
     color: #f0f0f0;
   }
 
-  /* Admin pages override */
-  :global(body.admin-page) {
-    background-color: #ffffff;
-    color: black;
+  /* Make the page container fill the viewport */
+  .page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
 
-  /* Global Footer Styling */
+  /* Ensure the main content takes up all available space */
+  .page-container > :global(main) {
+    flex: 1;
+  }
+
+  /* Footer styling */
   .global-footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    padding: 10px;
+    background-color: var(--dark);
+    color: #fff;
     text-align: center;
-    font-size: 14px;
+    padding: 1rem;
   }
 
   .global-footer a {
-    color: #e50914;
+    color: var(--gold);
     text-decoration: none;
-    font-weight: bold;
   }
 
   .global-footer a:hover {
@@ -55,7 +65,7 @@
   /* Global Button Styling */
   :global(button) {
     padding: 10px 15px;
-    background-color: #e50914; /* Button background color */
+    background-color: var(--gold);
     color: white;
     border: none;
     border-radius: 5px;
@@ -65,11 +75,79 @@
   }
 
   :global(button:hover) {
-    background-color: #b40710; /* Darker red on hover */
+    background-color: var(--dark-gold);
   }
 
   :global(button:disabled) {
     background-color: #666;
     cursor: not-allowed;
+  }
+
+  :global(.modal) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;  /* Horizontally center */
+    align-items: center;      /* Vertically center */
+    z-index: 1000;
+}
+
+  :global(.modal-content) {
+      background-color: #fff;
+      color: black;
+      padding: 20px;
+      border-radius: 8px;
+      width: 500px;
+      text-align: center; /* Center text */
+      display: flex;
+      flex-direction: column;  /* Arrange elements vertically */
+      align-items: center;     /* Center items horizontally */
+  }
+
+  :global(.modal-content input) {
+      margin: 5px 0; /* Space between input fields */
+      padding: 8px;
+      width: 100%;
+      max-width: 250px; /* Limit input width */
+  }
+
+  :global(.modal-content button) {
+      padding: 10px 15px;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      width: 100%;
+      max-width: 250px; /* Same as input field width */
+      margin-top: 10px; /* Space between inputs and button */
+  }
+
+  :global(.modal-content .cancel-button) {
+    background-color: darkgrey;
+  }
+
+  :global(.modal-content .cancel-button:hover) {
+    background-color: grey;
+  }
+
+  :global(.form-group) {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+  }
+
+  :global(.form-group label) {
+    margin-right: 10px;
+    width: auto;
+  }
+
+  :global(.form-group input) {
+    flex-grow: 1;
+    padding: 5px;
+    font-size: 14px;
   }
 </style>
