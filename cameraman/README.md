@@ -10,12 +10,12 @@ Make sure you've [downloaded and installed](https://go.dev/doc/install) Go.
 
 While in `cameraman`, execute `go mod tidy` to download missing modules and clean up any unnecessary dependencies.
 
-Add the following to a `.env` file with your information:
+Add the following to a `.env` file and replace "?" with your information:
 ```
 DB_HOST="?"
 DB_USER="?"
 DB_PASS="?"
-DB_PORT="?"
+DB_PORT="5432"
 DB_NAME="?"
 
 API_KEY="?"
