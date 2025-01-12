@@ -3,7 +3,9 @@
 </script>
   
 <main>
+  <div class="admin-page">
     <slot></slot>
+  </div>
 </main>
 
 <style>
@@ -11,5 +13,9 @@
   :global(body) {
     background-color: white;
     color: black;
+  }
+
+  .admin-page {
+    padding: 20px;
   }
 </style>

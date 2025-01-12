@@ -185,25 +185,31 @@
 
 <!-- Add Movie Form Popup -->
 {#if showForm}
-  <div class="form-popup">
+<div class="modal">
+  <div class="modal-content">
     <h2>Add Movie</h2>
     <form on:submit|preventDefault={handleAddMovie}>
-      <label for="title">Title:</label>
-      <input type="text" id="title" bind:value={newMovie.Title} required />
-
-      <label for="date">Date:</label>
-      <input type="datetime-local" id="date" bind:value={newMovie.Date} required />
-
-      <label for="posterUrl">Poster URL:</label>
-      <input type="url" id="posterUrl" bind:value={newMovie.PosterUrl} required />
-
-      <label for="menuUrl">Menu URL:</label>
-      <input type="url" id="menuUrl" bind:value={newMovie.MenuUrl} required />
-
+      <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" id="title" bind:value={newMovie.Title} required />
+      </div>
+      <div class="form-group">
+        <label for="date">Date:</label>
+        <input type="datetime-local" id="date" bind:value={newMovie.Date} required />
+      </div>
+      <div class="form-group">
+        <label for="posterUrl">Poster URL:</label>
+        <input type="url" id="posterUrl" bind:value={newMovie.PosterUrl} required />
+      </div>
+      <div class="form-group">
+        <label for="menuUrl">Menu URL:</label>
+        <input type="url" id="menuUrl" bind:value={newMovie.MenuUrl} required />
+      </div>
       <button type="submit">Submit</button>
-      <button type="button" on:click={() => showForm = false}>Cancel</button>
+      <button type="button" class="cancel-button" on:click={() => showForm = false}>Cancel</button>
     </form>
   </div>
+</div>
 {/if}
 <br><br>
 <!-- Comments Table -->
@@ -286,7 +292,7 @@
 
   .form-popup button {
     cursor: pointer;
-    background-color: #3498db;
+    background-color: var(--gold);
     color: white;
     border: none;
     padding: 10px;
@@ -298,11 +304,5 @@
     right: 20px;
     padding: 10px 20px;
   }
-
-  button {
-    padding: 10px 20px;
-    font-size: 14px;
-  }
-
 </style>
   

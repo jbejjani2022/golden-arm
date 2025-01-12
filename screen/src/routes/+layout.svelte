@@ -135,11 +135,11 @@
       margin-top: 10px; /* Space between inputs and button */
   }
 
-  :global(.modal-content .cancel-button) {
+  :global(.cancel-button) {
     background-color: darkgrey;
   }
 
-  :global(.modal-content .cancel-button:hover) {
+  :global(.cancel-button:hover) {
     background-color: grey;
   }
 
