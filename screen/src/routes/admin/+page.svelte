@@ -5,7 +5,7 @@
     let error = '';
   
     const handleLogin = async () => {
-      error = ''; // Reset error message
+      error = '';
       try {
         const response = await fetch('/api/admin/login', {
           method: 'POST',
@@ -27,20 +27,39 @@
     };
   </script>
   
-  <h1>The Golden Arm Operator Room</h1>
+  <div class="container">
+    <h1>The Golden Arm Operator Room</h1>
+    
+    <form on:submit|preventDefault={handleLogin}>
+      <input
+        type="password"
+        id="passkey"
+        bind:value={passkey}
+        placeholder="Passkey"
+        required
+      />
+      <button type="submit">Login</button>
+    </form>
+    
+    {#if error}
+      <p style="color: red;">{error}</p>
+    {/if}
+  </div>
+
+  <style>
+    .container {
+      text-align: center;
+      padding: 20px;
+      border-radius: 8px;
+    }
   
-  <form on:submit|preventDefault={handleLogin}>
-    <input
-      type="password"
-      id="passkey"
-      bind:value={passkey}
-      placeholder="Passkey"
-      required
-    />
-    <button type="submit">Login</button>
-  </form>
-  
-  {#if error}
-    <p style="color: red;">{error}</p>
-  {/if}
+    input {
+      padding: 10px;
+      margin: 10px 0;
+      width: 200px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
   

@@ -47,7 +47,8 @@ func main() {
 	schema.CreateTables()
 
 	// Routes
-	router.GET("/api/movie", routes.GetMovie)
+	router.GET("/api/movie/:movie_id", routes.GetMovie)
+	router.GET("/api/movie/next", routes.GetNextMovie)
 	router.GET("/api/movie/all", routes.GetAllMovies)
 	router.GET("/api/movie/archive", routes.GetMovieArchive)
 	router.GET("/api/reserved/:movie_id", routes.GetReservedSeats)
