@@ -11,10 +11,10 @@
     <slot></slot>
     <!-- Show footer if it's not the admin page -->
     {#if !isAdmin}
-    <footer class="global-footer">
-      <p>Visit <a href="https://www.instagram.com/eliotgoldenarm/" target="_blank" rel="noopener noreferrer">@eliotgoldenarm</a> on Instagram.</p>
-    </footer>
-  {/if}
+      <footer class="global-footer">
+        <p>Visit <a href="https://www.instagram.com/eliotgoldenarm/" target="_blank" rel="noopener noreferrer">@eliotgoldenarm</a> on Instagram.</p>
+      </footer>
+    {/if}
   </div>
 </main>
 
