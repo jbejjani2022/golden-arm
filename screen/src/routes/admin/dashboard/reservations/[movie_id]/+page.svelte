@@ -58,6 +58,20 @@
         }
       }
     };
+
+    const copyEmailList = async () => {
+      // Extract unique emails from reservations
+      const uniqueEmails = [...new Set(reservations.map(res => res.Email))];
+      const emailList = uniqueEmails.join(', ');
+
+      try {
+        await navigator.clipboard.writeText(emailList);
+        alert('Email list copied to clipboard!');
+      } catch (err) {
+        console.error('Failed to copy email list:', err);
+        alert('Failed to copy email list. Please try again.');
+      }
+    };
 </script>
   
 <h1>{movieTitle} ({movieDate})</h1>
@@ -97,6 +111,8 @@
 {:else}
 <p>No reservations found for this movie.</p>
 {/if}
+
+<button on:click={copyEmailList} style="margin-top: 20px; padding: 10px 20px; cursor: pointer;">Get Email List</button>
   
 <style>
     table {

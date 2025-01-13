@@ -4,6 +4,7 @@
 
     let movies: Array<any> = [];
     let comments: Array<any> = [];
+    let emailList: Array<any> = [];
     let error: string = '';
 
     // Fetch movie and comments data on page load
@@ -34,6 +35,20 @@
         } catch (err) {
             console.error(err);
             error = 'Something went wrong while fetching the comment data.';
+        }
+
+        try {
+            const response = await fetch('/api/emails');
+            const data = await response.json();
+
+            if (data.success) {
+                emailList = data.data;
+            } else {
+                error = 'Failed to load email data.';
+            }
+        } catch (err) {
+            console.error(err);
+            error = 'Something went wrong while fetching the email data.';
         }
     });
   
@@ -115,9 +130,26 @@
         }
       }
     };
+
+    // Function to copy the email list to clipboard
+    const copyEmailList = async () => {
+      if (emailList.length === 0) {
+        alert('No emails available to copy.');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(emailList.join(', '));
+        alert('Email list copied to clipboard!');
+      } catch (err) {
+        console.error('Failed to copy email list:', err);
+        alert('Failed to copy email list. Please try again.');
+      }
+    };
+
 </script>
   
 <h1>What's good, Golden Arm operator.</h1>
+<button on:click={copyEmailList} style="padding: 10px 20px; cursor: pointer;" title="Copy all unique emails from reservations and comments to clipboard.">Get Email List</button>
 
 <!-- Display error message if data fetching fails -->
 {#if error}
