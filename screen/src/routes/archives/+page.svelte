@@ -116,8 +116,8 @@
           <p>{formatDate(movie.Date)}</p>
           <div class="images">
             <img src={movie.PosterURL} alt="{movie.Title} poster" class="poster" />
-            <img src={movie.MenuURL} alt="{movie.Title} menu" class="menu" />
-          </div>
+            <img src={movie.MenuURL} alt="{movie.Title} menu" class="menu below" />
+          </div>          
         </div>
       {/each}
     </div>
@@ -218,8 +218,17 @@
 
   .images {
     display: flex;
-    gap: 1rem;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .poster {
+    width: 100%;
+  }
+
+  .menu.below {
     margin-top: 1rem;
+    width: 80%;
   }
 
   .images img {
@@ -227,11 +236,6 @@
     height: auto;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  }
-
-  .poster {
-    flex: 1;
-    max-width: 50%;
   }
 
   .menu {
