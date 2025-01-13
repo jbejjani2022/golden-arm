@@ -57,19 +57,16 @@
     let newMovie = {
       Title: '',
       Date: '',
-      PosterUrl: '',
-      MenuUrl: ''
+      PosterFile: null as File | null,
+      MenuFile: null as File | null
     };
-
-    let posterFile: HTMLInputElement;
-    let menuFile: HTMLInputElement;
 
     const handleAddMovie = async () => {
       const formData = new FormData();
       formData.append('title', newMovie.Title);
       formData.append('date', new Date(newMovie.Date).toISOString());
-      formData.append('poster', posterFile.files[0]);
-      formData.append('menu', menuFile.files[0]);
+      if (newMovie.PosterFile) formData.append('poster', newMovie.PosterFile);
+      if (newMovie.MenuFile) formData.append('menu', newMovie.MenuFile);
 
       try {
         const response = await fetch('/api/movie', {
@@ -79,6 +76,7 @@
 
         const result = await response.json();
         if (result.success) {
+          console.log('Movie added successfully.');
           window.location.reload();
         } else {
           error = 'Failed to add movie.';
@@ -210,12 +208,12 @@
       </div>
       <div class="form-group">
         <label for="posterFile">Poster Image:</label>
-        <input type="file" id="posterFile" bind:this={posterFile} required />
+        <input type="file" id="posterFile" accept="image/jpg, image/png" on:change={(event) => newMovie.PosterFile = (event.target as HTMLInputElement).files?.[0] || null} required />
       </div>
       <div class="form-group">
         <label for="menuFile">Menu Image:</label>
-        <input type="file" id="menuFile" bind:this={menuFile} required />
-      </div>
+        <input type="file" id="menuFile" accept="image/jpg, image/png" on:change={(event) => newMovie.MenuFile = (event.target as HTMLInputElement).files?.[0] || null} required />
+      </div>      
       <button type="submit">Submit</button>
       <button type="button" class="cancel-button" on:click={() => showForm = false}>Cancel</button>
     </form>
