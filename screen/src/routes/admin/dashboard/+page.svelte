@@ -61,20 +61,20 @@
       MenuUrl: ''
     };
 
+    let posterFile: HTMLInputElement;
+    let menuFile: HTMLInputElement;
+
     const handleAddMovie = async () => {
-      const formattedDate = new Date(newMovie.Date).toISOString();
+      const formData = new FormData();
+      formData.append('title', newMovie.Title);
+      formData.append('date', new Date(newMovie.Date).toISOString());
+      formData.append('poster', posterFile.files[0]);
+      formData.append('menu', menuFile.files[0]);
+
       try {
         const response = await fetch('/api/movie', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            title: newMovie.Title,
-            date: formattedDate,
-            poster_url: newMovie.PosterUrl,
-            menu_url: newMovie.MenuUrl
-          }),
+          body: formData,
         });
 
         const result = await response.json();
@@ -209,12 +209,12 @@
         <input type="datetime-local" id="date" bind:value={newMovie.Date} required />
       </div>
       <div class="form-group">
-        <label for="posterUrl">Poster URL:</label>
-        <input type="url" id="posterUrl" bind:value={newMovie.PosterUrl} />
+        <label for="posterFile">Poster Image:</label>
+        <input type="file" id="posterFile" bind:this={posterFile} required />
       </div>
       <div class="form-group">
-        <label for="menuUrl">Menu URL:</label>
-        <input type="url" id="menuUrl" bind:value={newMovie.MenuUrl} />
+        <label for="menuFile">Menu Image:</label>
+        <input type="file" id="menuFile" bind:this={menuFile} required />
       </div>
       <button type="submit">Submit</button>
       <button type="button" class="cancel-button" on:click={() => showForm = false}>Cancel</button>
