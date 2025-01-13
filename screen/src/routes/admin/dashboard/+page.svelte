@@ -210,11 +210,11 @@
       </div>
       <div class="form-group">
         <label for="posterUrl">Poster URL:</label>
-        <input type="url" id="posterUrl" bind:value={newMovie.PosterUrl} required />
+        <input type="url" id="posterUrl" bind:value={newMovie.PosterUrl} />
       </div>
       <div class="form-group">
         <label for="menuUrl">Menu URL:</label>
-        <input type="url" id="menuUrl" bind:value={newMovie.MenuUrl} required />
+        <input type="url" id="menuUrl" bind:value={newMovie.MenuUrl} />
       </div>
       <button type="submit">Submit</button>
       <button type="button" class="cancel-button" on:click={() => showForm = false}>Cancel</button>
