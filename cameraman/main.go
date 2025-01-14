@@ -54,6 +54,7 @@ func main() {
 	router.GET("/api/reserved/:movie_id", routes.GetReservedSeats)
 	router.GET("/api/reservations/:movie_id", routes.GetReservations)
 	router.GET("/api/comments", routes.GetComments)
+	router.GET("/api/emails", routes.GetEmails)
 
 	router.POST("/api/reserve", routes.Reserve)
 	router.POST("/api/movie", routes.AddMovie)

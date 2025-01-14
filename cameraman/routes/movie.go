@@ -5,9 +5,15 @@ import (
 	"fmt"
 	"golden-arm/internal"
 	"golden-arm/schema"
+	"io"
+	"mime/multipart"
 	"net/http"
+	"strings"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -20,8 +26,10 @@ type MovieRequest struct {
 }
 
 /*
-Adds new movie to database
+Adds new movie to database; supports file upload and JSON-based submissions
 e.g. set the upcoming screening
+
+For JSON-based submissions:
 
 	curl -X POST http://localhost:8080/api/movie -H "Authorization: Bearer YOUR API KEY" \
 	-H "Content-Type: application/json" -d
@@ -31,6 +39,14 @@ e.g. set the upcoming screening
 		"poster_url": "https://example.com/poster.jpg",
 		"menu_url": "https://example.com/menu.jpg"
 	}'
+
+For file upload submissions:
+
+	curl -X POST http://localhost:8080/api/movie -H "Authorization: Bearer YOUR_API_KEY" \
+		-F "title=Interstellar" \
+		-F "date=2025-01-10T00:00:00Z" \
+		-F "poster=@/path/to/poster.jpg" \
+		-F "menu=@/path/to/menu.jpg"
 */
 func AddMovie(c *gin.Context) {
 	if !internal.CheckAuthorization(c) {
@@ -38,13 +54,55 @@ func AddMovie(c *gin.Context) {
 		return
 	}
 
+	// Check if the request is multipart/form-data for file uploads
+	contentType := c.Request.Header.Get("Content-Type")
+	isMultipart := strings.HasPrefix(contentType, "multipart/form-data")
+
 	var newMovie MovieRequest
-	if err := c.ShouldBindJSON(&newMovie); err != nil {
-		fmt.Println(err)
-		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
-		return
+	if isMultipart {
+		// Handle file uploads
+		var err error
+
+		newMovie.Title = c.PostForm("title")
+		date := c.PostForm("date")
+		newMovie.Date, _ = time.Parse(time.RFC3339, date)
+
+		// Poster file
+		posterFile, _ := c.FormFile("poster")
+		if posterFile != nil {
+			newMovie.PosterUrl, err = uploadToS3(posterFile, newMovie.Title)
+			if err != nil {
+				fmt.Println("Error uploading poster:", err)
+				c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
+				return
+			}
+		} else {
+			newMovie.PosterUrl = c.PostForm("poster_url")
+		}
+
+		// Menu file
+		menuFile, _ := c.FormFile("menu")
+		if menuFile != nil {
+			newMovie.MenuUrl, err = uploadToS3(menuFile, newMovie.Title)
+			if err != nil {
+				fmt.Println("Error uploading menu:", err)
+				c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
+				return
+			}
+		} else {
+			newMovie.MenuUrl = c.PostForm("menu_url")
+		}
+
+	} else {
+		// Handle JSON requests (for URL-based submissions)
+		if err := c.ShouldBindJSON(&newMovie); err != nil {
+			fmt.Println(err)
+			c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
+			return
+		}
 	}
 
+	// Create movie object
 	movie := schema.Movie{
 		ID:        uuid.New(),
 		Title:     newMovie.Title,
@@ -53,11 +111,11 @@ func AddMovie(c *gin.Context) {
 		MenuURL:   newMovie.MenuUrl,
 	}
 
+	// Database connection
 	db := schema.GetDBConn()
 	ctx := context.Background()
 
-	// Perform an upsert operation based on the Date field
-	// e.g. if a movie already exists with identical Date value, update the remaining fields
+	// Upsert operation
 	err := db.NewInsert().
 		Model(&movie).
 		On("CONFLICT (date) DO UPDATE").
@@ -74,6 +132,56 @@ func AddMovie(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Movie added successfully"})
+}
+
+func uploadToS3(file *multipart.FileHeader, folder string) (string, error) {
+	bucketName := "eliotgoldenarm"
+	region := "us-east-2"
+	key := fmt.Sprintf("%s/%s", folder, file.Filename)
+
+	// Open the file
+	f, err := file.Open()
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	// Read the file into a buffer to detect the content type
+	fileBytes, err := io.ReadAll(f)
+	if err != nil {
+		return "", err
+	}
+	contentType := http.DetectContentType(fileBytes)
+
+	// Reopen the file for uploading
+	f, err = file.Open()
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	// Create a new AWS session (automatically picks up environment variables or IAM roles)
+	sess := session.Must(session.NewSession(&aws.Config{
+		Region: aws.String(region),
+	}))
+
+	// Create an S3 uploader
+	uploader := s3manager.NewUploader(sess)
+
+	// Upload the file to S3 with the correct headers
+	_, err = uploader.Upload(&s3manager.UploadInput{
+		Bucket:             aws.String(bucketName),
+		Key:                aws.String(key),
+		Body:               f,
+		ContentType:        aws.String(contentType),
+		ContentDisposition: aws.String("inline"),
+	})
+	if err != nil {
+		return "", err
+	}
+
+	// Return the public URL
+	return fmt.Sprintf("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, key), nil
 }
 
 /*

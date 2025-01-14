@@ -4,6 +4,7 @@
 
     let movies: Array<any> = [];
     let comments: Array<any> = [];
+    let emailList: Array<any> = [];
     let error: string = '';
 
     // Fetch movie and comments data on page load
@@ -35,6 +36,20 @@
             console.error(err);
             error = 'Something went wrong while fetching the comment data.';
         }
+
+        try {
+            const response = await fetch('/api/emails');
+            const data = await response.json();
+
+            if (data.success) {
+                emailList = data.data;
+            } else {
+                error = 'Failed to load email data.';
+            }
+        } catch (err) {
+            console.error(err);
+            error = 'Something went wrong while fetching the email data.';
+        }
     });
   
     // Add Movie form data and handling
@@ -42,28 +57,26 @@
     let newMovie = {
       Title: '',
       Date: '',
-      PosterUrl: '',
-      MenuUrl: ''
+      PosterFile: null as File | null,
+      MenuFile: null as File | null
     };
 
     const handleAddMovie = async () => {
-      const formattedDate = new Date(newMovie.Date).toISOString();
+      const formData = new FormData();
+      formData.append('title', newMovie.Title);
+      formData.append('date', new Date(newMovie.Date).toISOString());
+      if (newMovie.PosterFile) formData.append('poster', newMovie.PosterFile);
+      if (newMovie.MenuFile) formData.append('menu', newMovie.MenuFile);
+
       try {
         const response = await fetch('/api/movie', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            title: newMovie.Title,
-            date: formattedDate,
-            poster_url: newMovie.PosterUrl,
-            menu_url: newMovie.MenuUrl
-          }),
+          body: formData,
         });
 
         const result = await response.json();
         if (result.success) {
+          console.log('Movie added successfully.');
           window.location.reload();
         } else {
           error = 'Failed to add movie.';
@@ -115,9 +128,26 @@
         }
       }
     };
+
+    // Function to copy the email list to clipboard
+    const copyEmailList = async () => {
+      if (emailList.length === 0) {
+        alert('No emails available to copy.');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(emailList.join(', '));
+        alert('Email list copied to clipboard!');
+      } catch (err) {
+        console.error('Failed to copy email list:', err);
+        alert('Failed to copy email list. Please try again.');
+      }
+    };
+
 </script>
   
 <h1>What's good, Golden Arm operator.</h1>
+<button on:click={copyEmailList} style="padding: 10px 20px; cursor: pointer;" title="Copy all unique emails from reservations and comments to clipboard.">Get Email List</button>
 
 <!-- Display error message if data fetching fails -->
 {#if error}
@@ -177,13 +207,13 @@
         <input type="datetime-local" id="date" bind:value={newMovie.Date} required />
       </div>
       <div class="form-group">
-        <label for="posterUrl">Poster URL:</label>
-        <input type="url" id="posterUrl" bind:value={newMovie.PosterUrl} required />
+        <label for="posterFile">Poster Image:</label>
+        <input type="file" id="posterFile" accept="image/jpg, image/png" on:change={(event) => newMovie.PosterFile = (event.target as HTMLInputElement).files?.[0] || null} required />
       </div>
       <div class="form-group">
-        <label for="menuUrl">Menu URL:</label>
-        <input type="url" id="menuUrl" bind:value={newMovie.MenuUrl} required />
-      </div>
+        <label for="menuFile">Menu Image:</label>
+        <input type="file" id="menuFile" accept="image/jpg, image/png" on:change={(event) => newMovie.MenuFile = (event.target as HTMLInputElement).files?.[0] || null} required />
+      </div>      
       <button type="submit">Submit</button>
       <button type="button" class="cancel-button" on:click={() => showForm = false}>Cancel</button>
     </form>

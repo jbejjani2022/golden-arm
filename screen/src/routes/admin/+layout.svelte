@@ -9,10 +9,11 @@
 </main>
 
 <style>
-  /* Apply a white background to all admin pages */
+  /* Override the global dark theme for admin pages */
   :global(body) {
     background-color: white;
     color: black;
+    font-family: Arial, sans-serif;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
