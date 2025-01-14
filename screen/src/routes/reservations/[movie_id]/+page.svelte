@@ -141,6 +141,9 @@
 <main class="reservation-page">
 {#if movie}
 <h1>The Golden Arm's Screening of "{movie.Title}"</h1>
+<div class="poster">
+  <img src={movie.PosterURL} alt="Movie poster for {movie.Title}" />
+</div>
 <h2>{formatDate(movie.Date)}</h2>
 {:else}
 <p>Loading movie information...</p>
@@ -204,6 +207,14 @@
   height: 100vh;
 }
 
+.poster img {
+    width: 40%;
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 20px 0;
+  }
+
 h1 {
   text-align: center;
 }
@@ -253,4 +264,5 @@ button {
 .reserve-button:disabled {
   background-color: grey;
 }
+
 </style>
