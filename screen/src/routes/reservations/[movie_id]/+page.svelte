@@ -23,6 +23,24 @@
     }
   });
 
+  let reservedSeats: number[] = []; // Store reserved seat IDs
+
+  onMount(async () => {
+    const movieId = page.params.movie_id;
+    try {
+      const response = await fetch(`/api/reserved/${movieId}`);
+      const result = await response.json();
+      if (result.success) {
+        reservedSeats = result.data.reserved_seats; // Update reserved seats array
+      } else {
+        console.error('Failed to load reserved seats data');
+      }
+    } catch (err) {
+      console.error('Error fetching reserved seats:', err);
+    }
+  });
+
+
   // Define the Seat interface
   interface Seat {
     id: number;
@@ -41,19 +59,34 @@
   let email = '';
   let comment = '';
 
+  // function toggleSeat(seat: Seat) {
+  //   seats = seats.map(row =>
+  //     row.map(s => {
+  //       if (s.id === seat.id) {
+  //         s.selected = !s.selected;
+  //         selectedSeat = s.selected ? s : null;
+  //       } else {
+  //         s.selected = false;
+  //       }
+  //       return s;
+  //     })
+  //   );
+  // }
+  //new toggle
   function toggleSeat(seat: Seat) {
-    seats = seats.map(row =>
-      row.map(s => {
-        if (s.id === seat.id) {
-          s.selected = !s.selected;
-          selectedSeat = s.selected ? s : null;
-        } else {
-          s.selected = false;
-        }
-        return s;
-      })
-    );
-  }
+  seats = seats.map(row =>
+    row.map(s => {
+      if (s.id === seat.id) {
+        s.selected = !s.selected; // Toggle selection
+        selectedSeat = s.selected ? s : null;
+      } else {
+        s.selected = false; // Deselect other seats
+      }
+      return s;
+    })
+  );
+}
+
 
   const confirmReservation = () => {
     showResModal = true;
@@ -139,13 +172,24 @@
 </script>
 
 <main class="reservation-page">
-{#if movie}
+  {#if movie}
+  <div class="movie-info">
+    <div class="movie-icon">
+      <img src={movie.PosterURL} alt="Movie poster for {movie.Title}" />
+    </div>
+    <div class="movie-details">
+      <h1>{movie.Title}</h1>
+      <p class="movie-date">{formatDate(movie.Date)}</p>
+    </div>
+  </div>
+  {:else}
+<!-- {#if movie}
 <h1>The Golden Arm's Screening of "{movie.Title}"</h1>
 <div class="poster">
   <img src={movie.PosterURL} alt="Movie poster for {movie.Title}" />
 </div>
 <h2>{formatDate(movie.Date)}</h2>
-{:else}
+{:else} -->
 <p>Loading movie information...</p>
 {/if}
 <h3>Select Your Seat</h3>
@@ -155,15 +199,19 @@
       {#each row as seat}
         <button
           class="seat"
-          class:selected={seat.selected}
+          disabled={reservedSeats.includes(seat.id)} 
           on:click={() => toggleSeat(seat)}
         >
-          {seat.id}
+          <img
+          src={reservedSeats.includes(seat.id) ? '/grey-chair.png' : (seat.selected ? "/yellow-chair.png" : "/white-chair.png")}
+            alt="Seat {seat.id}"
+          />
         </button>
       {/each}
     </div>
   {/each}
 </div>
+
 <button class="reserve-button" on:click={confirmReservation} disabled={!selectedSeat}>Confirm</button>
 
 {#if showResModal}
@@ -207,13 +255,34 @@
   height: 100vh;
 }
 
-.poster img {
-    width: 40%;
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin: 20px 0;
-  }
+/* new */
+.movie-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.movie-icon img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.movie-details h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.movie-details .movie-date {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: gray;
+}
+
+
 
 h1 {
   text-align: center;
@@ -230,18 +299,16 @@ h1 {
 .seat {
   width: 50px;
   height: 50px;
-  background-color: #ccc;
-  border: none;
-  border-radius: 5px;
+  background-color: transparent; /* Optional: Remove any background color */
+  border: none; /* Remove any borders if unnecessary */
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: visible; /* Allow the image to show fully */
 }
 
-.seat.selected {
-  background-color: var(--gold);
-}
+
 
 button {
   display: inline-block;
@@ -263,6 +330,25 @@ button {
 
 .reserve-button:disabled {
   background-color: grey;
+}
+
+/* seatstuff */
+.seat {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.seat img {
+  width: 50px;
+  height: 50px;
+  transition: transform 0.2s ease;
+}
+
+.seat img:hover {
+  transform: scale(1.1); /* Slightly enlarge on hover */
 }
 
 </style>
