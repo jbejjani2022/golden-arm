@@ -23,7 +23,7 @@
     }
   });
 
-  let reservedSeats: number[] = []; // Store reserved seat IDs
+  let reservedSeats: string[] = []; // Store reserved seats
 
   onMount(async () => {
     const movieId = page.params.movie_id;
@@ -43,17 +43,16 @@
 
   // Define the Seat interface
   interface Seat {
-    id: number;
     num: string;
     selected: boolean;
   }
 
-// Create custom rows for the grid: 5 seats, 7 seats, 6 seats
-let seats: Seat[][] = [
-  Array.from({ length: 5 }, (_, col) => ({ id: col + 1, num: `C${col + 1}`, selected: false })),
-  Array.from({ length: 7 }, (_, col) => ({ id: col + 6, num: `B${col + 1}`, selected: false })),
-  Array.from({ length: 6 }, (_, col) => ({ id: col + 13, num: `A${col + 1}`, selected: false })),
-];
+  // Create custom rows for the grid: 5 seats, 7 seats, 6 seats
+  let seats: Seat[][] = [
+    Array.from({ length: 5 }, (_, col) => ({ num: `C${col + 1}`, selected: false })),
+    Array.from({ length: 7 }, (_, col) => ({ num: `B${col + 1}`, selected: false })),
+    Array.from({ length: 6 }, (_, col) => ({ num: `A${col + 1}`, selected: false })),
+  ];
 
   let selectedSeat: Seat | null = null;
   let showResModal = false;
@@ -62,34 +61,19 @@ let seats: Seat[][] = [
   let email = '';
   let comment = '';
 
-  // function toggleSeat(seat: Seat) {
-  //   seats = seats.map(row =>
-  //     row.map(s => {
-  //       if (s.id === seat.id) {
-  //         s.selected = !s.selected;
-  //         selectedSeat = s.selected ? s : null;
-  //       } else {
-  //         s.selected = false;
-  //       }
-  //       return s;
-  //     })
-  //   );
-  // }
-  //new toggle
   function toggleSeat(seat: Seat) {
-  seats = seats.map(row =>
-    row.map(s => {
-      if (s.id === seat.id) {
-        s.selected = !s.selected; // Toggle selection
-        selectedSeat = s.selected ? s : null;
-      } else {
-        s.selected = false; // Deselect other seats
-      }
-      return s;
-    })
-  );
-}
-
+    seats = seats.map(row =>
+      row.map(s => {
+        if (s.num === seat.num) {
+          s.selected = !s.selected; // Toggle selection
+          selectedSeat = s.selected ? s : null;
+        } else {
+          s.selected = false; // Deselect other seats
+        }
+        return s;
+      })
+    );
+  }
 
   const confirmReservation = () => {
     showResModal = true;
@@ -114,7 +98,7 @@ let seats: Seat[][] = [
         },
         body: JSON.stringify({
           movie_id: page.params.movie_id,
-          seat_number: selectedSeat?.id,
+          seat_number: selectedSeat?.num,
           name,
           email,
         })
@@ -122,6 +106,7 @@ let seats: Seat[][] = [
 
       const result = await response.json();
       if (result.success) {
+        reservedSeats.push(selectedSeat?.num || '');  // add new reserved seat
         alert("Reservation confirmed!");
         confirmComment();
       } else {
@@ -186,32 +171,25 @@ let seats: Seat[][] = [
     </div>
   </div>
   {:else}
-<!-- {#if movie}
-<h1>The Golden Arm's Screening of "{movie.Title}"</h1>
-<div class="poster">
-  <img src={movie.PosterURL} alt="Movie poster for {movie.Title}" />
-</div>
-<h2>{formatDate(movie.Date)}</h2>
-{:else} -->
-<p>Loading movie information...</p>
-{/if}
+  <p>Loading movie information...</p>
+  {/if}
+
 <h3>Select Your Seat</h3>
 <div class="grid">
   {#each seats as row, rowIndex}
     <div class="row">
-      <!-- {#each row as seat} -->
       {#each row as seat, colIndex}
         {#if rowIndex === 2 && colIndex === 3}
           <div class="seat-space"></div> <!-- Add space in the middle of the 6 chairs -->
         {/if}
         <button
-          class="seat {reservedSeats.includes(seat.id) ? 'reserved' : ''}"
-          disabled={reservedSeats.includes(seat.id)} 
+          class="seat {reservedSeats.includes(seat.num) ? 'reserved' : ''}"
+          disabled={reservedSeats.includes(seat.num)} 
           on:click={() => toggleSeat(seat)}
         >
           <img
-          src={reservedSeats.includes(seat.id) ? '/grey-chair.png' : (seat.selected ? "/yellow-chair.png" : "/white-chair.png")}
-            alt="Seat {seat.id}"
+          src={reservedSeats.includes(seat.num) ? '/grey-chair.png' : (seat.selected ? "/yellow-chair.png" : "/white-chair.png")}
+            alt="Seat {seat.num}"
           />
           <span class="seat-label">{seat.num}</span> <!-- Add seat number here -->
         </button>
@@ -294,8 +272,6 @@ let seats: Seat[][] = [
   color: gray;
 }
 
-
-
 h1 {
   text-align: center;
 }
@@ -320,8 +296,6 @@ h1 {
   overflow: visible; /* Allow the image to show fully */
 }
 
-
-
 button {
   display: inline-block;
   padding: 10px;
@@ -340,7 +314,6 @@ button {
   margin-top: 20px;
 }
 
-
 /* seatstuff */
 .seat {
   background: none;
@@ -352,7 +325,6 @@ button {
   font-size: 12px; /* Adjust font size for seat labels */
   text-align: center; /* Center-align the text */
 }
-
 
 .seat img {
   /* transform: rotate(180deg); */

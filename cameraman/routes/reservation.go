@@ -21,7 +21,7 @@ import (
 
 type ReservationRequest struct {
 	MovieID    uuid.UUID `json:"movie_id" binding:"required"`
-	SeatNumber int       `json:"seat_number" binding:"required"`
+	SeatNumber string    `json:"seat_number" binding:"required"`
 	Name       string    `json:"name" binding:"required"`
 	Email      string    `json:"email" binding:"required,email"`
 }
@@ -32,8 +32,22 @@ type EmailData struct {
 	Name       string
 	MovieTitle string
 	MovieDate  string
-	SeatNumber int
+	SeatNumber string
 	PosterURL  string
+}
+
+// Theater seat layout
+var Seats = []string{"A1", "A2", "A3", "A4", "A5", "A6",
+	"B1", "B2", "B3", "B4", "B5", "B6", "B7",
+	"C1", "C2", "C3", "C4", "C5", "C5"}
+
+func contains(slice []string, item string) bool {
+	for _, element := range slice {
+		if element == item {
+			return true
+		}
+	}
+	return false
 }
 
 /*
@@ -43,7 +57,7 @@ Raises error for invalid seat or conflicting reservation
 	curl -X POST http://localhost:8080/api/reserve -H "Content-Type: application/json" -d
 	'{
 		"movie_id": "00000000-0000-0000-0000-000000000000",
-		"seat_number": 4,
+		"seat_number": "A1",
 		"name": "Joey B",
 		"email": "jb@example.com"
 	}'
@@ -56,9 +70,9 @@ func Reserve(c *gin.Context) {
 		return
 	}
 
-	// Validate that seat number is in range [1, 18] (how many seats does golden arm actually have?)
-	if newRes.SeatNumber < 1 || newRes.SeatNumber > 18 {
-		fmt.Println("Seat number must be between 1 and 18")
+	// Validate that the requested seat exists
+	if !contains(Seats, newRes.SeatNumber) {
+		fmt.Println("Invalid seat number")
 		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
 		return
 	}
@@ -202,7 +216,7 @@ func GetReservedSeats(c *gin.Context) {
 		return
 	}
 
-	var reservedSeats []int
+	reservedSeats := []string{}
 	for _, reservation := range reservations {
 		reservedSeats = append(reservedSeats, reservation.SeatNumber)
 	}

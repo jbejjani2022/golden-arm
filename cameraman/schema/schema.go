@@ -18,8 +18,8 @@ type Movie struct {
 type Reservation struct {
 	ID         uuid.UUID `bun:"type:uuid,pk,default:gen_random_uuid()"`
 	MovieID    uuid.UUID `bun:"type:uuid,notnull"`
-	SeatNumber int       `bun:"seat_number,notnull"`
-	Date       time.Time `bun:"date,notnull"` // When the reservation was made
+	SeatNumber string    `bun:"seat_number,notnull"` // e.g. A1, A2, ...
+	Date       time.Time `bun:"date,notnull"`        // When the reservation was made
 	// Movie-goer information
 	Name  string `bun:"name,notnull"`
 	Email string `bun:"email,notnull"`
