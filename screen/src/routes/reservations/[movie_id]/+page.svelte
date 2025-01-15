@@ -107,6 +107,7 @@
       const result = await response.json();
       if (result.success) {
         reservedSeats.push(selectedSeat?.num || '');  // add new reserved seat
+        toggleSeat(selectedSeat || { num: '', selected: false });
         alert("Reservation confirmed!");
         confirmComment();
       } else {
