@@ -3,6 +3,7 @@ package main
 import (
 	"golden-arm/internal"
 	"golden-arm/routes"
+	"golden-arm/schema" // Add this line
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -43,7 +44,7 @@ func main() {
 	router.NoRoute(internal.Handle404)
 	router.NoMethod(internal.Handle405)
 
-	// schema.CreateTables()
+	schema.CreateTables()
 
 	// Routes
 	router.GET("/api/movie/:movie_id", routes.GetMovie)
