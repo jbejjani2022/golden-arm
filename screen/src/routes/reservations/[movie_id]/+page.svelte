@@ -44,13 +44,16 @@
   // Define the Seat interface
   interface Seat {
     id: number;
+    num: string;
     selected: boolean;
   }
 
-  // Create 2 x 9 seats grid
-  let seats: Seat[][] = Array.from({ length: 2 }, (_, row) =>
-    Array.from({ length: 9 }, (_, col) => ({ id: row * 9 + col + 1, selected: false }))
-  );
+// Create custom rows for the grid: 5 seats, 7 seats, 6 seats
+let seats: Seat[][] = [
+  Array.from({ length: 5 }, (_, col) => ({ id: col + 1, num: `C${col + 1}`, selected: false })),
+  Array.from({ length: 7 }, (_, col) => ({ id: col + 6, num: `B${col + 1}`, selected: false })),
+  Array.from({ length: 6 }, (_, col) => ({ id: col + 13, num: `A${col + 1}`, selected: false })),
+];
 
   let selectedSeat: Seat | null = null;
   let showResModal = false;
@@ -194,11 +197,15 @@
 {/if}
 <h3>Select Your Seat</h3>
 <div class="grid">
-  {#each seats as row}
+  {#each seats as row, rowIndex}
     <div class="row">
-      {#each row as seat}
+      <!-- {#each row as seat} -->
+      {#each row as seat, colIndex}
+        {#if rowIndex === 2 && colIndex === 3}
+          <div class="seat-space"></div> <!-- Add space in the middle of the 6 chairs -->
+        {/if}
         <button
-          class="seat"
+          class="seat {reservedSeats.includes(seat.id) ? 'reserved' : ''}"
           disabled={reservedSeats.includes(seat.id)} 
           on:click={() => toggleSeat(seat)}
         >
@@ -206,10 +213,15 @@
           src={reservedSeats.includes(seat.id) ? '/grey-chair.png' : (seat.selected ? "/yellow-chair.png" : "/white-chair.png")}
             alt="Seat {seat.id}"
           />
+          <span class="seat-label">{seat.num}</span> <!-- Add seat number here -->
         </button>
       {/each}
     </div>
   {/each}
+</div>
+
+<div id="screen-container">
+  <div id="screen">Screen</div>
 </div>
 
 <button class="reserve-button" on:click={confirmReservation} disabled={!selectedSeat}>Confirm</button>
@@ -217,7 +229,7 @@
 {#if showResModal}
 <div class="modal">
   <div class="modal-content">
-      <h2>Seat {selectedSeat?.id}</h2>
+      <h2>Seat {selectedSeat?.num}</h2>
       <div class="form-group">
         <label for="name">Name: </label>
         <input type="text" id="name" bind:value={name} placeholder="Enter your name" required />
@@ -328,9 +340,6 @@ button {
   margin-top: 20px;
 }
 
-.reserve-button:disabled {
-  background-color: grey;
-}
 
 /* seatstuff */
 .seat {
@@ -339,16 +348,65 @@ button {
   padding: 0;
   margin: 0;
   cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  font-size: 12px; /* Adjust font size for seat labels */
+  text-align: center; /* Center-align the text */
 }
 
+
 .seat img {
+  /* transform: rotate(180deg); */
+
   width: 50px;
   height: 50px;
   transition: transform 0.2s ease;
 }
 
-.seat img:hover {
-  transform: scale(1.1); /* Slightly enlarge on hover */
+.seat:hover {
+  transform: scale(1.1); /* Enlarges seat on hover */
 }
 
+.reserved {
+
+  cursor: not-allowed; /* Change cursor to not-allowed */
+}
+
+.reserved:hover {
+  transform: none; /* Disable enlarging on hover */
+}
+
+/* screen */
+#screen-container {
+  display: flex;
+  justify-content: center; /* Center the rectangle horizontally */
+  margin-bottom: 20px; /* Space between the rectangle and the Confirm button */
+}
+
+#screen {
+  background-color: white; /* Rectangle background color */
+  color: black; /* Text color */
+  width: 300px; /* Width of the rectangle */
+  height: 30px; /* Height of the rectangle */
+  display: flex;
+  justify-content: center; /* Center text horizontally */
+  align-items: center; /* Center text vertically */
+  font-size: 18px; /* Font size of the text */
+  border-radius: 10px; /* Optional: Rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Optional: Add a subtle shadow */
+}
+
+/* seat space */
+.seat-space {
+  width: 20px; /* Adjust the gap width */
+}
+
+.seat-label {
+  position: absolute; /* Position label absolutely to center it */
+  z-index: 2; /* Ensure the label is above the image */
+  color: black;
+  font-size: 14px;
+  font-weight: bold;
+  pointer-events: none; /* Prevent interfering with button click */
+  padding-top: 15px;
+}
 </style>
