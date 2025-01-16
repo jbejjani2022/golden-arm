@@ -1,6 +1,8 @@
 <script lang="ts">
   // Add any global logic or imports here
   import { page } from '$app/state';
+  import { goto } from '$app/navigation';
+
 
   // Create a derived store to check if the current path starts with '/admin'
   const isAdmin = page.url.pathname.startsWith('/admin');
@@ -19,6 +21,30 @@
       toggleMenu();
     }
   }
+
+
+  // reserve
+    import { onMount } from 'svelte';
+  
+    let movie: any = null;
+    let error: string = '';
+  
+    // Fetch the next movie using the /api/movie/next endpoint
+    onMount(async () => {
+      try {
+        const response = await fetch('/api/movie/next');
+        const data = await response.json();
+  
+        if (data.success) {
+          movie = data.data;
+        } else {
+          error = 'Failed to load the next movie.';
+        }
+      } catch (err) {
+        console.error(err);
+        error = 'Something went wrong while fetching the movie data.';
+      }
+    });
 </script>
 
 <!-- Navbar -->
@@ -34,8 +60,9 @@
       <a href="/archives" class:active={page.url.pathname === '/archives'}>Past Screenings</a>
     </li>
     <li>
-      <a href="/reserve" class:active={page.url.pathname === '/reserve'}>Reserve a Seat</a>
-    </li>
+      {#if movie?.ID}
+      <a href={`/reservations/${movie.ID}`} class:active={page.url.pathname === `/reservations/${movie.ID}`}>Reserve a Seat</a>
+    {/if}    </li>
     <li>
       <a href="/merch" class:active={page.url.pathname === '/merch'}>Merch</a>
     </li>
@@ -61,7 +88,7 @@
  {#if showMobileMenu}
  <div class="mobile-menu">
    <a href="/archives" on:click={() => (showMobileMenu = false)}>Past Screenings</a>
-   <a href="/reserve" on:click={() => (showMobileMenu = false)}>Reserve a Seat</a>
+   <!-- <a href={`/reservations/${movie.ID}`} on:click={() => (showMobileMenu = false)}>Reserve a Seat</a> -->
    <a href="/merch" on:click={() => (showMobileMenu = false)}>Merch</a>
    <a href="/filmfest" on:click={() => (showMobileMenu = false)}>Film Festival</a>
  </div>
@@ -252,7 +279,6 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     position: fixed;
     top: 0;
-    left: 0;
     width: 100%; /* Spans the full width */
     max-width: 100%; /* Ensures it doesn’t overflow the screen */
     z-index: 10;
