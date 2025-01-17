@@ -1,5 +1,4 @@
 <script lang="ts">
-  // Add any global logic or imports here
   import { page } from '$app/state';
   import { onMount } from 'svelte';
 
@@ -68,6 +67,20 @@
     </li>
   </ul>
 
+  <!-- Instagram Icon -->
+  <a 
+    href="https://www.instagram.com/eliotgoldenarm/" 
+    target="_blank" 
+    rel="noopener noreferrer"
+    class="instagram-link"
+  >
+    <img 
+      src="/instagram.svg" 
+      alt="Instagram" 
+      class="instagram-icon"
+    />
+  </a>
+
     <!-- Hamburger Menu Button -->
     <button
     class="hamburger"
@@ -97,9 +110,9 @@
     <slot></slot>
     <!-- Show footer if it's not the admin page -->
     {#if !isAdmin}
-      <footer class="global-footer">
+      <!-- <footer class="global-footer">
         <p>Visit <a href="https://www.instagram.com/eliotgoldenarm/" target="_blank" rel="noopener noreferrer">@eliotgoldenarm</a> on Instagram.</p>
-      </footer>
+      </footer> -->
     {/if}
   </div>
 </main>
@@ -108,7 +121,7 @@
   :root { /* #33312A  #4B483C  */
     --gold: #edbc0d;
     --dark-gold: #b08d00;
-    --dark: #202020;
+    --dark: #1f1f1f;
   }
 
   /* Dark theme styling */
@@ -273,7 +286,7 @@
     align-items: center;
     /* justify-content: space-between; */
     padding: 0 1rem; /* Add some padding inside the navbar */
-    background-color: #1a1a1a; 
+    background-color: #0e0e0e; 
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     position: fixed;
     top: 0;
@@ -281,9 +294,8 @@
     width: 100%; /* Spans the full width */
     max-width: 100%; /* Ensures it doesn’t overflow the screen */
     z-index: 10;
-    margin: 0;
     box-sizing: border-box; /* Includes padding and border in the element's total width/height */
-    /* height: 5%; */ 
+    height: 10%;
   }
 
   .navbar-logo img {
@@ -315,8 +327,7 @@
   }
 
   .navbar-links a.active {
-    color: var(--gold); /* Active link color */
-    /* font-weight: 600; */
+    color: var(--gold);
   }
 
   /* for mobile */
@@ -355,19 +366,41 @@
     border-bottom: 1px solid white;
   }
 
+  .instagram-link {
+    margin-left: auto;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    transition: filter 0.3s ease;
+  }
+
+  .instagram-icon {
+    width: 24px;
+    height: 24px;
+    filter: invert(1);
+  }
+
+  .instagram-link:hover .instagram-icon {
+    filter: invert(71%) sepia(97%) saturate(1061%) hue-rotate(359deg) brightness(103%) contrast(98%);
+  }
+
+  /* Update mobile styles */
   @media screen and (max-width: 768px) {
     .navbar {
-      justify-content: space-between; /* Space between logo and hamburger on mobile */
+      justify-content: space-between;
     }
     
+    .instagram-link {
+      margin-left: 0; /* Reset margin for mobile */
+      order: -1; /* Places Instagram icon before hamburger menu */
+    }
+
     .navbar-links {
-      display: none; /* Hide links for smaller screens */
+      display: none;
     }
 
     .hamburger {
       display: flex;
-      justify-content: flex-end; /* Align hamburger to the right side */
-
     }
 
     .mobile-menu {

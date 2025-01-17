@@ -163,7 +163,6 @@
       <p>Loading movie information...</p>
     {/if}
 
-     <!-- Row with "Past Screenings" and "See All" -->
   <div class="row-header">
     <h2 class="header-title">Past Screenings</h2>
     <a href="/archives" class="see-all-link">See All</a>
@@ -195,9 +194,10 @@
 {/if}
     
     <div class="separator"></div>
-
-    <p>We want your suggestions!</p>
-    <button class="home-button" on:click={confirmComment}>What should we screen next?</button>
+    <div class="suggestions">
+      <p>We want your suggestions!</p>
+      <button class="home-button" on:click={confirmComment}>What should we screen next?</button>
+    </div>
     {#if showModal}
     <div class="modal">
       <div class="modal-content">
@@ -283,7 +283,6 @@
 
     .home-button {
       display: inline-block;
-      color: white;
       font-weight: bold;
       text-decoration: none;
       margin-bottom: 20px;
@@ -307,6 +306,10 @@
       border: none; /* Removes any default borders */
     }
 
+    .suggestions {
+      margin-top: 2rem;
+    }
+
     /* Row header container */
     .row-header {
       display: flex;
@@ -314,6 +317,7 @@
       align-items: center; /* Centers vertically */
       width: 100%;
       margin-bottom: 1rem; /* Adds space below the row */
+      margin-top: 1.5rem;
     }
 
   /* Title styling */
