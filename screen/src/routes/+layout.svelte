@@ -105,9 +105,9 @@
 </main>
 
 <style>
-  :root {
-    --gold: #f4c523;
-    --dark-gold: #c09c0b;
+  :root { /* #33312A  #4B483C  */
+    --gold: #edbc0d;
+    --dark-gold: #b08d00;
     --dark: #202020;
   }
 
@@ -146,10 +146,10 @@
   }
 
   main {
-  margin-top: 70px; /* Matches the navbar height */
-  padding: 1rem;
-  box-sizing: border-box;
-}
+    margin-top: 70px; /* Matches the navbar height */
+    padding: 1rem;
+    box-sizing: border-box;
+  }
 
   /* Footer styling */
   .global-footer {
@@ -179,11 +179,12 @@
 
   /* Global Button Styling */
   :global(button) {
-    padding: 10px 15px;
+    padding: 12px 24px;
     background-color: var(--gold);
-    color: white;
+    color: black;
+    font-weight: bold;
     border: none;
-    border-radius: 5px;
+    border-radius: 15px;
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -272,7 +273,7 @@
     align-items: center;
     /* justify-content: space-between; */
     padding: 0 1rem; /* Add some padding inside the navbar */
-    background-color: #202020; 
+    background-color: #1a1a1a; 
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     position: fixed;
     top: 0;

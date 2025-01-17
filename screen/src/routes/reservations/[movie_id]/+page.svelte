@@ -299,21 +299,10 @@ h1 {
   overflow: visible; /* Allow the image to show fully */
 }
 
-button {
-  display: inline-block;
-  padding: 10px;
-  color: black;
-  text-decoration: none;
-  border-radius: 5px;
-}
-
 .reserve-button {
   display: inline-block;
   padding: 12px 24px;
-  color: black;
   text-decoration: none;
-  border-radius: 5px;
-  font-weight: bold;
   margin-top: 20px;
 }
 
@@ -342,7 +331,6 @@ button {
 }
 
 .reserved {
-
   cursor: not-allowed; /* Change cursor to not-allowed */
 }
 

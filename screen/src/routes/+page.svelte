@@ -147,14 +147,11 @@
         <!-- Left side: Movie Info -->
         <div class="movie-details">
           <h1 class="movie-title">{movie.Title}</h1>
-          <div class="movie-duration">
-            <h3>{formatRuntime(movie.Runtime)}</h3>
-          </div>
           <div class="movie-screening">
+            <h2>{formatRuntime(movie.Runtime)}</h2>
             <h2>Screening {formatDate(movie.Date)}</h2>
-                <button class="reserve-button" on:click={() => goto(`/reservations/${movie.ID}`)}>Get Tickets</button>
+            <button class="reserve-button" on:click={() => goto(`/reservations/${movie.ID}`)}>Get Tickets</button>
           </div>
-
         </div>
 
         <!-- Right side: Movie Poster -->
@@ -249,22 +246,22 @@
       /* gap: 1rem; Spacing between elements within the details section */
     }
 
+    .movie-screening {
+      margin-bottom: 10px;
+    }
+
     .movie-title {
       font-size: 2.5rem; /* Make title text larger */
       font-weight: bold; /* Make the title bold */
-      margin-bottom: 15px;
+      margin-bottom: 5px;
     }
 
     .reserve-button {
-      background-color: var(--gold);
-      color: white;
-      padding: 12px;
-      border: none;
       cursor: pointer;
       font-size: 1rem;
-      border-radius: 5px;
       display: inline-block; /* Ensures the button only takes as much space as the text needs */
       margin-top: 10px;
+      margin-bottom: 10px
     }
 
     .reserve-button:hover {
@@ -275,7 +272,6 @@
       flex: 1; /* Take up the other half of the screen */
       max-width: 30%;
       min-width: 300px;
-
     }
 
     .movie-poster img {
@@ -287,11 +283,10 @@
 
     .home-button {
       display: inline-block;
-      padding: 12px 24px;
       color: white;
+      font-weight: bold;
       text-decoration: none;
-      border-radius: 5px;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
   
     .error {
