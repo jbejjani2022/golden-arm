@@ -28,12 +28,13 @@ type ReservationRequest struct {
 
 // Confirmation email
 type EmailData struct {
-	To         string
-	Name       string
-	MovieTitle string
-	MovieDate  string
-	SeatNumber string
-	PosterURL  string
+	To           string
+	Name         string
+	MovieTitle   string
+	MovieDate    string
+	MovieRuntime string
+	SeatNumber   string
+	PosterURL    string
 }
 
 // Theater seat layout
@@ -48,6 +49,21 @@ func contains(slice []string, item string) bool {
 		}
 	}
 	return false
+}
+
+// Formats a movie runtime in minutes into a string like "1h 30m" or "30m"
+func formatRuntime(runtime int) (string, error) {
+	if runtime < 0 {
+		return "", fmt.Errorf("runtime cannot be negative")
+	}
+
+	hours := runtime / 60
+	minutes := runtime % 60
+
+	if hours > 0 {
+		return fmt.Sprintf("%dh %dm", hours, minutes), nil
+	}
+	return fmt.Sprintf("%dm", minutes), nil
 }
 
 /*
@@ -89,7 +105,7 @@ func Reserve(c *gin.Context) {
 
 	if err == nil {
 		// Conflicting reservation found
-		fmt.Printf("Seat %d already reserved", newRes.SeatNumber)
+		fmt.Printf("Seat %s already reserved", newRes.SeatNumber)
 		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
 		return
 	} else if !errors.Is(err, sql.ErrNoRows) {
@@ -139,6 +155,12 @@ func Reserve(c *gin.Context) {
 	data.Name = res.Name
 	data.MovieTitle = movie.Title
 	data.MovieDate = movie.Date.Format("Monday, January 2 3:04 PM")
+	data.MovieRuntime, err = formatRuntime(movie.Runtime)
+	if err != nil {
+		fmt.Printf("Error formatting movie runtime: %v", err)
+		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
+		return
+	}
 	data.SeatNumber = res.SeatNumber
 	data.PosterURL = movie.PosterURL
 

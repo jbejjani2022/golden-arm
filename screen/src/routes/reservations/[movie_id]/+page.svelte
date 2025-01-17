@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { onMount } from 'svelte';
-  import { formatDate } from '$lib';
+  import { formatDate, formatRuntime } from '$lib';
   
   let movie: any = null;
   let error: string = '';
@@ -169,6 +169,7 @@
     </div>
     <div class="movie-details">
       <h1>{movie.Title}</h1>
+      <p class="movie-date">{formatRuntime(movie.Runtime)}</p>
       <p class="movie-date">{formatDate(movie.Date)}</p>
     </div>
   </div>

@@ -211,8 +211,8 @@
         <input type="datetime-local" id="date" bind:value={newMovie.Date} required />
       </div>
       <div class="form-group">
-        <label for="date">Runtime (minutes):</label>
-        <input type="number" id="runtime" bind:value={newMovie.Runtime} required />
+        <label for="runtime">Runtime (minutes):</label>
+        <input type="number" id="runtime" bind:value={newMovie.Runtime} required min="1"/>
       </div>
       <div class="form-group">
         <label for="posterFile">Poster Image:</label>
