@@ -7,9 +7,10 @@ import (
 )
 
 type Movie struct {
-	ID    uuid.UUID `bun:"type:uuid,pk,default:gen_random_uuid()"`
-	Title string    `bun:"title,notnull"`
-	Date  time.Time `bun:"date,notnull,unique"` // Date of movie screening
+	ID      uuid.UUID `bun:"type:uuid,pk,default:gen_random_uuid()"`
+	Title   string    `bun:"title,notnull"`
+	Date    time.Time `bun:"date,notnull,unique"` // Date of movie screening
+	Runtime int       `bun:"runtime,notnull"`     // Movie runtime in minutes
 	// Public URLs to images stored in AWS S3
 	PosterURL string `bun:"poster_url"`
 	MenuURL   string `bun:"menu_url"`

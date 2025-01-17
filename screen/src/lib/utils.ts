@@ -11,3 +11,18 @@ export function formatDate(dateString: string): string {
     };
     return date.toLocaleString('en-US', options);
 }
+
+export function formatRuntime(runtime: number): string {
+    if (runtime < 0) {
+        throw new Error("Runtime cannot be negative");
+    }
+
+    const hours = Math.floor(runtime / 60);
+    const minutes = runtime % 60;
+
+    if (hours > 0) {
+        return `${hours}h ${minutes}m`;
+    } else {
+        return `${minutes}m`;
+    }
+}

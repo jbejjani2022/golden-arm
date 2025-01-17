@@ -1,5 +1,5 @@
 <script lang="ts">
-	  import { formatDate } from '$lib';
+	  import { formatDate, formatRuntime } from '$lib';
     import { goto } from '$app/navigation';
     import { onMount, onDestroy } from 'svelte';
 
@@ -148,10 +148,10 @@
         <div class="movie-details">
           <h1 class="movie-title">{movie.Title}</h1>
           <div class="movie-duration">
-            <p>1 HR 39 MIN</p>
+            <h3>{formatRuntime(movie.Runtime)}</h3>
           </div>
           <div class="movie-screening">
-            <h3>Screening {formatDate(movie.Date)}</h3>
+            <h2>Screening {formatDate(movie.Date)}</h2>
                 <button class="reserve-button" on:click={() => goto(`/reservations/${movie.ID}`)}>Get Tickets</button>
           </div>
 
@@ -256,9 +256,9 @@
     }
 
     .reserve-button {
-      background-color: #f4c523;
+      background-color: var(--gold);
       color: white;
-      padding: 10px;
+      padding: 12px;
       border: none;
       cursor: pointer;
       font-size: 1rem;
@@ -268,7 +268,7 @@
     }
 
     .reserve-button:hover {
-      background-color: #caac3e;
+      background-color: var(--dark-gold);
     }
 
     .movie-poster {

@@ -106,8 +106,8 @@
 
 <style>
   :root {
-    --gold: #d3ab0c;
-    --dark-gold: #a28200;
+    --gold: #f4c523;
+    --dark-gold: #c09c0b;
     --dark: #202020;
   }
 
@@ -285,8 +285,6 @@
     /* height: 5%; */ 
   }
 
- 
-
   .navbar-logo img {
     height: 40px;
     padding: 10px 20px;
@@ -312,16 +310,15 @@
   }
 
   .navbar-links a:hover {
-    color: #f4c523; /* Highlight color on hover */
+    color: var(--gold);
   }
 
   .navbar-links a.active {
-    color: #f4c523; /* Active link color */
+    color: var(--gold); /* Active link color */
     /* font-weight: 600; */
   }
 
   /* for mobile */
-
   .hamburger {
     display: none;
     flex-direction: column;
@@ -350,7 +347,7 @@
   }
 
   .mobile-menu a {
-    color: #f4c523;
+    color: var(--gold);
     text-decoration: none;
     padding: 1rem;
     text-align: center;

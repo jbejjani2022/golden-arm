@@ -57,6 +57,7 @@
     let newMovie = {
       Title: '',
       Date: '',
+      Runtime: 0,
       PosterFile: null as File | null,
       MenuFile: null as File | null
     };
@@ -65,6 +66,7 @@
       const formData = new FormData();
       formData.append('title', newMovie.Title);
       formData.append('date', new Date(newMovie.Date).toISOString());
+      formData.append('runtime', newMovie.Runtime.toString());
       if (newMovie.PosterFile) formData.append('poster', newMovie.PosterFile);
       if (newMovie.MenuFile) formData.append('menu', newMovie.MenuFile);
 
@@ -163,6 +165,7 @@
             <th>ID</th>
             <th>Title</th>
             <th>Screening Date</th>
+            <th>Runtime</th>
             <th>Assets</th>
             <th>Actions</th>
         </tr>
@@ -173,6 +176,7 @@
                 <td>{movie.ID}</td>
                 <td>{movie.Title}</td>
                 <td>{formatDate(movie.Date)}</td>
+                <td>{movie.Runtime}</td>
                 <td>
                   <a href={movie.PosterURL} target="_blank">Poster</a>,
                   <a href={movie.MenuURL} target="_blank">Menu</a>
@@ -205,6 +209,10 @@
       <div class="form-group">
         <label for="date">Date:</label>
         <input type="datetime-local" id="date" bind:value={newMovie.Date} required />
+      </div>
+      <div class="form-group">
+        <label for="date">Runtime (minutes):</label>
+        <input type="number" id="runtime" bind:value={newMovie.Runtime} required />
       </div>
       <div class="form-group">
         <label for="posterFile">Poster Image:</label>

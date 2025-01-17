@@ -8,6 +8,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -21,6 +22,7 @@ import (
 type MovieRequest struct {
 	Title     string    `json:"title"`
 	Date      time.Time `json:"date"`
+	Runtime   int       `json:"runtime"`
 	PosterUrl string    `json:"poster_url"`
 	MenuUrl   string    `json:"menu_url"`
 }
@@ -36,6 +38,7 @@ For JSON-based submissions:
 	'{
 		"title": "Interstellar",
 		"date": "2025-01-10T00:00:00Z",
+		"runtime": 169,
 		"poster_url": "https://example.com/poster.jpg",
 		"menu_url": "https://example.com/menu.jpg"
 	}'
@@ -45,6 +48,7 @@ For file upload submissions:
 	curl -X POST http://localhost:8080/api/movie -H "Authorization: Bearer YOUR_API_KEY" \
 		-F "title=Interstellar" \
 		-F "date=2025-01-10T00:00:00Z" \
+		-F "runtime=169" \
 		-F "poster=@/path/to/poster.jpg" \
 		-F "menu=@/path/to/menu.jpg"
 */
@@ -65,7 +69,18 @@ func AddMovie(c *gin.Context) {
 
 		newMovie.Title = c.PostForm("title")
 		date := c.PostForm("date")
-		newMovie.Date, _ = time.Parse(time.RFC3339, date)
+		newMovie.Date, err = time.Parse(time.RFC3339, date)
+		if err != nil {
+			fmt.Println("Error parsing date:", err)
+			c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
+			return
+		}
+		newMovie.Runtime, err = strconv.Atoi(c.PostForm("runtime"))
+		if err != nil {
+			fmt.Println("Error parsing runtime:", err)
+			c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
+			return
+		}
 
 		// Poster file
 		posterFile, _ := c.FormFile("poster")
@@ -107,6 +122,7 @@ func AddMovie(c *gin.Context) {
 		ID:        uuid.New(),
 		Title:     newMovie.Title,
 		Date:      newMovie.Date,
+		Runtime:   newMovie.Runtime,
 		PosterURL: newMovie.PosterUrl,
 		MenuURL:   newMovie.MenuUrl,
 	}
@@ -120,6 +136,7 @@ func AddMovie(c *gin.Context) {
 		Model(&movie).
 		On("CONFLICT (date) DO UPDATE").
 		Set("title = EXCLUDED.title").
+		Set("runtime = EXCLUDED.runtime").
 		Set("poster_url = EXCLUDED.poster_url").
 		Set("menu_url = EXCLUDED.menu_url").
 		Returning("id").
