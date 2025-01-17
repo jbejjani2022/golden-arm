@@ -120,7 +120,7 @@
     font-family: Arial, sans-serif;
     background-color: var(--dark);
     color: #f0f0f0;
-    max-width: 800px;
+    max-width: 80%;
     padding: 20px;
     text-align: center;
   }
@@ -279,6 +279,7 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     position: fixed;
     top: 0;
+    left: 0;
     width: 100%; /* Spans the full width */
     max-width: 100%; /* Ensures it doesn’t overflow the screen */
     z-index: 10;
