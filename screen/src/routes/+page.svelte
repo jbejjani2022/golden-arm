@@ -1,9 +1,8 @@
 <script lang="ts">
 	  import { formatDate } from '$lib';
     import { goto } from '$app/navigation';
-    import { onMount, onDestroy } from 'svelte'; // Add onDestroy here
+    import { onMount, onDestroy } from 'svelte';
 
-  
     let movie: any = null;
     let error: string = '';
     let showModal = false;
@@ -69,12 +68,10 @@
       }
     };
 
-    // carousel
-   // Define a type for movie objects
+  // Past screening carousel
   type Movie = {
     PosterURL: string;
     Title: string;
-    // Add any other properties as needed
   };
 
   let archive: Movie[] = [];
@@ -83,8 +80,8 @@
   
   // For infinite loop effect, duplicate the first 2 slides at the end
   const numberOfVisibleSlides = 3;
-// Create a duplicatedArchive of the same type
-let duplicatedArchive: Movie[] = [];
+  // Create a duplicatedArchive of the same type
+  let duplicatedArchive: Movie[] = [];
 
   // Automatically rotate every 3 seconds
   onMount(async () => {
@@ -102,17 +99,13 @@ let duplicatedArchive: Movie[] = [];
       // Start the automatic carousel rotation
       intervalId = setInterval(() => {
         nextSlide();
-      }, 3000); // 3 seconds interval
+      }, 3000); // 3 second interval
 
     } catch (err) {
       console.error(err);
       error = 'Something went wrong while fetching the movie archive.';
     }
   });
-
-
-
-  
  
   function prevSlide() {
     // Move to the previous slide
@@ -132,7 +125,6 @@ let duplicatedArchive: Movie[] = [];
     }
   }
 
-
   // Clear interval when component is destroyed
   onDestroy(() => {
     if (intervalId) clearInterval(intervalId);
@@ -150,7 +142,6 @@ let duplicatedArchive: Movie[] = [];
       <p class="error">{error}</p>
     {/if}
   
-
     {#if movie}
       <section class="movie-info">
         <!-- Left side: Movie Info -->
@@ -165,7 +156,6 @@ let duplicatedArchive: Movie[] = [];
           </div>
 
         </div>
-
 
         <!-- Right side: Movie Poster -->
         <div class="movie-poster">
@@ -209,7 +199,6 @@ let duplicatedArchive: Movie[] = [];
     
     <div class="separator"></div>
 
-
     <p>We want your suggestions!</p>
     <button class="home-button" on:click={confirmComment}>What should we screen next?</button>
     {#if showModal}
@@ -234,7 +223,7 @@ let duplicatedArchive: Movie[] = [];
     {/if}
   </main>
   
-  <style>
+<style>
     .top-text {
       font-size: 30px;
       font-weight: bold;
@@ -243,66 +232,59 @@ let duplicatedArchive: Movie[] = [];
 
     .movie-info {
       flex-wrap: wrap; /* Enables wrapping if content doesn't fit */
+      display: flex; /* Use flexbox to align items side by side */
+      justify-content: space-evenly; /* Space out the elements */
+      /* min-width: 300px; Ensures a minimum width */
+      justify-content: center;
+      align-items: center; /* Vertically center the content */
+      gap: 15%; /* Increase space between text and poster */
+      padding: 20px;
+    }
 
-  display: flex; /* Use flexbox to align items side by side */
-  justify-content: space-evenly; /* Space out the elements */
-  /* min-width: 300px; Ensures a minimum width */
-  justify-content: center;
-  align-items: center; /* Vertically center the content */
-  gap: 15%; /* Increase space between text and poster */
-  padding: 20px;
-}
+    .movie-details {
+      /* flex: 1;  */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      /* gap: 1rem; Spacing between elements within the details section */
+    }
 
-.movie-details {
-  /* flex: 1;  */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  
-  /* gap: 1rem; Spacing between elements within the details section */
+    .movie-title {
+      font-size: 2.5rem; /* Make title text larger */
+      font-weight: bold; /* Make the title bold */
+      margin-bottom: 15px;
+    }
 
-}
+    .reserve-button {
+      background-color: #f4c523;
+      color: white;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      border-radius: 5px;
+      display: inline-block; /* Ensures the button only takes as much space as the text needs */
+      margin-top: 10px;
+    }
 
-.movie-title {
-  font-size: 2.5rem; /* Make title text larger */
-  font-weight: bold; /* Make the title bold */
-  margin-bottom: 15px;
-}
+    .reserve-button:hover {
+      background-color: #caac3e;
+    }
 
+    .movie-poster {
+      flex: 1; /* Take up the other half of the screen */
+      max-width: 30%;
+      min-width: 300px;
 
+    }
 
-.reserve-button {
-  background-color: #f4c523;
-  color: white;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  border-radius: 5px;
-  display: inline-block; /* Ensures the button only takes as much space as the text needs */
-  margin-top: 10px;
-}
+    .movie-poster img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
 
-.reserve-button:hover {
-  background-color: #caac3e;
-}
+    }
 
-.movie-poster {
-  flex: 1; /* Take up the other half of the screen */
-  max-width: 30%;
-  min-width: 300px;
-
-}
-
-.movie-poster img {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-
-}
-
-  
-  
     .home-button {
       display: inline-block;
       padding: 12px 24px;
@@ -322,56 +304,56 @@ let duplicatedArchive: Movie[] = [];
     }
 
     /* Separator line styling */
-.separator {
-  width: 100%; /* Ensures it spans the full width of the container */
-  height: 2px; /* Thickness of the line */
-  background-color: #ddd; /* Color of the line */
-  margin: 1rem 0; /* Optional: Adds spacing around the line */
-  border: none; /* Removes any default borders */
-}
+    .separator {
+      width: 100%; /* Ensures it spans the full width of the container */
+      height: 2px; /* Thickness of the line */
+      background-color: #ddd; /* Color of the line */
+      margin: 1rem 0; /* Optional: Adds spacing around the line */
+      border: none; /* Removes any default borders */
+    }
 
-/* Row header container */
-.row-header {
-  display: flex;
-  justify-content: space-between; /* Aligns the elements to opposite ends */
-  align-items: center; /* Centers vertically */
-  width: 100%;
-  margin-bottom: 1rem; /* Adds space below the row */
-}
+    /* Row header container */
+    .row-header {
+      display: flex;
+      justify-content: space-between; /* Aligns the elements to opposite ends */
+      align-items: center; /* Centers vertically */
+      width: 100%;
+      margin-bottom: 1rem; /* Adds space below the row */
+    }
 
-/* Title styling */
-.header-title {
-  font-size: 1.5rem; /* Larger text */
-  font-weight: bold; /* Bold font */
-  margin: 0; /* Removes default margin */
-  color: #fff; /* Dark text color */
-}
-
-/* See All link styling */
-.see-all-link {
-  font-size: 1rem; /* Smaller text */
-  color: #fff; /* Link color (blue) */
-  text-decoration: none; /* Removes underline */
-  font-weight: normal; /* Normal font weight */
-  transition: color 0.3s; /* Smooth color transition on hover */
-}
-
-/* Hover effect for the link */
-.see-all-link:hover {
-  color: #caac3e; /* Darker blue on hover */
-  text-decoration: underline; /* Optional underline on hover */
-}
-
-/* carousel */
-.carousel-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    position: relative;
-    width: 80%; /* Adjust the width as necessary */
-    margin: 0 auto;
+  /* Title styling */
+  .header-title {
+    font-size: 1.5rem; /* Larger text */
+    font-weight: bold; /* Bold font */
+    margin: 0; /* Removes default margin */
+    color: #fff; /* Dark text color */
   }
+
+  /* See All link styling */
+  .see-all-link {
+    font-size: 1rem; /* Smaller text */
+    color: #fff; /* Link color (blue) */
+    text-decoration: none; /* Removes underline */
+    font-weight: normal; /* Normal font weight */
+    transition: color 0.3s; /* Smooth color transition on hover */
+  }
+
+  /* Hover effect for the link */
+  .see-all-link:hover {
+    color: #caac3e; /* Darker blue on hover */
+    text-decoration: underline; /* Optional underline on hover */
+  }
+
+  /* carousel */
+  .carousel-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+      width: 80%; /* Adjust the width as necessary */
+      margin: 0 auto;
+    }
 
   .carousel {
     display: flex;
@@ -421,5 +403,5 @@ let duplicatedArchive: Movie[] = [];
   .carousel-arrow-right {
     right: 10px;}
 
-  </style>
+</style>
   

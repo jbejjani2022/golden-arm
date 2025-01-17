@@ -1,14 +1,34 @@
 <script lang="ts">
   // Add any global logic or imports here
   import { page } from '$app/state';
-  import { goto } from '$app/navigation';
+  import { onMount } from 'svelte';
 
-
-  // Create a derived store to check if the current path starts with '/admin'
+  // Check if the current path starts with '/admin'
   const isAdmin = page.url.pathname.startsWith('/admin');
 
-  //navbar mobile
+  // Navbar mobile
   let showMobileMenu = false;
+
+  // Data for next movie
+  let movie: any = null;
+  let error: string = '';
+
+  // Fetch the next movie using the /api/movie/next endpoint
+  onMount(async () => {
+    try {
+      const response = await fetch('/api/movie/next');
+      const data = await response.json();
+
+      if (data.success) {
+        movie = data.data;
+      } else {
+        error = 'Failed to load the next movie.';
+      }
+    } catch (err) {
+      console.error(err);
+      error = 'Something went wrong while fetching the movie data.';
+    }
+  });
 
   // Toggles the mobile menu
   function toggleMenu() {
@@ -22,29 +42,6 @@
     }
   }
 
-
-  // reserve
-    import { onMount } from 'svelte';
-  
-    let movie: any = null;
-    let error: string = '';
-  
-    // Fetch the next movie using the /api/movie/next endpoint
-    onMount(async () => {
-      try {
-        const response = await fetch('/api/movie/next');
-        const data = await response.json();
-  
-        if (data.success) {
-          movie = data.data;
-        } else {
-          error = 'Failed to load the next movie.';
-        }
-      } catch (err) {
-        console.error(err);
-        error = 'Something went wrong while fetching the movie data.';
-      }
-    });
 </script>
 
 <!-- Navbar -->
@@ -88,7 +85,7 @@
  {#if showMobileMenu}
  <div class="mobile-menu">
    <a href="/archives" on:click={() => (showMobileMenu = false)}>Past Screenings</a>
-   <!-- <a href={`/reservations/${movie.ID}`} on:click={() => (showMobileMenu = false)}>Reserve a Seat</a> -->
+   <a href={`/reservations/${movie.ID}`} on:click={() => (showMobileMenu = false)}>Reserve a Seat</a>
    <a href="/merch" on:click={() => (showMobileMenu = false)}>Merch</a>
    <a href="/filmfest" on:click={() => (showMobileMenu = false)}>Film Festival</a>
  </div>
