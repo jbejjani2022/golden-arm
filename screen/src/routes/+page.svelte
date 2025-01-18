@@ -4,6 +4,7 @@
   import { onMount, onDestroy } from 'svelte';
 
   let movie: any = null;
+  let calendar: any = null;
   let error: string = '';
 
   // Fetch the next movie using the /api/movie/next endpoint
@@ -20,6 +21,20 @@
     } catch (err) {
       console.error(err);
       error = 'Something went wrong while fetching the movie data.';
+    }
+
+    try {
+      const response = await fetch('/api/calendar');
+      const data = await response.json();
+
+      if (data.success) {
+        calendar = data.data;
+      } else {
+        error = 'Failed to load the calendar.';
+      }
+    } catch (err) {
+      console.error(err);
+      error = 'Something went wrong while fetching the calendar.';
     }
   });
 
@@ -93,10 +108,6 @@
       ELIOT HOUSE'S STUDENT-RUN THEATER SHOWCASING WEEKLY FILMS.
     </section>
   
-    {#if error}
-      <p class="error">{error}</p>
-    {/if}
-  
     {#if movie}
       <section class="movie-info">
         <!-- Left side: Movie Info -->
@@ -122,117 +133,146 @@
     <h2 class="header-title">Past Screenings</h2>
     <a href="/archives" class="see-all-link">See All</a>
   </div>
-
     <!-- Separator line -->
   <div class="separator"></div>
 
-  {#if error}
-  <p>{error}</p>
-{:else}
-  <div class="carousel-container">
-    <div
-      class="carousel"
-      style="transform: translateX(-{(currentIndex % archive.length) * 33.33}%)"
-    >
-      {#each [...archive, ...duplicatedArchive] as movie, index}
-        <div
-          class="carousel-slide {index === currentIndex || index === (currentIndex + 1) % archive.length || index === (currentIndex - 1 + archive.length) % archive.length ? 'active' : ''}"
-        >
-          <img src={movie.PosterURL} alt="{movie.Title} poster" />
-        </div>
-      {/each}
-    </div>
+  {#if archive.length > 0}
+    <div class="carousel-container">
+      <div
+        class="carousel"
+        style="transform: translateX(-{(currentIndex % archive.length) * 33.33}%)"
+      >
+        {#each [...archive, ...duplicatedArchive] as movie, index}
+          <div
+            class="carousel-slide {index === currentIndex || index === (currentIndex + 1) % archive.length || index === (currentIndex - 1 + archive.length) % archive.length ? 'active' : ''}"
+          >
+            <img src={movie.PosterURL} alt="{movie.Title} poster" />
+          </div>
+        {/each}
+      </div>
 
-    <button class="carousel-arrow carousel-arrow-left" on:click={prevSlide}>&lt;</button>
-    <button class="carousel-arrow carousel-arrow-right" on:click={nextSlide}>&gt;</button>
+      <button class="carousel-arrow carousel-arrow-left" on:click={prevSlide}>&lt;</button>
+      <button class="carousel-arrow carousel-arrow-right" on:click={nextSlide}>&gt;</button>
+    </div>
+  {:else}
+    <p>Archive is empty...</p>
+  {/if}
+
+  <div class="row-header">
+    <h2 class="header-title">Calendar</h2>
   </div>
-{/if}
+  <div class="separator"></div>
+  {#if calendar}
+    <div class="calendar-image">
+      <img src={calendar.ImageURL} alt="Calendar" />
+    </div>
+  {:else}
+    <p>Calendar not found.</p>
+  {/if}
+
 </main>
   
 <style>
-    .top-text {
-      font-size: 30px;
-      font-weight: bold;
-      margin-bottom: 30px;
-    }
+  .top-text {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 30px;
+  }
 
-    .movie-info {
-      flex-wrap: wrap; /* Enables wrapping if content doesn't fit */
-      display: flex; /* Use flexbox to align items side by side */
-      justify-content: space-evenly; /* Space out the elements */
-      /* min-width: 300px; Ensures a minimum width */
-      justify-content: center;
-      align-items: center; /* Vertically center the content */
-      gap: 15%; /* Increase space between text and poster */
-      padding: 20px;
-    }
+  .movie-info {
+    flex-wrap: wrap; /* Enables wrapping if content doesn't fit */
+    display: flex; /* Use flexbox to align items side by side */
+    justify-content: space-evenly; /* Space out the elements */
+    /* min-width: 300px; Ensures a minimum width */
+    justify-content: center;
+    align-items: center; /* Vertically center the content */
+    gap: 15%; /* Increase space between text and poster */
+    padding: 20px;
+  }
 
-    .movie-details {
-      /* flex: 1;  */
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      /* gap: 1rem; Spacing between elements within the details section */
-    }
+  .movie-details {
+    /* flex: 1;  */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* gap: 1rem; Spacing between elements within the details section */
+  }
 
-    .movie-screening {
-      margin-bottom: 10px;
-    }
+  .movie-screening {
+    margin-bottom: 10px;
+  }
 
-    .movie-title {
-      font-size: 2.5rem; /* Make title text larger */
-      font-weight: bold; /* Make the title bold */
-      margin-bottom: 5px;
-    }
+  .movie-title {
+    font-size: 2.5rem; /* Make title text larger */
+    font-weight: bold; /* Make the title bold */
+    margin-bottom: 5px;
+  }
 
-    .reserve-button {
-      cursor: pointer;
-      font-size: 1rem;
-      display: inline-block; /* Ensures the button only takes as much space as the text needs */
-      margin-top: 10px;
-      margin-bottom: 10px
-    }
+  .reserve-button {
+    cursor: pointer;
+    font-size: 1rem;
+    display: inline-block; /* Ensures the button only takes as much space as the text needs */
+    margin-top: 10px;
+    margin-bottom: 10px
+  }
 
-    .reserve-button:hover {
-      background-color: var(--dark-gold);
-    }
+  .reserve-button:hover {
+    background-color: var(--dark-gold);
+  }
 
-    .movie-poster {
-      flex: 1; /* Take up the other half of the screen */
-      max-width: 30%;
-      min-width: 300px;
-    }
+  .movie-poster {
+    flex: 1; /* Take up the other half of the screen */
+    max-width: 30%;
+    min-width: 300px;
+  }
 
-    .movie-poster img {
-      width: 100%;
-      height: auto;
-      border-radius: 8px;
+  .movie-poster img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
 
-    }
-  
-    .error {
-      color: #ff5252;
-      font-size: 16px;
-    }
+  }
 
-    /* Separator line styling */
-    .separator {
-      width: 100%; /* Ensures it spans the full width of the container */
-      height: 2px; /* Thickness of the line */
-      background-color: #ddd; /* Color of the line */
-      margin: 1rem 0; /* Optional: Adds spacing around the line */
-      border: none; /* Removes any default borders */
-    }
+  .error {
+    color: #ff5252;
+    font-size: 16px;
+  }
 
-    /* Row header container */
-    .row-header {
-      display: flex;
-      justify-content: space-between; /* Aligns the elements to opposite ends */
-      align-items: center; /* Centers vertically */
-      width: 100%;
-      margin-bottom: 1rem; /* Adds space below the row */
-      margin-top: 1.5rem;
-    }
+  /* Separator line styling */
+  .separator {
+    width: 100%; /* Ensures it spans the full width of the container */
+    height: 2px; /* Thickness of the line */
+    background-color: #ddd; /* Color of the line */
+    margin: 1rem 0; /* Optional: Adds spacing around the line */
+    border: none; /* Removes any default borders */
+  }
+
+  /* Row header container */
+  .row-header {
+    display: flex;
+    justify-content: space-between; /* Aligns the elements to opposite ends */
+    align-items: center; /* Centers vertically */
+    width: 100%;
+    margin-bottom: 1rem; /* Adds space below the row */
+    margin-top: 1.5rem;
+  }
+
+  /* Calendar styling */
+  .calendar-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem auto;
+    max-width: 90%;  /* Prevents calendar from being too wide on large screens */
+  }
+
+  .calendar-image img {
+    width: 100%;
+    height: auto;  /* Maintains aspect ratio */
+    max-width: 800px;  /* Adjust this value based on your needs */
+    object-fit: contain;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  }
 
   /* Title styling */
   .header-title {
