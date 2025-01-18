@@ -342,7 +342,7 @@
     color: black;
     font-weight: bold;
     border: none;
-    border-radius: 15px;
+    border-radius: 18px;
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;

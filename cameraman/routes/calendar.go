@@ -1,7 +1,3 @@
-// AddCalendar
-// GetCalendar
-// DeleteCalendar
-
 package routes
 
 import (
@@ -177,6 +173,7 @@ func AddCalendar(c *gin.Context) {
 		StartDate: newCalendar.StartDate,
 		EndDate:   newCalendar.EndDate,
 		ImageURL:  newCalendar.ImageURL,
+		Date:      time.Now(),
 	}
 
 	// Database connection
@@ -197,7 +194,7 @@ func AddCalendar(c *gin.Context) {
 	}
 	if count > 0 {
 		fmt.Println("Calendar overlaps with existing calendars")
-		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"success": false, "error": "Calendar overlaps with existing calendar."})
 		return
 	}
 

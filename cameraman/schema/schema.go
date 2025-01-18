@@ -44,4 +44,5 @@ type Calendar struct {
 	StartDate time.Time `bun:"start_date,notnull"` // Start date of the calendar
 	EndDate   time.Time `bun:"end_date,notnull"`   // End date of the calendar
 	ImageURL  string    `bun:"image_url,notnull"`  // Public URL to calendar image stored in AWS S3
+	Date      time.Time `bun:"date,notnull"`       // Date the calendar was added
 }

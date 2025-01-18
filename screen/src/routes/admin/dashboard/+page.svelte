@@ -4,6 +4,7 @@
 
     let movies: Array<any> = [];
     let comments: Array<any> = [];
+    let calendars: Array<any> = [];
     let emailList: Array<any> = [];
     let error: string = '';
 
@@ -35,6 +36,20 @@
         } catch (err) {
             console.error(err);
             error = 'Something went wrong while fetching the comment data.';
+        }
+
+        try {
+            const response = await fetch('/api/calendar/all');
+            const data = await response.json();
+
+            if (data.success) {
+                calendars = data.data;
+            } else {
+                error = 'Failed to load calendar data.';
+            }
+        } catch (err) {
+            console.error(err);
+            error = 'Something went wrong while fetching the calendar data.';
         }
 
         try {
@@ -89,6 +104,55 @@
       }
     };
 
+    // Add Calendar form data and handling
+    let showCalendarForm = false;
+    let newCalendar = {
+      StartDate: '',
+      EndDate: '',
+      CalendarFile: null as File | null
+    };
+
+    function validateDateRange(startDate: Date, endDate: Date): boolean {
+      return startDate < endDate;
+    }
+
+    const handleAddCalendar = async () => {
+      // Create dates in local timezone
+      const start = new Date(newCalendar.StartDate + 'T00:00:00');  // sets time to start of day
+      const end = new Date(newCalendar.EndDate + 'T23:59:59.999');  // sets time to end of day
+      
+      if (!validateDateRange(start, end)) {
+        alert('End date must be after start date');
+        return;
+      }
+
+      newCalendar.StartDate = start.toISOString();
+      newCalendar.EndDate = end.toISOString();
+      const formData = new FormData();
+      formData.append('start_date', newCalendar.StartDate);
+      formData.append('end_date', newCalendar.EndDate);
+      if (newCalendar.CalendarFile) formData.append('image', newCalendar.CalendarFile);
+
+      try {
+        const response = await fetch('/api/calendar', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          console.log('Calendar added successfully.');
+          window.location.reload();
+        } else {
+          error = result.error;
+          alert("Error: " + error);
+        }
+      } catch (err) {
+        console.error(err);
+        error = 'Something went wrong while adding the calendar.';
+      }
+    };
+
     // Delete movie handler
     const deleteMovie = async (movieId: string) => {
       const confirmation = confirm('Are you sure you want to delete this movie?');
@@ -106,6 +170,27 @@
           }
         } catch (err) {
           console.error('Error during movie deletion:', err);
+        }
+      }
+    };
+
+    // Delete calendar handler
+    const deleteCalendar = async (calendarId: string) => {
+      const confirmation = confirm('Are you sure you want to delete this calendar?');
+
+      if (confirmation) {
+        try {
+          const response = await fetch(`/api/calendar/${calendarId}`, {
+            method: 'DELETE',
+          });
+
+          if (response.ok) {
+            window.location.reload();
+          } else {
+            console.error('Failed to delete calendar');
+          }
+        } catch (err) {
+          console.error('Error during calendar deletion:', err);
         }
       }
     };
@@ -190,7 +275,7 @@
     </tbody>
 </table>
 {:else}
-  <p>No movies available at the moment. Add some!</p>
+  <p>No movies found. Add some!</p>
 {/if}
 <br>
 <!-- Add Movie Button -->
@@ -261,6 +346,77 @@
 {:else}
   <p>No comments found.</p>
 {/if}
+<br><br>
+<!-- Calendars Table -->
+<h2>Calendars</h2>
+{#if calendars.length > 0}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Date Range</th>
+            <th>Date Added</th>
+            <th>Assets</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {#each calendars as calendar (calendar.ID)}
+            <tr>
+                <td>{calendar.ID}</td>
+                <td>{formatDate(calendar.StartDate)} - {formatDate(calendar.EndDate)}</td>
+                <td>{formatDate(calendar.Date)}</td>
+                <td>
+                  <a href={calendar.ImageURL} target="_blank">Image</a>
+                </td>
+                <td>
+                    <button on:click={() => deleteCalendar(calendar.ID)} style="color: red; border: none; background: none; cursor: pointer;">X</button>
+                </td>
+            </tr>
+        {/each}
+    </tbody>
+</table>
+{:else}
+  <p>No calendars found. Add some.</p>
+{/if}
+<br>
+<!-- Add Calendar Button -->
+<button on:click={() => showCalendarForm = !showCalendarForm}>Add Calendar</button>
+
+<!-- Add Calendar Form Popup -->
+{#if showCalendarForm}
+<div class="modal">
+  <div class="modal-content">
+    <h2>Add Calendar</h2>
+    <form on:submit|preventDefault={handleAddCalendar}>
+      <div class="form-group">
+        <label for="dateRange">Date Range:</label>
+        <div class="date-range-container">
+          <input 
+            type="date" 
+            id="startDate"
+            bind:value={newCalendar.StartDate} 
+            required 
+          />
+          <span>to</span>
+          <input 
+            type="date" 
+            id="endDate"
+            bind:value={newCalendar.EndDate} 
+            required 
+          />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="File">Calendar Image:</label>
+        <input type="file" id="calendarFile" accept="image/jpg, image/png" on:change={(event) => newCalendar.CalendarFile = (event.target as HTMLInputElement).files?.[0] || null} required />
+      </div>   
+      <button type="submit">Submit</button>
+      <button type="button" class="cancel-button" on:click={() => showCalendarForm = false}>Cancel</button>
+    </form>
+  </div>
+</div>
+{/if}
 
 <style>
   table {
@@ -278,6 +434,16 @@
 
   th {
       background-color: #f4f4f4;
+  }
+
+  .date-range-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .date-range-container span {
+    padding: 0 0.5rem;
   }
 </style>
   
