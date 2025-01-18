@@ -110,7 +110,7 @@ func DeleteComment(c *gin.Context) {
 	}
 	commentID, err := uuid.Parse(param)
 	if err != nil {
-		fmt.Println("commen_id must be a valid UUID")
+		fmt.Println("comment_id must be a valid UUID")
 		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
 		return
 	}

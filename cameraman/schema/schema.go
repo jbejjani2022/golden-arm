@@ -37,3 +37,11 @@ type Comment struct {
 	Comment string    `bun:"comment,notnull"`
 	Date    time.Time `bun:"date,notnull"`
 }
+
+// Calendar with upcoming screenings; an image with an associated date range
+type Calendar struct {
+	ID        uuid.UUID `bun:"type:uuid,pk,default:gen_random_uuid()"`
+	StartDate time.Time `bun:"start_date,notnull"` // Start date of the calendar
+	EndDate   time.Time `bun:"end_date,notnull"`   // End date of the calendar
+	ImageURL  string    `bun:"image_url,notnull"`  // Public URL to calendar image stored in AWS S3
+}

@@ -78,5 +78,13 @@ func CreateTables() {
 		log.Fatalf("Failed to create comment table: %v", err)
 	}
 
+	// Create the Calendar table
+	if _, err := db.NewCreateTable().
+		Model(&Calendar{}).
+		IfNotExists().
+		Exec(ctx); err != nil {
+		log.Fatalf("Failed to create comment table: %v", err)
+	}
+
 	log.Println("✅ Tables created successfully.")
 }

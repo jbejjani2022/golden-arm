@@ -3,8 +3,9 @@ package main
 import (
 	"golden-arm/internal"
 	"golden-arm/routes"
-	"golden-arm/schema" // Add this line
+	"golden-arm/schema"
 
+	// Add this line
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -55,16 +56,20 @@ func main() {
 	router.GET("/api/reservations/:movie_id", routes.GetReservations)
 	router.GET("/api/comments", routes.GetComments)
 	router.GET("/api/emails", routes.GetEmails)
+	router.GET("/api/calendar", routes.GetCalendar)
+	router.GET("/api/calendar/all", routes.GetAllCalendars)
 
 	router.POST("/api/reserve", routes.Reserve)
 	router.POST("/api/movie", routes.AddMovie)
 	router.POST("/api/comment", routes.SubmitComment)
 	router.POST("/api/admin/login", routes.AdminLogin)
 	router.POST("/api/admin/logout", routes.AdminLogout)
+	router.POST("/api/calendar", routes.AddCalendar)
 
 	router.DELETE("/api/movie/:movie_id", routes.DeleteMovie)
 	router.DELETE("/api/reservation/:reservation_id", routes.DeleteReservation)
 	router.DELETE("/api/comment/:comment_id", routes.DeleteComment)
+	router.DELETE("/api/calendar/:calendar_id", routes.DeleteCalendar)
 
 	router.Run(":8080")
 }
