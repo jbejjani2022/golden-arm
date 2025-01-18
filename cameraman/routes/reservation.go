@@ -69,6 +69,7 @@ func formatRuntime(runtime int) (string, error) {
 /*
 Reserves a seat and sends email confirmation
 Raises error for invalid seat or conflicting reservation
+Cancels reservation if email confirmation fails
 
 	curl -X POST http://localhost:8080/api/reserve -H "Content-Type: application/json" -d
 	'{
@@ -145,6 +146,11 @@ func Reserve(c *gin.Context) {
 		Where("id = ?", res.MovieID).
 		Scan(ctx)
 	if err != nil {
+		// Delete the reservation from the database
+		_, err := db.NewDelete().
+			Model((*schema.Reservation)(nil)).
+			Where("id = ?", res.ID).
+			Exec(ctx)
 		fmt.Println("Error loading movie details: ", err)
 		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
 		return
@@ -157,6 +163,10 @@ func Reserve(c *gin.Context) {
 	data.MovieDate = movie.Date.Format("Monday, January 2 3:04 PM")
 	data.MovieRuntime, err = formatRuntime(movie.Runtime)
 	if err != nil {
+		_, err := db.NewDelete().
+			Model((*schema.Reservation)(nil)).
+			Where("id = ?", res.ID).
+			Exec(ctx)
 		fmt.Printf("Error formatting movie runtime: %v", err)
 		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
 		return
@@ -165,6 +175,10 @@ func Reserve(c *gin.Context) {
 	data.PosterURL = movie.PosterURL
 
 	if err := sendConfirmationEmail(data); err != nil {
+		_, err := db.NewDelete().
+			Model((*schema.Reservation)(nil)).
+			Where("id = ?", res.ID).
+			Exec(ctx)
 		fmt.Printf("Error sending confirmation email: %v", err)
 		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
 		return
