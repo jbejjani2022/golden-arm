@@ -1,72 +1,27 @@
 <script lang="ts">
-	  import { formatDate, formatRuntime } from '$lib';
-    import { goto } from '$app/navigation';
-    import { onMount, onDestroy } from 'svelte';
+  import { formatDate, formatRuntime } from '$lib';
+  import { goto } from '$app/navigation';
+  import { onMount, onDestroy } from 'svelte';
 
-    let movie: any = null;
-    let error: string = '';
-    let showModal = false;
-  
-    // Fetch the next movie using the /api/movie/next endpoint
-    onMount(async () => {
-      try {
-        const response = await fetch('/api/movie/next');
-        const data = await response.json();
-  
-        if (data.success) {
-          movie = data.data;
-        } else {
-          error = 'Failed to load the next movie.';
-        }
-      } catch (err) {
-        console.error(err);
-        error = 'Something went wrong while fetching the movie data.';
+  let movie: any = null;
+  let error: string = '';
+
+  // Fetch the next movie using the /api/movie/next endpoint
+  onMount(async () => {
+    try {
+      const response = await fetch('/api/movie/next');
+      const data = await response.json();
+
+      if (data.success) {
+        movie = data.data;
+      } else {
+        error = 'Failed to load the next movie.';
       }
-    });
-
-    const confirmComment = () => {
-      showModal = true;
+    } catch (err) {
+      console.error(err);
+      error = 'Something went wrong while fetching the movie data.';
     }
-  
-    const cancelComment = () => {
-      showModal = false;
-    }
-  
-    let name = '';
-    let email = '';
-    let comment = '';
-  
-    const handleComment = async () => {
-      if (!name || !email || !comment) {
-        alert("Please fill out the suggestion form.");
-        return;
-      }
-      // Send suggestion to server
-      try {
-        const response = await fetch(`/api/comment`, {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json" 
-          },
-          body: JSON.stringify({
-            name,
-            email,
-            comment,
-          })
-        });
-
-        const result = await response.json();
-        showModal = false;
-        if (result.success) {
-          alert("Thank you for your suggestion!");
-        } else {
-          alert("Failed to submit comment.");
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Something went wrong while submitting the comment.");
-      }
-    };
+  });
 
   // Past screening carousel
   type Movie = {
@@ -192,33 +147,7 @@
     <button class="carousel-arrow carousel-arrow-right" on:click={nextSlide}>&gt;</button>
   </div>
 {/if}
-    
-    <div class="separator"></div>
-    <div class="suggestions">
-      <p>We want your suggestions!</p>
-      <button class="home-button" on:click={confirmComment}>What should we screen next?</button>
-    </div>
-    {#if showModal}
-    <div class="modal">
-      <div class="modal-content">
-          <div class="form-group">
-            <label for="name">Name: </label>
-            <input type="text" id="name" bind:value={name} placeholder="Enter your name" required />
-          </div>
-          <div class="form-group">
-            <label for="email">Email: </label>
-            <input type="email" id="email" bind:value={email} placeholder="Enter your email" required />
-          </div>
-          <div class="form-group">
-            <label for="comment">What should we screen next?</label>
-            <input type="text" id="comment" bind:value={comment} placeholder="Enter any movie suggestions!" required />
-          </div>
-          <button type="submit" on:click={handleComment}>Send</button>
-          <button type="button" class="cancel-button" on:click={cancelComment}>Cancel</button>
-      </div>
-    </div>
-    {/if}
-  </main>
+</main>
   
 <style>
     .top-text {
@@ -280,21 +209,10 @@
       border-radius: 8px;
 
     }
-
-    .home-button {
-      display: inline-block;
-      font-weight: bold;
-      text-decoration: none;
-      margin-bottom: 20px;
-    }
   
     .error {
       color: #ff5252;
       font-size: 16px;
-    }
-
-    .modal-content button {
-      color: black;
     }
 
     /* Separator line styling */
@@ -304,10 +222,6 @@
       background-color: #ddd; /* Color of the line */
       margin: 1rem 0; /* Optional: Adds spacing around the line */
       border: none; /* Removes any default borders */
-    }
-
-    .suggestions {
-      margin-top: 2rem;
     }
 
     /* Row header container */

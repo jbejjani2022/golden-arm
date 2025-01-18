@@ -41,6 +41,52 @@
     }
   }
 
+  let showModal = false;
+
+  const confirmComment = () => {
+    showModal = true;
+  }
+
+  const cancelComment = () => {
+    showModal = false;
+  }
+
+  let name = '';
+  let email = '';
+  let comment = '';
+
+  const handleComment = async () => {
+    if (!name || !email || !comment) {
+      alert("Please fill out the suggestion form.");
+      return;
+    }
+    // Send suggestion to server
+    try {
+      const response = await fetch(`/api/comment`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json" 
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          comment,
+        })
+      });
+
+      const result = await response.json();
+      showModal = false;
+      if (result.success) {
+        alert("Thank you for your suggestion!");
+      } else {
+        alert("Failed to submit comment.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong while submitting the comment.");
+    }
+  };
+
 </script>
 
 <!-- Navbar -->
@@ -107,18 +153,54 @@
 
 <main>
   <div class="page-container">
+    {#if showModal}
+    <div class="modal">
+      <div class="modal-content">
+          <div class="form-group">
+            <label for="name">Name: </label>
+            <input type="text" id="name" bind:value={name} placeholder="Enter your name" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email: </label>
+            <input type="email" id="email" bind:value={email} placeholder="Enter your email" required />
+          </div>
+          <div class="form-group">
+            <label for="comment">What should we screen next?</label>
+            <input type="text" id="comment" bind:value={comment} placeholder="Enter any movie suggestions!" required />
+          </div>
+          <button type="submit" on:click={handleComment}>Send</button>
+          <button type="button" class="cancel-button" on:click={cancelComment}>Cancel</button>
+      </div>
+    </div>
+    {/if}
+
     <slot></slot>
+
     <!-- Show footer if it's not the admin page -->
     {#if !isAdmin}
-      <!-- <footer class="global-footer">
-        <p>Visit <a href="https://www.instagram.com/eliotgoldenarm/" target="_blank" rel="noopener noreferrer">@eliotgoldenarm</a> on Instagram.</p>
-      </footer> -->
-    {/if}
+    <footer class="global-footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <a href="/" class="footer-logo-link">
+            <img src="/standinlogo.png" alt="Logo" class="footer-logo-img" />
+          </a>
+          <div class="suggestions-section">
+            <p>Have suggestions? We'd love to hear from you!</p>
+            <button class="suggestions-button" on:click={confirmComment}>Comment</button>
+          </div>
+          <div class="social-links">
+            <p>Stay updated on how The Golden Arm is shaping the cinema landscape of the Boston area.</p>
+            <p>Follow us <a href="https://www.instagram.com/eliotgoldenarm/" target="_blank" rel="noopener noreferrer">@eliotgoldenarm</a>.</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  {/if}
   </div>
 </main>
 
 <style>
-  :root { /* #33312A  #4B483C  */
+  :root {
     --gold: #edbc0d;
     --dark-gold: #b08d00;
     --dark: #1f1f1f;
@@ -131,8 +213,9 @@
     background-color: var(--dark);
     color: #f0f0f0;
     max-width: 80%;
-    padding: 20px;
+    padding: 20px 20px 0 20px;
     text-align: center;
+    min-height: 100vh;
   }
 
   :global(.theater-info h1) {
@@ -146,11 +229,22 @@
     color: #bbb;
   }
 
+  :global(.link) {
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  :global(.link:hover) {
+    text-decoration: underline;
+  }
+
   /* Make the page container fill the viewport */
   .page-container {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    margin-bottom: 0;
+    margin: 0;
   }
 
   /* Ensure the main content takes up all available space */
@@ -159,35 +253,86 @@
   }
 
   main {
-    margin-top: 70px; /* Matches the navbar height */
-    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-top: 10%; /* Matches the navbar height */
     box-sizing: border-box;
   }
 
   /* Footer styling */
   .global-footer {
-    background-color: var(--dark);
+    background-color: #0e0e0e;
     color: #fff;
+    padding: 3rem 1rem 3rem 1rem;
+    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+    width: 100vw; /* Full viewport width */
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-top: 4rem;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
+
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .footer-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
     text-align: center;
-    padding: 1rem;
   }
 
-  .global-footer a {
+  .footer-logo-link {
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .footer-logo-img {
+    height: 60px; /* Increased logo size */
+    width: auto;
+  }
+
+  .footer-logo-img {
+    height: 40px;
+    width: auto;
+  }
+
+  .social-links {
+    margin-top: 0.5rem;
+  }
+
+  .social-links a {
     color: var(--gold);
     text-decoration: none;
+    transition: color 0.3s ease;
   }
 
-  .global-footer a:hover {
+  .social-links a:hover {
     text-decoration: underline;
   }
 
-  :global(.link) {
-    color: var(--gold);
-    text-decoration: none;
+  .suggestions-section {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
   }
 
-  :global(.link:hover) {
-    text-decoration: underline;
+  .suggestions-section p {
+    margin: 0;
+  }
+
+  .suggestions-button {
+    margin-top: 0.5rem;
+    padding: 8px 16px;
+    font-size: 14px;
   }
 
   /* Global Button Styling */
@@ -405,6 +550,28 @@
 
     .mobile-menu {
       display: flex;
+    }
+
+    .footer-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 1.5rem;
+    }
+
+    .global-footer {
+      padding: 2rem 1rem;
+    }
+
+    .footer-section {
+      gap: 1.5rem;
+    }
+
+    .footer-logo-img {
+      height: 50px;
+    }
+
+    .suggestions-section {
+      align-items: center;
     }
   }
 </style>
