@@ -187,7 +187,7 @@ func AddCalendar(c *gin.Context) {
 	var count int
 	err := db.NewSelect().
 		Model(&schema.Calendar{}).
-		Where("start_date <= ? AND end_date >= ?", calendar.StartDate, calendar.EndDate).
+		Where("start_date <= ? AND end_date >= ?", calendar.EndDate, calendar.StartDate).
 		ColumnExpr("COUNT(*)").
 		Scan(ctx, &count)
 	if err != nil {
