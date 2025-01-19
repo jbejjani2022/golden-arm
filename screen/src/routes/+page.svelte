@@ -1,7 +1,9 @@
 <script lang="ts">
   import { formatDate, formatRuntime } from '$lib';
   import { goto } from '$app/navigation';
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount } from 'svelte';
+  import { Splide, SplideSlide, SplideTrack } from '@splidejs/svelte-splide';
+  import '@splidejs/svelte-splide/css';
 
   let movie: any = null;
   let calendar: any = null;
@@ -45,15 +47,7 @@
   };
 
   let archive: Movie[] = [];
-  let currentIndex: number = 0;
-  let intervalId: any;
-  
-  // For infinite loop effect, duplicate the first 2 slides at the end
-  const numberOfVisibleSlides = 3;
-  // Create a duplicatedArchive of the same type
-  let duplicatedArchive: Movie[] = [];
 
-  // Automatically rotate every 3 seconds
   onMount(async () => {
     try {
       const response = await fetch('/api/movie/archive');
@@ -61,46 +55,47 @@
 
       if (data.success) {
         archive = data.data;
-        duplicatedArchive = [...archive, ...archive]; // Duplicate for the seamless loop
       } else {
         error = 'Failed to load the movie archive.';
       }
-
-      // Start the automatic carousel rotation
-      intervalId = setInterval(() => {
-        nextSlide();
-      }, 3000); // 3 second interval
 
     } catch (err) {
       console.error(err);
       error = 'Something went wrong while fetching the movie archive.';
     }
   });
- 
-  function prevSlide() {
-    // Move to the previous slide
-    if (currentIndex === 0) {
-      currentIndex = duplicatedArchive.length / 2 - numberOfVisibleSlides; // Set to last valid index
-    } else {
-      currentIndex--;
+
+  const options = {
+    type: 'loop',
+    drag: 'free',
+    snap: true,
+    perPage: 3,
+    perMove: 1,
+    focus: 'center',
+    autoplay: true,
+    interval: 4000,
+    speed: 2000,
+    arrows: true,
+    padding: '2rem',
+    gap: '1.5rem',
+    pagination: true,
+    width: '100%', // use full container width
+    breakpoints: {
+      768: {
+        perPage: 2,
+        gap: '1rem',
+        padding: '1rem'
+      },
+      480: {
+        perPage: 1,
+        gap: '0.5rem',
+        padding: '0.5rem',
+        arrows: false // hide arrows on mobile
+      }
     }
   }
 
-  function nextSlide() {
-    // Move to the next slide
-    if (currentIndex === duplicatedArchive.length / 2 - numberOfVisibleSlides) {
-      currentIndex = 0; // Reset to the first position
-    } else {
-      currentIndex++;
-    }
-  }
-
-  // Clear interval when component is destroyed
-  onDestroy(() => {
-    if (intervalId) clearInterval(intervalId);
-  });
- 
-  </script>
+</script>
   
   <!-- Home Page Layout -->
   <main>
@@ -137,23 +132,34 @@
   <div class="separator"></div>
 
   {#if archive.length > 0}
-    <div class="carousel-container">
-      <div
-        class="carousel"
-        style="transform: translateX(-{(currentIndex % archive.length) * 33.33}%)"
-      >
-        {#each [...archive, ...duplicatedArchive] as movie, index}
-          <div
-            class="carousel-slide {index === currentIndex || index === (currentIndex + 1) % archive.length || index === (currentIndex - 1 + archive.length) % archive.length ? 'active' : ''}"
-          >
-            <img src={movie.PosterURL} alt="{movie.Title} poster" />
-          </div>
-        {/each}
-      </div>
+  <!-- <Splide aria-label="Past screening posters">
+    {#each archive as movie}
+    <SplideSlide>
+      <img src={movie.PosterURL} alt={movie.Title}>
+    </SplideSlide>
+    {/each}
+  </Splide> -->
 
-      <button class="carousel-arrow carousel-arrow-left" on:click={prevSlide}>&lt;</button>
-      <button class="carousel-arrow carousel-arrow-right" on:click={nextSlide}>&gt;</button>
+  <Splide 
+    options={ options } 
+    hasTrack={ false } 
+    aria-label="Past screening posters"
+  >
+  <div style="position: relative">
+    <SplideTrack>
+      {#each archive as movie}
+        <SplideSlide>
+          <img src={movie.PosterURL} alt={movie.Title}>
+        </SplideSlide>
+      {/each}
+    </SplideTrack>
+  </div>
+
+    <div class="splide__progress">
+      <div class="splide__progress__bar">
+      </div>
     </div>
+  </Splide>
   {:else}
     <p>Archive is empty...</p>
   {/if}
@@ -173,6 +179,31 @@
 </main>
   
 <style>
+  /* Update the Splide slide styles */
+  :global(.splide__slide) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  :global(.splide__slide img) {
+    width: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  :global(.splide__slide:hover img) {
+    transform: scale(1.05);
+  }
+
+  :global(.splide) {
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-bottom: 3rem;
+  }
+
   .top-text {
     font-size: 30px;
     font-weight: bold;
@@ -191,11 +222,10 @@
   }
 
   .movie-details {
-    /* flex: 1;  */
     display: flex;
     flex-direction: column;
     justify-content: center;
-    /* gap: 1rem; Spacing between elements within the details section */
+    align-items: center;
   }
 
   .movie-screening {
@@ -229,7 +259,7 @@
   .movie-poster img {
     width: 100%;
     height: auto;
-    border-radius: 8px;
+    border-radius: 5px;
 
   }
 
@@ -296,65 +326,5 @@
     color: #caac3e; /* Darker blue on hover */
     text-decoration: underline; /* Optional underline on hover */
   }
-
-  /* carousel */
-  .carousel-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      position: relative;
-      width: 80%; /* Adjust the width as necessary */
-      margin: 0 auto;
-    }
-
-  .carousel {
-    display: flex;
-    transition: transform 0.5s ease;
-  }
-
-  .carousel-slide {
-    flex: 0 0 33.33%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0.7;
-  }
-
-  .carousel-slide img {
-    width: 80%;
-    height: auto;
-    transition: transform 0.5s ease;
-  }
-
-  .carousel-slide.active img {
-    transform: scale(1.2);
-    opacity: 1;
-  }
-
-  .carousel-slide img:not(.active) {
-    transform: scale(0.8);
-    opacity: 0.7;
-  }
-
-  .carousel-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 10px;
-    font-size: 24px;
-    cursor: pointer;
-    z-index: 10;
-  }
-
-  .carousel-arrow-left {
-    left: 10px;
-  }
-
-  .carousel-arrow-right {
-    right: 10px;}
-
 </style>
   

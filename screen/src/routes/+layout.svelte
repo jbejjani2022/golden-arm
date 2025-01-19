@@ -142,7 +142,7 @@
 
  <!-- Mobile Menu -->
  {#if showMobileMenu}
- <div class="mobile-menu">
+ <div class="mobile-menu {showMobileMenu ? 'open' : ''}">
    <a href="/archives" on:click={() => (showMobileMenu = false)}>Past Screenings</a>
    <a href={`/reservations/${movie.ID}`} on:click={() => (showMobileMenu = false)}>Reserve a Seat</a>
    <a href="/merch" on:click={() => (showMobileMenu = false)}>Merch</a>
@@ -151,6 +151,7 @@
 {/if}
 </nav>
 
+<div class="content-wrapper">
 <main>
   <div class="page-container">
     {#if showModal}
@@ -175,29 +176,30 @@
     {/if}
 
     <slot></slot>
-
-    <!-- Show footer if it's not the admin page -->
-    {#if !isAdmin}
-    <footer class="global-footer">
-      <div class="footer-content">
-        <div class="footer-section">
-          <a href="/" class="footer-logo-link">
-            <img src="/standinlogo.png" alt="Logo" class="footer-logo-img" />
-          </a>
-          <div class="suggestions-section">
-            <p>Have suggestions? We'd love to hear from you!</p>
-            <button class="suggestions-button" on:click={confirmComment}>Comment</button>
-          </div>
-          <div class="social-links">
-            <p>Stay updated on how The Golden Arm is shaping the cinema landscape of the Boston area.</p>
-            <p>Follow us <a href="https://www.instagram.com/eliotgoldenarm/" target="_blank" rel="noopener noreferrer">@eliotgoldenarm</a>.</p>
-          </div>
-        </div>
-      </div>
-    </footer>
-  {/if}
   </div>
 </main>
+</div>
+
+ <!-- Show footer if it's not the admin page -->
+ {#if !isAdmin}
+ <footer class="global-footer">
+   <div class="footer-content">
+     <div class="footer-section">
+       <a href="/" class="footer-logo-link">
+         <img src="/standinlogo.png" alt="Logo" class="footer-logo-img" />
+       </a>
+       <div class="suggestions-section">
+         <p>Have suggestions? We'd love to hear from you!</p>
+         <button class="suggestions-button" on:click={confirmComment}>Comment</button>
+       </div>
+       <div class="social-links">
+         <p>Stay updated on how The Golden Arm is shaping the cinema landscape of the Boston area.</p>
+         <p>Follow us <a href="https://www.instagram.com/eliotgoldenarm/" target="_blank" rel="noopener noreferrer">@eliotgoldenarm</a>.</p>
+       </div>
+     </div>
+   </div>
+ </footer>
+{/if}
 
 <style>
   :root {
@@ -209,15 +211,22 @@
   /* Dark theme styling */
   :global(body) {
     margin: 0 auto;
+    padding: 0;
     font-family: Arial, sans-serif;
     background-color: var(--dark);
     color: #f0f0f0;
-    max-width: 80%;
-    padding: 20px 20px 0 20px;
-    text-align: center;
     min-height: 100vh;
+    text-align: center;
   }
-
+  
+  .content-wrapper {
+    width: 80%;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
   :global(.theater-info h1) {
     font-size: 36px;
     margin-bottom: 10px;
@@ -242,13 +251,6 @@
   .page-container {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    margin-bottom: 0;
-    margin: 0;
-  }
-
-  /* Ensure the main content takes up all available space */
-  .page-container > :global(main) {
     flex: 1;
   }
 
@@ -258,53 +260,52 @@
     flex: 1;
     margin-top: 10%; /* Matches the navbar height */
     box-sizing: border-box;
+    width: 100%;
   }
 
   /* Footer styling */
   .global-footer {
     background-color: #0e0e0e;
     color: #fff;
-    padding: 3rem 1rem 3rem 1rem;
+    padding: 3rem 1rem;
     box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-    width: 100vw; /* Full viewport width */
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-top: 4rem;
-    margin-left: -50vw;
-    margin-right: -50vw;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    box-sizing: border-box; /* Includes padding in width/height */
+    margin-top: 2rem;
   }
 
   .footer-content {
-    max-width: 1200px;
+    width: 80%;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 2rem; /* Spacing between footer sections */
   }
 
   .footer-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    text-align: center;
+    gap: 1rem; /* Spacing between elements in a section */
   }
 
   .footer-logo-link {
     display: block;
-    margin-bottom: 1rem;
   }
 
   .footer-logo-img {
-    height: 60px; /* Increased logo size */
-    width: auto;
-  }
-
-  .footer-logo-img {
-    height: 40px;
+    height: 60px; /* Adjust logo size */
     width: auto;
   }
 
   .social-links {
-    margin-top: 0.5rem;
+    font-size: 0.9rem;
   }
 
   .social-links a {
@@ -318,21 +319,30 @@
   }
 
   .suggestions-section {
-    margin-top: 0.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-  }
-
-  .suggestions-section p {
-    margin: 0;
   }
 
   .suggestions-button {
-    margin-top: 0.5rem;
     padding: 8px 16px;
     font-size: 14px;
+    border-radius: 5px;
+  }
+
+  /* Mobile styles */
+  @media screen and (max-width: 768px) {
+    .footer-content {
+      padding: 0 1rem;
+    }
+
+    .footer-logo-img {
+      height: 50px; /* Slightly smaller logo for mobile */
+    }
+
+    .social-links {
+      font-size: 0.8rem;
+    }
   }
 
   /* Global Button Styling */
@@ -503,6 +513,10 @@
     z-index: 10;
   }
 
+  .mobile-menu.open {
+    display: flex;
+  }
+
   .mobile-menu a {
     color: var(--gold);
     text-decoration: none;
@@ -550,28 +564,6 @@
 
     .mobile-menu {
       display: flex;
-    }
-
-    .footer-content {
-      flex-direction: column;
-      text-align: center;
-      gap: 1.5rem;
-    }
-
-    .global-footer {
-      padding: 2rem 1rem;
-    }
-
-    .footer-section {
-      gap: 1.5rem;
-    }
-
-    .footer-logo-img {
-      height: 50px;
-    }
-
-    .suggestions-section {
-      align-items: center;
     }
   }
 </style>
