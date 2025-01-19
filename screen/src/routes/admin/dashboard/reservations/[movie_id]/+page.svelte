@@ -112,7 +112,7 @@
 <p>No reservations found for this movie.</p>
 {/if}
 
-<button on:click={copyEmailList} style="margin-top: 20px; padding: 10px 20px; cursor: pointer;">Get Email List</button>
+<button on:click={copyEmailList} style="margin-top: 20px; padding: 10px 20px; cursor: pointer;">Get Movie Email List</button>
   
 <style>
     table {

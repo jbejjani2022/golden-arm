@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { formatDate } from '$lib';
+    import Pagination from './Pagination.svelte';
 
     let movies: Array<any> = [];
     let comments: Array<any> = [];
@@ -216,25 +217,50 @@
       }
     };
 
-    // Function to copy the email list to clipboard
-    const copyEmailList = async () => {
-      if (emailList.length === 0) {
-        alert('No emails available to copy.');
-        return;
-      }
-      try {
-        await navigator.clipboard.writeText(emailList.join(', '));
-        alert('Email list copied to clipboard!');
-      } catch (err) {
-        console.error('Failed to copy email list:', err);
-        alert('Failed to copy email list. Please try again.');
-      }
+    // Pagination settings
+    const ITEMS_PER_PAGE = 8;
+    
+    // Pagination state for each table
+    let movieCurrentPage = 1;
+    let commentCurrentPage = 1;
+    let calendarCurrentPage = 1;
+
+    // Computed properties for paginated data
+    $: paginatedMovies = movies.slice(
+      (movieCurrentPage - 1) * ITEMS_PER_PAGE,
+      movieCurrentPage * ITEMS_PER_PAGE
+    );
+
+    $: paginatedComments = comments.slice(
+      (commentCurrentPage - 1) * ITEMS_PER_PAGE,
+      commentCurrentPage * ITEMS_PER_PAGE
+    );
+
+    $: paginatedCalendars = calendars.slice(
+      (calendarCurrentPage - 1) * ITEMS_PER_PAGE,
+      calendarCurrentPage * ITEMS_PER_PAGE
+    );
+
+    // Calculate total pages for each table
+    $: movieTotalPages = Math.ceil(movies.length / ITEMS_PER_PAGE);
+    $: commentTotalPages = Math.ceil(comments.length / ITEMS_PER_PAGE);
+    $: calendarTotalPages = Math.ceil(calendars.length / ITEMS_PER_PAGE);
+
+    // Page change handlers
+    const handleMoviePageChange = (page: number) => {
+      movieCurrentPage = page;
     };
 
+    const handleCommentPageChange = (page: number) => {
+      commentCurrentPage = page;
+    };
+
+    const handleCalendarPageChange = (page: number) => {
+      calendarCurrentPage = page;
+    };
 </script>
   
-<h1>What's good, Golden Arm operator.</h1>
-<button on:click={copyEmailList} style="padding: 10px 20px; cursor: pointer;" title="Copy all unique emails from reservations and comments to clipboard.">Get Email List</button>
+<h1>What's good, Golden Arm operator. Let's screen something.</h1>
 
 <!-- Display error message if data fetching fails -->
 {#if error}
@@ -244,6 +270,7 @@
 <!-- Movie Table -->
 <h2>Movies</h2>
 {#if movies.length > 0}
+<div class="table-container">
 <table>
     <thead>
         <tr>
@@ -256,7 +283,7 @@
         </tr>
     </thead>
     <tbody>
-        {#each movies as movie (movie.ID)}
+        {#each paginatedMovies as movie (movie.ID)}
             <tr>
                 <td>{movie.ID}</td>
                 <td>{movie.Title}</td>
@@ -274,12 +301,21 @@
         {/each}
     </tbody>
 </table>
+  <div class="table-footer">
+    <button class="add-button" on:click={() => showForm = !showForm}>Add Movie</button>
+    <div class="pagination-wrapper">
+    <Pagination
+        currentPage={movieCurrentPage}
+        totalPages={movieTotalPages}
+        totalItems={movies.length}
+        onPageChange={handleMoviePageChange}
+      />
+    </div>
+  </div>
+</div>
 {:else}
   <p>No movies found. Add some!</p>
 {/if}
-<br>
-<!-- Add Movie Button -->
-<button on:click={() => showForm = !showForm}>Add Movie</button>
 
 <!-- Add Movie Form Popup -->
 {#if showForm}
@@ -313,10 +349,11 @@
   </div>
 </div>
 {/if}
-<br><br>
+
 <!-- Comments Table -->
 <h2>Comments</h2>
 {#if comments.length > 0}
+<div class="table-container">
 <table>
     <thead>
         <tr>
@@ -329,7 +366,7 @@
         </tr>
     </thead>
     <tbody>
-        {#each comments as comment (comment.ID)}
+        {#each paginatedComments as comment (comment.ID)}
             <tr>
                 <td>{comment.ID}</td>
                 <td>{comment.Name}</td>
@@ -343,13 +380,23 @@
         {/each}
     </tbody>
 </table>
+  <div class="pagination-wrapper">
+  <Pagination
+      currentPage={commentCurrentPage}
+      totalPages={commentTotalPages}
+      totalItems={comments.length}
+      onPageChange={handleCommentPageChange}
+    />
+  </div>
+</div>
 {:else}
   <p>No comments found.</p>
 {/if}
-<br><br>
+
 <!-- Calendars Table -->
 <h2>Calendars</h2>
 {#if calendars.length > 0}
+<div class="table-container">
 <table>
     <thead>
         <tr>
@@ -361,7 +408,7 @@
         </tr>
     </thead>
     <tbody>
-        {#each calendars as calendar (calendar.ID)}
+        {#each paginatedCalendars as calendar (calendar.ID)}
             <tr>
                 <td>{calendar.ID}</td>
                 <td>{formatDate(calendar.StartDate)} - {formatDate(calendar.EndDate)}</td>
@@ -376,12 +423,21 @@
         {/each}
     </tbody>
 </table>
+  <div class="table-footer">
+    <button class="add-button" on:click={() => showCalendarForm = !showCalendarForm}>Add Calendar</button>
+    <div class="pagination-wrapper">
+    <Pagination
+        currentPage={calendarCurrentPage}
+        totalPages={calendarTotalPages}
+        totalItems={calendars.length}
+        onPageChange={handleCalendarPageChange}
+      />
+    </div>
+  </div>
+</div>
 {:else}
   <p>No calendars found. Add some.</p>
 {/if}
-<br>
-<!-- Add Calendar Button -->
-<button on:click={() => showCalendarForm = !showCalendarForm}>Add Calendar</button>
 
 <!-- Add Calendar Form Popup -->
 {#if showCalendarForm}
@@ -423,7 +479,6 @@
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
-      align-items: center;
   }
 
   th, td {
@@ -434,6 +489,29 @@
 
   th {
       background-color: #f4f4f4;
+  }
+
+  .table-container {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+
+  .table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    width: 100%;
+  }
+
+  .add-button {
+    text-align: center;
+  }
+
+  .pagination-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end !important;
   }
 
   .date-range-container {
