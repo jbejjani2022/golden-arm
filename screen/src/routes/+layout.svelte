@@ -89,6 +89,8 @@
 
 </script>
 
+<div class="layout">
+  
 <!-- Navbar -->
 <nav class="navbar">
   <!-- Logo -->
@@ -201,7 +203,14 @@
  </footer>
 {/if}
 
+</div>
+
 <style>
+  .layout{
+    display: flex;
+  flex-direction: column;
+  }
+
   :root {
     --gold: #edbc0d;
     --dark-gold: #b08d00;
@@ -220,7 +229,7 @@
   }
   
   .content-wrapper {
-    width: 80%;
+    width: 90%;
     margin: 0 auto;
     min-height: 100vh;
     display: flex;
@@ -252,13 +261,17 @@
     display: flex;
     flex-direction: column;
     flex: 1;
+    margin-top: 10%;
+    flex-grow: 1;
+    overflow: auto;
   }
+  
 
   main {
     display: flex;
     flex-direction: column;
     flex: 1;
-    margin-top: 10%; /* Matches the navbar height */
+    /* margin-top: 10%;  */
     box-sizing: border-box;
     width: 100%;
   }
@@ -451,6 +464,7 @@
     z-index: 10;
     box-sizing: border-box; /* Includes padding and border in the element's total width/height */
     height: 10%;
+    flex-shrink: 0; /* Prevents the navbar from shrinking */
   }
 
   .navbar-logo img {

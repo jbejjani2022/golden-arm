@@ -207,7 +207,8 @@
   .top-text {
     font-size: 30px;
     font-weight: bold;
-    margin-bottom: 30px;
+    margin-top: 70px;
+    margin-bottom: 40px;
   }
 
   .movie-info {

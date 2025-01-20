@@ -56,6 +56,7 @@
     padding: 2rem;
     color: #f0f0f0;
     min-height: 100vh;
+    margin-top: 20px;
   }
 
   h1 {
