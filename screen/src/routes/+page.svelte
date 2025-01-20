@@ -207,7 +207,7 @@
   .top-text {
     font-size: 30px;
     font-weight: bold;
-    margin-top: 70px;
+    margin-top: 20px;
     margin-bottom: 40px;
   }
 
@@ -227,6 +227,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin-bottom: 10px;
   }
 
   .movie-screening {
@@ -237,6 +238,8 @@
     font-size: 2.5rem; /* Make title text larger */
     font-weight: bold; /* Make the title bold */
     margin-bottom: 5px;
+    margin-top: 5px;
+
   }
 
   .reserve-button {
@@ -327,5 +330,24 @@
     color: #caac3e; /* Darker blue on hover */
     text-decoration: underline; /* Optional underline on hover */
   }
+
+  @media screen and (max-width: 768px) {
+    .top-text {
+        margin-top: 100px; /* Adjust as needed to increase space */
+    }
+
+    .movie-screening {
+      font-size: 13px;
+    }
+
+}
+
+@media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait), 
+       screen and (min-width: 1024px) and (max-width: 1366px) and (orientation: landscape) {
+    .top-text {
+        margin-top: 80px; /* Adjust this value as needed */
+        padding-top: 20px; /* Optional: Additional padding for spacing */
+    }
+}
 </style>
   
