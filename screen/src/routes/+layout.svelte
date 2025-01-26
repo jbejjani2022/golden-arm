@@ -500,20 +500,22 @@
   }
 
   /* for mobile */
+  .hamburger span {
+    background-color: white;
+    height: 3px;
+    margin: 3px 0;
+    width: 25px;
+  }
+
   .hamburger {
+    background: none; /* Ensure no background color */
+    border: none; /* Remove any border */
     display: none;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
     right: 0;
-  }
-
-  .hamburger span {
-    background-color: white;
-    height: 3px;
-    margin: 3px 0;
-    width: 25px;
   }
 
   .mobile-menu {
