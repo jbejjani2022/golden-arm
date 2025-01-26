@@ -123,11 +123,31 @@
   @media (max-width: 600px) {
     .images {
       flex-direction: column;
+      /* width: 90%; */
     }
 
-    .poster,
-    .menu {
-      max-width: 100%;
-    }
+    .images img {
+    width: 90%;
+  }
+
+  .menu.below {
+    /* margin-top: 1rem; */
+    width: 90%;
+  }
+
+  .poster,
+  .menu {
+    max-width: 100%;
+  }
+
+  main.archive {
+    margin-top: 10%;
+    padding: 1rem;
+  }
+/* 
+  .movie-card {
+    width: 90%;
+  } */
+
   }
 </style>
