@@ -240,6 +240,8 @@
 </main>
 
 <style>
+
+  
 .reservation-page {
   display: flex;
   flex-direction: column;
@@ -279,6 +281,17 @@ h1 {
   text-align: center;
 }
 
+/* Seat Grid */
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 auto;
+  width: 100%; /* Take full width */
+  max-width: 600px; /* Limit the width on larger screens */
+}
+
+
 .row {
   display: flex;
   gap: 10px;
@@ -288,6 +301,8 @@ h1 {
 }
 
 .seat {
+  position: relative; /* Needed for label positioning */
+
   width: 50px;
   height: 50px;
   background-color: transparent; /* Optional: Remove any background color */
@@ -371,5 +386,32 @@ h1 {
   font-weight: bold;
   pointer-events: none; /* Prevent interfering with button click */
   padding-top: 15px;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .reservation-page {
+    padding: 0; /* Remove padding for full width */
+  }
+
+  .grid {
+    margin: 0; /* Remove margins for full-width display */
+  }
+
+  .seat {
+    width: 40px; /* Slightly smaller seats on mobile */
+    height: 40px;
+  }
+
+  .seat img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .seat-label {
+    /* bottom: px; Adjust label for smaller seats */
+    font-size: 12px; /* Slightly smaller font */
+  }
 }
 </style>

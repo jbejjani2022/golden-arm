@@ -146,12 +146,15 @@ func Reserve(c *gin.Context) {
 		Where("id = ?", res.MovieID).
 		Scan(ctx)
 	if err != nil {
+		fmt.Println("Error loading movie details: ", err)
 		// Delete the reservation from the database
 		_, err := db.NewDelete().
 			Model((*schema.Reservation)(nil)).
 			Where("id = ?", res.ID).
 			Exec(ctx)
-		fmt.Println("Error loading movie details: ", err)
+		if err != nil {
+			fmt.Printf("Error deleting reservation: %v", err)
+		}
 		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
 		return
 	}
@@ -163,11 +166,14 @@ func Reserve(c *gin.Context) {
 	data.MovieDate = movie.Date.Format("Monday, January 2 3:04 PM")
 	data.MovieRuntime, err = formatRuntime(movie.Runtime)
 	if err != nil {
+		fmt.Printf("Error formatting movie runtime: %v", err)
 		_, err := db.NewDelete().
 			Model((*schema.Reservation)(nil)).
 			Where("id = ?", res.ID).
 			Exec(ctx)
-		fmt.Printf("Error formatting movie runtime: %v", err)
+		if err != nil {
+			fmt.Printf("Error deleting reservation: %v", err)
+		}
 		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
 		return
 	}
@@ -175,11 +181,14 @@ func Reserve(c *gin.Context) {
 	data.PosterURL = movie.PosterURL
 
 	if err := sendConfirmationEmail(data); err != nil {
+		fmt.Printf("Error sending confirmation email: %v", err)
 		_, err := db.NewDelete().
 			Model((*schema.Reservation)(nil)).
 			Where("id = ?", res.ID).
 			Exec(ctx)
-		fmt.Printf("Error sending confirmation email: %v", err)
+		if err != nil {
+			fmt.Printf("Error deleting reservation: %v", err)
+		}
 		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
 		return
 	}
