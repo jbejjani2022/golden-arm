@@ -356,6 +356,12 @@
     .social-links {
       font-size: 0.8rem;
     }
+
+    /* add more space under navbar for mobile */
+    /* :global(body) {
+    margin: 5rem auto;
+
+  } */
   }
 
   /* Global Button Styling */

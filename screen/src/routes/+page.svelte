@@ -267,10 +267,10 @@
 
   }
 
-  .error {
+  /* .error {
     color: #ff5252;
     font-size: 16px;
-  }
+  } */
 
   /* Separator line styling */
   .separator {
@@ -331,6 +331,7 @@
     text-decoration: underline; /* Optional underline on hover */
   }
 
+
   @media screen and (max-width: 768px) {
     .top-text {
         margin-top: 100px; /* Adjust as needed to increase space */
@@ -342,6 +343,7 @@
 
 }
 
+/* for da ipad kids */
 @media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait), 
        screen and (min-width: 1024px) and (max-width: 1366px) and (orientation: landscape) {
     .top-text {
