@@ -217,11 +217,25 @@
     --dark: #1f1f1f;
   }
 
+  @font-face {
+    font-family: Telegraf;
+    src: url('/fonts/Telegraf/PPTelegraf-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: Telegraf-Ultrabold;
+    src: url('/fonts/Telegraf/PPTelegraf-Ultrabold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+  }
+
   /* Dark theme styling */
   :global(body) {
     margin: 0 auto;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: Ubuntu, Arial, sans-serif;
     background-color: var(--dark);
     color: #f0f0f0;
     min-height: 100vh;
@@ -354,12 +368,6 @@
     .social-links {
       font-size: 0.8rem;
     }
-
-    /* add more space under navbar for mobile */
-    /* :global(body) {
-    margin: 5rem auto;
-
-  } */
   }
 
   /* Global Button Styling */
@@ -477,6 +485,7 @@
   }
 
   .navbar-links {
+    font-family: Telegraf-Ultrabold, sans-serif;
     list-style: none;
     display: flex;
     gap: 2rem;
