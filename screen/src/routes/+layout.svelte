@@ -471,6 +471,7 @@
     box-sizing: border-box; /* Includes padding and border in the element's total width/height */
     height: 10%;
     flex-shrink: 0; /* Prevents the navbar from shrinking */
+    
   }
 
   .navbar-logo img {
@@ -484,10 +485,12 @@
     gap: 2rem;
     margin: 0;
     padding: 5px;
+    
   }
 
   .navbar-links li {
     font-size: 1rem;
+    
   }
 
   .navbar-links a {
@@ -495,6 +498,7 @@
     color: #ffffff;
     font-weight: 500;
     transition: color 0.3s ease;
+    font-weight: bold;
   }
 
   .navbar-links a:hover {

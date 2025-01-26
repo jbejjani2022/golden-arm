@@ -109,8 +109,8 @@
         <div class="movie-details">
           <h1 class="movie-title">{movie.Title}</h1>
           <div class="movie-screening">
-            <h2>{formatRuntime(movie.Runtime)}</h2>
-            <h2>Screening {formatDate(movie.Date)}</h2>
+            <div style="padding: 0.5rem">{formatRuntime(movie.Runtime)}</div>
+            <div style="margin-bottom: 0.5rem">Screening {formatDate(movie.Date)}</div>
             <button class="reserve-button" on:click={() => goto(`/reservations/${movie.ID}`)}>Get Tickets</button>
           </div>
         </div>
@@ -227,11 +227,13 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 1rem;
   }
 
   .movie-screening {
     margin-bottom: 10px;
+    font-size: 1.2rem;
+
   }
 
   .movie-title {
@@ -311,7 +313,7 @@
   /* Title styling */
   .header-title {
     font-size: 1.5rem; /* Larger text */
-    font-weight: bold; /* Bold font */
+    /* font-weight: bold; Bold font */
     margin: 0; /* Removes default margin */
     color: #fff; /* Dark text color */
   }
