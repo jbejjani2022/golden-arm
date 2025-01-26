@@ -266,12 +266,10 @@
     overflow: auto;
   }
   
-
   main {
     display: flex;
     flex-direction: column;
     flex: 1;
-    /* margin-top: 10%;  */
     box-sizing: border-box;
     width: 100%;
   }

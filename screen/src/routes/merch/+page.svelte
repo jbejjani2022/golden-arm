@@ -13,8 +13,7 @@
 
   main.archive {
     padding: 2rem;
-    color: #f0f0f0;
-    min-height: 100vh;
+    color: #ffffff;
   }
 
   h1 {
