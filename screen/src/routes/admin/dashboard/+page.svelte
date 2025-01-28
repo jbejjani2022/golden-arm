@@ -2,6 +2,7 @@
     import { onMount } from 'svelte';
     import { formatDate } from '$lib';
     import Pagination from './Pagination.svelte';
+    import { apiBaseUrl } from '$lib/api';
 
     let movies: Array<any> = [];
     let comments: Array<any> = [];
@@ -12,7 +13,7 @@
     // Fetch movie and comments data on page load
     onMount(async () => {
         try {
-            const response = await fetch('/api/movie/all');
+            const response = await fetch(`${apiBaseUrl}/movie/all`);
             const data = await response.json();
 
             if (data.success) {
@@ -26,7 +27,7 @@
         }
 
         try {
-            const response = await fetch('/api/comments');
+            const response = await fetch(`${apiBaseUrl}/comments`);
             const data = await response.json();
 
             if (data.success) {
@@ -40,7 +41,7 @@
         }
 
         try {
-            const response = await fetch('/api/calendar/all');
+            const response = await fetch(`${apiBaseUrl}/calendar/all`);
             const data = await response.json();
 
             if (data.success) {
@@ -54,7 +55,7 @@
         }
 
         try {
-            const response = await fetch('/api/emails');
+            const response = await fetch(`${apiBaseUrl}/emails`);
             const data = await response.json();
 
             if (data.success) {
@@ -87,7 +88,7 @@
       if (newMovie.MenuFile) formData.append('menu', newMovie.MenuFile);
 
       try {
-        const response = await fetch('/api/movie', {
+        const response = await fetch(`${apiBaseUrl}/movie`, {
           method: 'POST',
           body: formData,
         });
@@ -135,7 +136,7 @@
       if (newCalendar.CalendarFile) formData.append('image', newCalendar.CalendarFile);
 
       try {
-        const response = await fetch('/api/calendar', {
+        const response = await fetch(`${apiBaseUrl}/calendar`, {
           method: 'POST',
           body: formData,
         });

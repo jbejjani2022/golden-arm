@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
+    import { apiBaseUrl } from '$lib/api';
   
     let passkey = '';
     let error = '';
@@ -7,7 +8,7 @@
     const handleLogin = async () => {
       error = '';
       try {
-        const response = await fetch('/api/admin/login', {
+        const response = await fetch(`${apiBaseUrl}/admin/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ passkey })

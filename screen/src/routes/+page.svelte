@@ -2,6 +2,7 @@
   import { formatDate, formatRuntime } from '$lib';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
+  import { apiBaseUrl } from '$lib/api';
   import { Splide, SplideSlide, SplideTrack } from '@splidejs/svelte-splide';
   import '@splidejs/svelte-splide/css';
 
@@ -12,7 +13,7 @@
   // Fetch the next movie using the /api/movie/next endpoint
   onMount(async () => {
     try {
-      const response = await fetch('/api/movie/next');
+      const response = await fetch(`${apiBaseUrl}/movie/next`);
       const data = await response.json();
 
       if (data.success) {
@@ -26,7 +27,7 @@
     }
 
     try {
-      const response = await fetch('/api/calendar');
+      const response = await fetch(`${apiBaseUrl}/calendar`);
       const data = await response.json();
 
       if (data.success) {
@@ -50,7 +51,7 @@
 
   onMount(async () => {
     try {
-      const response = await fetch('/api/movie/archive');
+      const response = await fetch(`${apiBaseUrl}/movie/archive`);
       const data = await response.json();
 
       if (data.success) {

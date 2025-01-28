@@ -2,12 +2,13 @@
     // Add any global logic or imports here
     import { goto } from '$app/navigation';
 	  import { onMount } from 'svelte';
+    import { apiBaseUrl } from '$lib/api';
 
     let emailList: Array<any> = [];
 
     onMount(async () => {
       try {
-            const response = await fetch('/api/emails');
+            const response = await fetch(`${apiBaseUrl}/emails`);
             const data = await response.json();
 
             if (data.success) {
@@ -22,7 +23,7 @@
 
     const logout = async () => {
       try {
-        const response = await fetch('/api/admin/logout', {
+        const response = await fetch(`${apiBaseUrl}/admin/logout`, {
           method: 'POST',
         });
 

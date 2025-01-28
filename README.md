@@ -28,6 +28,8 @@ While in `/cameraman`, execute `go mod tidy` to download missing modules and cle
 
 Add the following to a `.env` file in `/cameraman` and replace "?" with your information:
 ```
+PORT="8080"
+
 DB_HOST="?"
 DB_USER="?"
 DB_PASS="?"

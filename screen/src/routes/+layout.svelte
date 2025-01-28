@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { onMount } from 'svelte';
+  import { apiBaseUrl } from '$lib/api';
 
   // Check if the current path starts with '/admin'
   const isAdmin = page.url.pathname.startsWith('/admin');
@@ -15,7 +16,7 @@
   // Fetch the next movie using the /api/movie/next endpoint
   onMount(async () => {
     try {
-      const response = await fetch('/api/movie/next');
+      const response = await fetch(`${apiBaseUrl}/movie/next`);
       const data = await response.json();
 
       if (data.success) {
