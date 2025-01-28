@@ -205,6 +205,7 @@
   }
 
   .top-text {
+    font-family: Telegraf-Ultrabold, sans-serif;
     font-size: 30px;
     font-weight: bold;
     margin-top: 20px;
