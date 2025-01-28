@@ -35,13 +35,13 @@ func AdminLogin(c *gin.Context) {
 		return
 	}
 
+	// Validate password
 	if request.Passkey != os.Getenv("ADMIN_PASSKEY") {
 		fmt.Println("Invalid passkey")
 		c.AbortWithError(http.StatusUnauthorized, internal.ErrUnauthorized)
 		return
 	}
 
-	// Generate a secure session token
 	sessionToken, err := generateSessionToken()
 	if err != nil {
 		fmt.Println("Failed to generate session token:", err)
@@ -49,10 +49,13 @@ func AdminLogin(c *gin.Context) {
 		return
 	}
 
-	// Store the session in an in-memory or database store (e.g., Redis)
+	// Store the session in an in-memory store
 	internal.StoreSession(sessionToken, "admin", time.Now().Add(1*time.Hour))
 
-	// Set a secure HttpOnly cookie for the session token
+	// Set a cookie for session validation with lifetime 3600s = 1 hr
+	// For production:
+	//     change localhost to site domain
+	//     change `secure` from false to true to only send cookie over https
 	c.SetCookie("sessionToken", sessionToken, 3600, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Login successful"})
