@@ -2,7 +2,7 @@
 
 </script>
   
-  <main class="archive">
+  <main class="merch">
     <div>
          <h1>Coming Soon ... 👀</h1>
     </div>
@@ -11,7 +11,7 @@
   
 <style>
 
-  main.archive {
+  main.merch {
     padding: 2rem;
     color: #ffffff;
   }
@@ -20,6 +20,14 @@
     text-align: center;
     font-size: 2rem;
     margin-bottom: 1.5rem;
+  }
+
+  @media screen and (max-width: 768px) {
+    main.merch {
+    margin-top: 4rem;
+    padding: 2rem;
+    color: #ffffff;
+  }
   }
   
 </style>

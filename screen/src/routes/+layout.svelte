@@ -90,29 +90,31 @@
 </script>
 
 <div class="layout">
-  
-<!-- Navbar -->
+  <!-- Navbar -->
 <nav class="navbar">
   <!-- Logo -->
   <a href="/" class="navbar-logo">
-    <img src="/standinlogo.png" alt="Logo" class="logo" />
+    <img src="/logofr.JPEG" alt="Logo" class="logo" />
   </a>
 
   <!-- Navigation Links -->
   <ul class="navbar-links">
     <li>
-      <a href="/archives" class:active={page.url.pathname === '/archives'}>Past Screenings</a>
-    </li>
-    <li>
       {#if movie?.ID}
       <a href={`/reservations/${movie.ID}`} class:active={page.url.pathname === `/reservations/${movie.ID}`}>Reserve a Seat</a>
-    {/if}    </li>
+    {/if}    
+  </li>
     <li>
-      <a href="/merch" class:active={page.url.pathname === '/merch'}>Merch</a>
+      <a href="/archives" class:active={page.url.pathname === '/archives'}>Past Screenings</a>
     </li>
     <li>
       <a href="/filmfest" class:active={page.url.pathname === '/filmfest'}>Film Festival</a>
     </li>
+    <li>
+      <a href="/merch" class:active={page.url.pathname === '/merch'}>Merch</a>
+    </li>
+    
+   
   </ul>
 
   <!-- Instagram Icon -->
@@ -145,13 +147,14 @@
  <!-- Mobile Menu -->
  {#if showMobileMenu}
  <div class="mobile-menu {showMobileMenu ? 'open' : ''}">
-   <a href="/archives" on:click={() => (showMobileMenu = false)}>Past Screenings</a>
    <a href={`/reservations/${movie.ID}`} on:click={() => (showMobileMenu = false)}>Reserve a Seat</a>
-   <a href="/merch" on:click={() => (showMobileMenu = false)}>Merch</a>
+   <a href="/archives" on:click={() => (showMobileMenu = false)}>Past Screenings</a>
    <a href="/filmfest" on:click={() => (showMobileMenu = false)}>Film Festival</a>
+   <a href="/merch" on:click={() => (showMobileMenu = false)}>Merch</a>
  </div>
 {/if}
-</nav>
+</nav> 
+
 
 <div class="content-wrapper">
 <main>
@@ -188,7 +191,7 @@
    <div class="footer-content">
      <div class="footer-section">
        <a href="/" class="footer-logo-link">
-         <img src="/standinlogo.png" alt="Logo" class="footer-logo-img" />
+         <img src="/logofr.JPEG" alt="Logo" class="footer-logo-img" />
        </a>
        <div class="suggestions-section">
          <p>Have suggestions? We'd love to hear from you!</p>
@@ -290,7 +293,7 @@
 
   /* Footer styling */
   .global-footer {
-    background-color: #0e0e0e;
+    background-color: #000;
     color: #fff;
     padding: 3rem 1rem;
     box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
@@ -368,6 +371,11 @@
     .social-links {
       font-size: 0.8rem;
     }
+
+    :global(.modal-content) {
+      width: 75%;
+   
+  }
   }
 
   /* Global Button Styling */
@@ -459,62 +467,85 @@
     padding: 5px;
     font-size: 14px;
   }
+/* Navbar Styles */
+.navbar {
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  padding: 0rem;
+  background-color: #000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  box-sizing: border-box;
+}
 
-  /* Navbar Styles */
-  .navbar {
-    display: flex;
-    align-items: center;
-    /* justify-content: space-between; */
-    padding: 0 1rem; /* Add some padding inside the navbar */
-    background-color: #0e0e0e; 
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%; /* Spans the full width */
-    max-width: 100%; /* Ensures it doesn’t overflow the screen */
-    z-index: 10;
-    box-sizing: border-box; /* Includes padding and border in the element's total width/height */
-    height: 10%;
-    flex-shrink: 0; /* Prevents the navbar from shrinking */
-    
-  }
+/* Logo Row */
+.navbar-logo-row {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 1rem;
+}
 
-  .navbar-logo img {
-    height: 40px;
-    padding: 10px 20px;
-  }
+.navbar-logo img {
+  left: 10px;
+  height: 5rem;
+  padding: 10px 0px;
+}
 
-  .navbar-links {
-    font-family: Telegraf-Ultrabold, sans-serif;
-    list-style: none;
-    display: flex;
-    gap: 2rem;
-    margin: 0;
-    padding: 5px;
-    
-  }
+/* Navigation Links */
+.navbar-links-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
 
-  .navbar-links li {
-    font-size: 1rem;
-    
-  }
+.navbar-links {
+  list-style: none;
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
 
-  .navbar-links a {
-    text-decoration: none;
-    color: #ffffff;
-    font-weight: 500;
-    transition: color 0.3s ease;
-    font-weight: bold;
-  }
+.navbar-links li {
+  font-size: 1rem;
+}
 
-  .navbar-links a:hover {
-    color: var(--gold);
-  }
+.navbar-links a {
+  text-decoration: none;
+  color: #ffffff;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
 
-  .navbar-links a.active {
-    color: var(--gold);
-  }
+.navbar-links a:hover {
+  color: var(--gold);
+}
+
+.navbar-links a.active {
+  color: var(--gold);
+}
+
+/* Instagram Icon */
+.instagram-link {
+  /* position: absolute; */
+  top: 10px;
+  right: 10px;
+  /* align-items: center;
+  display: flex; */
+}
+
+.instagram-icon {
+  height: 30px;
+  width: 30px;
+  align-items: center;
+}
 
   /* for mobile */
   .hamburger span {
@@ -542,8 +573,9 @@
     top: 100%;
     right: 0;
     left: 0;
-    background-color: #202020;
+    background-color: #000;
     z-index: 10;
+    font-family: Telegraf-Ultrabold, sans-serif;
   }
 
   .mobile-menu.open {
@@ -551,19 +583,25 @@
   }
 
   .mobile-menu a {
-    color: var(--gold);
+    /* color: var(--gold); */
+    color: white;
     text-decoration: none;
     padding: 1rem;
     text-align: center;
     border-bottom: 1px solid white;
   }
 
+  .mobile-menu a:hover {
+    color: var(--gold);
+  }
+
   .instagram-link {
     margin-left: auto;
-    padding: 0.5rem;
+    padding: 1.5rem;
     display: flex;
     align-items: center;
     transition: filter 0.3s ease;
+    
   }
 
   .instagram-icon {
@@ -598,5 +636,11 @@
     .mobile-menu {
       display: flex;
     }
+
+    :global(.modal-content) {
+
+      width: 75%;
+
+  }
   }
 </style>

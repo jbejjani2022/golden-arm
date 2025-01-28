@@ -413,5 +413,9 @@ h1 {
     /* bottom: px; Adjust label for smaller seats */
     font-size: 12px; /* Slightly smaller font */
   }
+
+  .movie-info {
+  margin-top: 5rem;
+}
 }
 </style>

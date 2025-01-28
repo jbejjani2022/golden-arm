@@ -52,6 +52,13 @@
 </main>
 
 <style>
+
+@media (max-width: 768px) {
+  h1 {
+    margin-top: 4rem;
+    
+  }
+}
   main.archive {
     padding: 2rem;
     color: #f0f0f0;
@@ -63,6 +70,7 @@
     text-align: center;
     font-size: 2rem;
     margin-bottom: 1.5rem;
+
   }
 
   .movie-list {

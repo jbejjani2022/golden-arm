@@ -1,7 +1,7 @@
 <script lang="ts">
 </script>
 
-<main class="archive">
+<main class="filmfest">
     <div class="content">
         <h1 class="top-text">Harvard Film Festival</h1>
         <div class="festival-info">
@@ -24,14 +24,14 @@
             </p>
             <h3>Round Two (Harvard Film Festival):</h3>
             <p>
-                Films will be screened across Harvard's campus from April 25th to 27th, with three finalist films selected by a panel of Harvard faculty shown in the Carpenter Center for Visual Arts Theater on Sunday April 27th. Winning filmmaker will receive a modest stipend and Harvard Film Festival nominal awards.
+                Films will be screened across Harvard's campus from April 25th to 27th, with five finalist films selected by a panel of Harvard faculty shown in the Carpenter Center for Visual Arts Theater on Sunday April 27th. Winning filmmaker will receive a modest stipend and Harvard Film Festival nominal awards.
             </p>
         </div>
     </div>
 </main>
 
 <style>
-main.archive {
+main.filmfest {
     padding: 2rem;
     color: #ffffff;
   }
@@ -54,7 +54,7 @@ main.archive {
 
 h3 {
     color: var(--gold);
-    margin-top: 1rem;
+    /* margin-top: 1rem; */
 }
 
 p {
@@ -71,4 +71,12 @@ p a {
 p a:hover {
     text-decoration: underline;
 }
+
+@media screen and (max-width: 768px) {
+    main.filmfest {
+    margin-top: 2rem;
+    padding: 2rem;
+    color: #ffffff;
+  }
+  }
 </style>
