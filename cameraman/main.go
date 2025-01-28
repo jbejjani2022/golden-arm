@@ -62,9 +62,10 @@ func main() {
 	router.POST("/api/reserve", routes.Reserve)
 	router.POST("/api/movie", routes.AddMovie)
 	router.POST("/api/comment", routes.SubmitComment)
+	router.POST("/api/calendar", routes.AddCalendar)
 	router.POST("/api/admin/login", routes.AdminLogin)
 	router.POST("/api/admin/logout", routes.AdminLogout)
-	router.POST("/api/calendar", routes.AddCalendar)
+	router.POST("/api/admin/validate-session", routes.ValidateSession)
 
 	router.DELETE("/api/movie/:movie_id", routes.DeleteMovie)
 	router.DELETE("/api/reservation/:reservation_id", routes.DeleteReservation)

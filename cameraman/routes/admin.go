@@ -2,11 +2,14 @@ package routes
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"golden-arm/internal"
 	"golden-arm/schema"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +18,15 @@ type AdminLoginRequest struct {
 	Passkey string `json:"passkey"`
 }
 
-// Handles admin passkey validation
+// Generates a secure random session token
+func generateSessionToken() (string, error) {
+	bytes := make([]byte, 32)
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err
+	}
+	return base64.URLEncoding.EncodeToString(bytes), nil
+}
+
 func AdminLogin(c *gin.Context) {
 	var request AdminLoginRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -24,27 +35,61 @@ func AdminLogin(c *gin.Context) {
 		return
 	}
 
+	// Validate password
 	if request.Passkey != os.Getenv("ADMIN_PASSKEY") {
 		fmt.Println("Invalid passkey")
 		c.AbortWithError(http.StatusUnauthorized, internal.ErrUnauthorized)
 		return
 	}
 
+	sessionToken, err := generateSessionToken()
+	if err != nil {
+		fmt.Println("Failed to generate session token:", err)
+		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
+		return
+	}
+
+	// Store the session in an in-memory store
+	internal.StoreSession(sessionToken, "admin", time.Now().Add(1*time.Hour))
+
 	// Set a cookie for session validation with lifetime 3600s = 1 hr
-	// For production
-	// change localhost to site domain
-	// change `secure` from false to true to only send cookie over https
-	c.SetCookie("isAdmin", "true", 3600, "/", "localhost", false, true)
-	c.SetCookie("apiKey", os.Getenv("API_KEY"), 3600, "/", "localhost", false, true)
+	// For production:
+	//     change localhost to site domain
+	//     change `secure` from false to true to only send cookie over https
+	c.SetCookie("sessionToken", sessionToken, 3600, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Login successful"})
 }
 
 func AdminLogout(c *gin.Context) {
-	c.SetCookie("isAdmin", "", -1, "/", "localhost", false, true)
-	c.SetCookie("apiKey", "", -1, "/", "localhost", false, true)
+	sessionToken, _ := c.Cookie("sessionToken")
+	if sessionToken != "" {
+		internal.DeleteSession(sessionToken)
+	}
+	c.SetCookie("sessionToken", "", -1, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Logout successful"})
+}
+
+type ValidateSessionRequest struct {
+	SessionToken string `json:"sessionToken"`
+}
+
+// Validates session token
+func ValidateSession(c *gin.Context) {
+	var request ValidateSessionRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"valid": false, "message": "Invalid request"})
+		return
+	}
+
+	isValid := internal.ValidateSession(request.SessionToken)
+	if !isValid {
+		c.JSON(http.StatusUnauthorized, gin.H{"valid": false, "message": "Invalid session"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"valid": true, "message": "Session is valid"})
 }
 
 /*
