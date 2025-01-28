@@ -67,11 +67,11 @@
 
   const options = {
     type: 'loop',
-    drag: 'free',
+    drag: true,
     snap: true,
     perPage: 3,
     perMove: 1,
-    focus: 'center',
+    focus: 0,
     autoplay: true,
     interval: 4000,
     speed: 2000,
