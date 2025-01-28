@@ -18,6 +18,8 @@ Our app features a content management system and interface for Golden Arm operat
 
 The user-facing site dynamically retrieves content uploaded by admins. For instance, the landing page displays the film screening that is closest in the future (i.e. the upcoming screening). If no such film exists in the database, it displays the most recently screened film. The landing page also shows the movie calendar that contains today's date; if no such calendar exists, it displays the calendar closest in the future, and if there are no future calendars, it displays the calendar closest in the past.
 
+In the admin dashboard, an admin can add a movie that will be screened. This involves uploading a movie poster and concessions menu as image files. These image files are stored in an AWS S3 bucket and made visible via a public URL. 
+
 ## Developing
 
 Make sure you've [downloaded and installed](https://go.dev/doc/install) Go and psql.
@@ -41,6 +43,8 @@ SMTP_PASSWORD="?"
 AWS_ACCESS_KEY_ID="?"
 AWS_SECRET_ACCESS_KEY="?"
 AWS_REGION="?"
+
+S3_BUCKET_NAME="?"
 ```
 
 Execute `go run .` to start a local development server.
@@ -60,6 +64,6 @@ npm run dev -- --open
 - Renée Perpignan [@reneeperpignan](https://github.com/reneeperpignan)
 
 In collaboration with
-- Xander Patton
+- [Xander Patton](https://xanderdraven.weebly.com)
 - Alexandre Benoit
 - Karen Choi

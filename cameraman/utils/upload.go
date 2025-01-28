@@ -5,6 +5,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -13,8 +14,8 @@ import (
 
 // Uploads a file to a folder in S3 and returns its public URL
 func UploadToS3(file *multipart.FileHeader, folder string) (string, error) {
-	bucketName := "eliotgoldenarm"
-	region := "us-east-2"
+	bucketName := os.Getenv("S3_BUCKET_NAME")
+	region := os.Getenv("AWS_REGION")
 	key := fmt.Sprintf("%s/%s", folder, file.Filename)
 
 	// Open the file
