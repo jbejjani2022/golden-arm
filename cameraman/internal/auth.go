@@ -7,12 +7,12 @@ import (
 )
 
 func CheckAuthorization(c *gin.Context) bool {
-	// check for isAdmin cookie
-	// if cookie is not present, check the request Authorization header
+	// check for and validate sessionToken cookie
+	// if not present or invalid, check the request Authorization header
 	// if API_KEY is not present in the request header or not equal to the value in .env, return 401
 
-	isAdmin, err := c.Cookie("isAdmin")
-	if err == nil && isAdmin == "true" {
+	sessionToken, err := c.Cookie("sessionToken")
+	if err == nil && ValidateSession(sessionToken) {
 		return true
 	}
 
