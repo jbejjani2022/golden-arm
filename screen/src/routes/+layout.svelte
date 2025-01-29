@@ -95,7 +95,7 @@
 <nav class="navbar">
   <!-- Logo -->
   <a href="/" class="navbar-logo">
-    <img src="/logofr.JPEG" alt="Logo" class="logo" />
+    <img src="/logofr.png" alt="Logo" class="logo" />
   </a>
 
   <!-- Navigation Links -->
@@ -192,7 +192,7 @@
    <div class="footer-content">
      <div class="footer-section">
        <a href="/" class="footer-logo-link">
-         <img src="/logofr.JPEG" alt="Logo" class="footer-logo-img" />
+         <img src="/logofr.png" alt="Logo" class="footer-logo-img" />
        </a>
        <div class="suggestions-section">
          <p>Have suggestions? We'd love to hear from you!</p>
@@ -494,7 +494,7 @@
 .navbar-logo img {
   left: 10px;
   height: 5rem;
-  padding: 10px 0px;
+  padding: 10px 20px;
 }
 
 /* Navigation Links */
