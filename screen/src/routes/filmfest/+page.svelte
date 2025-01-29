@@ -12,7 +12,7 @@
                 The Golden Arm is thrilled to announce the return of the Harvard Film Festival from April 25-27th, 2025.
             </p>
             <p>
-                Submissions are open to undergraduates (or within one year post-graduation) from any college or university in Massachusetts. We accept original films under 30 minutes in length from any genre. To submit your film, please send an unlisted YouTube link to <a href="mailto:goldenarmtheater@gmail.com">goldenarmtheater@gmail.com</a> in an email with subject "[NAME]: Harvard Film Festival 2025 Submission."
+                Submissions are open to undergraduates (or within one year post-graduation) from any college or university in Massachusetts. We accept original films under 30 minutes in length from any genre. To submit your film, please send an unlisted YouTube link to <a href="mailto:goldenarmtheater@gmail.com">goldenarmtheater@gmail.com</a> in an email with subject "[YOUR NAME]: Harvard Film Festival 2025 Submission."
             </p>
             <p>
               Direct any questions to <a href="mailto:goldenarmtheater@gmail.com">goldenarmtheater@gmail.com</a>.
