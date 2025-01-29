@@ -478,24 +478,10 @@
   box-sizing: border-box;
 }
 
-/* Logo Row */
-.navbar-logo-row {
-  width: 100%;
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
 .navbar-logo img {
   left: 10px;
   height: 5rem;
   padding: 10px 20px;
-}
-
-/* Navigation Links */
-.navbar-links-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
 }
 
 .navbar-links {
