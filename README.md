@@ -31,7 +31,7 @@ Add the following to a `.env` file in `/cameraman` and replace "?" with your inf
 DB_HOST="?"
 DB_USER="?"
 DB_PASS="?"
-DB_PORT="5432"
+DB_PORT="?"  # default: "5432"
 DB_NAME="?"
 
 API_KEY="?"
