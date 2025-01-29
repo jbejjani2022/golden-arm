@@ -194,11 +194,12 @@
        <a href="/" class="footer-logo-link">
          <img src="/logofr.png" alt="Logo" class="footer-logo-img" />
        </a>
-       <div class="suggestions-section">
+       <div class="footer-info">
          <p>Have suggestions? We'd love to hear from you!</p>
+          <p>Email us at <a href="mailto:goldenarmtheater@gmail.com">goldenarmtheater@gmail.com</a> or drop a comment below.</p>
          <button class="suggestions-button" on:click={confirmComment}>Comment</button>
        </div>
-       <div class="social-links">
+       <div class="footer-info">
          <p>Stay updated on how The Golden Arm is shaping the cinema landscape of the Boston area.</p>
          <p>Follow us <a href="https://www.instagram.com/eliotgoldenarm/" target="_blank" rel="noopener noreferrer">@eliotgoldenarm</a>.</p>
        </div>
@@ -333,24 +334,18 @@
     width: auto;
   }
 
-  .social-links {
+  .footer-info {
     font-size: 0.9rem;
   }
 
-  .social-links a {
+  .footer-info a {
     color: var(--gold);
     text-decoration: none;
     transition: color 0.3s ease;
   }
 
-  .social-links a:hover {
+  .footer-info a:hover {
     text-decoration: underline;
-  }
-
-  .suggestions-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
   }
 
   .suggestions-button {
@@ -369,14 +364,13 @@
       height: 50px; /* Slightly smaller logo for mobile */
     }
 
-    .social-links {
+    .footer-info {
       font-size: 0.8rem;
     }
 
     :global(.modal-content) {
       width: 75%;
-   
-  }
+    }
   }
 
   /* Global Button Styling */
