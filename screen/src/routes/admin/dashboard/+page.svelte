@@ -9,7 +9,7 @@
     let calendars: Array<any> = [];
     let error: string = '';
 
-    // Fetch movie and comments data on page load
+    // Fetch calendar, movie and comments data on page load
     onMount(async () => {
         try {
             const response = await fetch(`${apiBaseUrl}/movie/all`);
@@ -53,7 +53,7 @@
             error = 'Something went wrong while fetching the calendar data.';
         }
     });
-  
+    
     // Add Movie form data and handling
     let showForm = false;
     let newMovie = {
