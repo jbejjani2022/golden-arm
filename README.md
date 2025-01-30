@@ -28,8 +28,6 @@ While in `/cameraman`, execute `go mod tidy` to download missing modules and cle
 
 Add the following to a `.env` file in `/cameraman` and replace "?" with your information:
 ```
-PORT="?"  # port where cameraman listens. default: "8080"
-
 DB_HOST="?"
 DB_USER="?"
 DB_PASS="?"
@@ -51,19 +49,7 @@ S3_BUCKET_NAME="?"
 
 Execute `go run .` to start a local development server.
 
-While in `/screen`, ensure you've installed dependencies with `npm install` (or `pnpm install` or `yarn`).
-
-Add the following to `/screen/.env`:
-```
-VITE_API_BASE_URL=/api
-```
-and the following to `/screen/.env.production`:
-```
-VITE_API_BASE_URL=https://goldenarmtheater.com/api
-```
-
-
-Then, start a development server with
+While in `/screen`, ensure you've installed dependencies with `npm install` (or `pnpm install` or `yarn`). Then, start a development server with
 
 ```bash
 npm run dev

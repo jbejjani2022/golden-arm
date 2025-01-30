@@ -1,7 +1,6 @@
 <script lang="ts">
   import { formatDate } from '$lib';
   import { onMount } from 'svelte';
-  import { apiBaseUrl } from '$lib/api';
 
   let archive: Array<any> = [];
   let error: string = '';
@@ -9,7 +8,7 @@
   // Fetch the movie archive using /api/movie/archive
   onMount(async () => {
     try {
-      const response = await fetch(`${apiBaseUrl}/movie/archive`);
+      const response = await fetch('/api/movie/archive');
       const data = await response.json();
 
       if (data.success) {

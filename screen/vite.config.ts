@@ -6,13 +6,10 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8080', // Used in development mode
+        target: 'http://localhost:8080', // Your backend server
         changeOrigin: true,
-        secure: false,
-      },
-    },
-  },
-  build: {
-    outDir: 'build',
-  },
+        secure: false
+      }
+    }
+  }
 });

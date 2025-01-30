@@ -53,15 +53,10 @@ func AdminLogin(c *gin.Context) {
 	internal.StoreSession(sessionToken, "admin", time.Now().Add(1*time.Hour))
 
 	// Set a cookie for session validation with lifetime 3600s = 1 hr
-	c.SetCookie(
-		"sessionToken",
-		sessionToken,
-		3600,
-		"/", // Path (root scope)
-		"goldenarmtheater.com",
-		true, // Secure (only send over HTTPS)
-		true, // HttpOnly (not accessible via JavaScript)
-	)
+	// For production:
+	//     change localhost to site domain
+	//     change `secure` from false to true to only send cookie over https
+	c.SetCookie("sessionToken", sessionToken, 3600, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Login successful"})
 }
@@ -71,16 +66,7 @@ func AdminLogout(c *gin.Context) {
 	if sessionToken != "" {
 		internal.DeleteSession(sessionToken)
 	}
-
-	c.SetCookie(
-		"sessionToken",
-		"",
-		-1, // MaxAge (negative value indicates deletion)
-		"/",
-		"goldenarmtheater.com",
-		true,
-		true,
-	)
+	c.SetCookie("sessionToken", "", -1, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Logout successful"})
 }
