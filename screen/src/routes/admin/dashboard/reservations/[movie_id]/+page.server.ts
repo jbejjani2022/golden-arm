@@ -1,6 +1,9 @@
 import { redirect } from '@sveltejs/kit';
 import { apiBaseUrl } from '$lib/api';
 
+export const prerender = false;
+export const ssr = false;
+
 // Ensures admin reservation page is only accessible if a valid session exists
 export const load = async ({ fetch }) => {
   const response = await fetch(`${apiBaseUrl}/admin/validate-session`, {
