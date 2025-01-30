@@ -2,14 +2,14 @@
     import { onMount } from 'svelte';
     import { formatDate } from '$lib';
     import Pagination from './Pagination.svelte';
+    import { apiBaseUrl } from '$lib/api';
 
     let movies: Array<any> = [];
     let comments: Array<any> = [];
     let calendars: Array<any> = [];
-    let emailList: Array<any> = [];
     let error: string = '';
 
-    // Fetch movie and comments data on page load
+    // Fetch calendar, movie and comments data on page load
     onMount(async () => {
         try {
             const response = await fetch('/api/calendar/all');
@@ -52,20 +52,6 @@
             console.error(err);
             error = 'Something went wrong while fetching the comment data.';
         }
-
-        try {
-            const response = await fetch('/api/emails');
-            const data = await response.json();
-
-            if (data.success) {
-                emailList = data.data;
-            } else {
-                error = 'Failed to load email data.';
-            }
-        } catch (err) {
-            console.error(err);
-            error = 'Something went wrong while fetching the email data.';
-        }
     });
     
     // Add Movie form data and handling
@@ -87,7 +73,7 @@
       if (newMovie.MenuFile) formData.append('menu', newMovie.MenuFile);
 
       try {
-        const response = await fetch('/api/movie', {
+        const response = await fetch(`${apiBaseUrl}/movie`, {
           method: 'POST',
           body: formData,
         });
@@ -135,7 +121,7 @@
       if (newCalendar.CalendarFile) formData.append('image', newCalendar.CalendarFile);
 
       try {
-        const response = await fetch('/api/calendar', {
+        const response = await fetch(`${apiBaseUrl}/calendar`, {
           method: 'POST',
           body: formData,
         });

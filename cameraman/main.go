@@ -4,11 +4,16 @@ import (
 	"golden-arm/internal"
 	"golden-arm/routes"
 	"golden-arm/schema"
+	"os"
 
 	// Add this line
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
+
+func init() {
+	gin.SetMode(gin.ReleaseMode)
+}
 
 func main() {
 	err := godotenv.Load()
@@ -72,5 +77,9 @@ func main() {
 	router.DELETE("/api/comment/:comment_id", routes.DeleteComment)
 	router.DELETE("/api/calendar/:calendar_id", routes.DeleteCalendar)
 
-	router.Run(":8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	router.Run(":" + port)
 }

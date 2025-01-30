@@ -22,7 +22,7 @@ var (
 func GetDBConn() *bun.DB {
 	once.Do(func() {
 		// Build DSN string
-		connstr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		connstr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=require",
 			os.Getenv("DB_USER"), os.Getenv("DB_PASS"),
 			os.Getenv("DB_HOST"), os.Getenv("DB_PORT"),
 			os.Getenv("DB_NAME"))
