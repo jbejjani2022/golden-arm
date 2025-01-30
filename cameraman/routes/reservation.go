@@ -163,7 +163,16 @@ func Reserve(c *gin.Context) {
 	data.To = res.Email
 	data.Name = res.Name
 	data.MovieTitle = movie.Title
-	data.MovieDate = movie.Date.Format("Monday, January 2 3:04 PM")
+
+	loc, err := time.LoadLocation("America/New_York")
+	if err != nil {
+		fmt.Println("Error loading time zone:", err)
+		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
+		return
+	}
+
+	data.MovieDate = movie.Date.In(loc).Format("Monday, January 2 3:04 PM")
+
 	data.MovieRuntime, err = formatRuntime(movie.Runtime)
 	if err != nil {
 		fmt.Printf("Error formatting movie runtime: %v", err)
