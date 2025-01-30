@@ -11,17 +11,13 @@
         const response = await fetch(`${apiBaseUrl}/admin/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',  // Add this to handle cookies
           body: JSON.stringify({ passkey })
         });
   
-        console.log('Login response status:', response.status);
         const result = await response.json();
-        console.log('Login result:', result);
   
         if (result.success) {
-          // Use replace instead of goto to force a full page load
-          window.location.replace('/admin/dashboard');
+          goto('/admin/dashboard');
         } else {
           error = 'Are you really a Golden Arm operator?';
         }
