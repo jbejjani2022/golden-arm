@@ -7,7 +7,6 @@
     let movies: Array<any> = [];
     let comments: Array<any> = [];
     let calendars: Array<any> = [];
-    let emailList: Array<any> = [];
     let error: string = '';
 
     // Fetch movie and comments data on page load
@@ -52,20 +51,6 @@
         } catch (err) {
             console.error(err);
             error = 'Something went wrong while fetching the calendar data.';
-        }
-
-        try {
-            const response = await fetch(`${apiBaseUrl}/emails`);
-            const data = await response.json();
-
-            if (data.success) {
-                emailList = data.data;
-            } else {
-                error = 'Failed to load email data.';
-            }
-        } catch (err) {
-            console.error(err);
-            error = 'Something went wrong while fetching the email data.';
         }
     });
   
