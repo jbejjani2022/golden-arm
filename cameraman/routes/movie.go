@@ -81,7 +81,8 @@ func AddMovie(c *gin.Context) {
 		// Poster file
 		posterFile, _ := c.FormFile("poster")
 		if posterFile != nil {
-			newMovie.PosterUrl, err = utils.UploadToS3(posterFile, newMovie.Title)
+			filename := fmt.Sprintf("%s Poster", newMovie.Title)
+			newMovie.PosterUrl, err = utils.UploadToS3(posterFile, newMovie.Title, filename)
 			if err != nil {
 				fmt.Println("Error uploading poster:", err)
 				c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
@@ -94,7 +95,8 @@ func AddMovie(c *gin.Context) {
 		// Menu file
 		menuFile, _ := c.FormFile("menu")
 		if menuFile != nil {
-			newMovie.MenuUrl, err = utils.UploadToS3(menuFile, newMovie.Title)
+			filename := fmt.Sprintf("%s Menu", newMovie.Title)
+			newMovie.MenuUrl, err = utils.UploadToS3(menuFile, newMovie.Title, filename)
 			if err != nil {
 				fmt.Println("Error uploading menu:", err)
 				c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)

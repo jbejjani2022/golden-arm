@@ -148,7 +148,14 @@ func AddCalendar(c *gin.Context) {
 		// Calendar image file
 		imageFile, _ := c.FormFile("image")
 		if imageFile != nil {
-			newCalendar.ImageURL, err = utils.UploadToS3(imageFile, "Calendars")
+			// Construct calendar filename, e.g. "01-01-25 to 02-01-25"
+			startFormatted := fmt.Sprintf("%d-%d-%d", newCalendar.StartDate.Month(),
+				newCalendar.StartDate.Day(), newCalendar.StartDate.Year()%100)
+			endFormatted := fmt.Sprintf("%d-%d-%d", newCalendar.EndDate.Month(),
+				newCalendar.EndDate.Day(), newCalendar.EndDate.Year()%100)
+			filename := fmt.Sprintf("%s to %s", startFormatted, endFormatted)
+
+			newCalendar.ImageURL, err = utils.UploadToS3(imageFile, "Calendars", filename)
 			if err != nil {
 				fmt.Println("Error uploading calendar image file:", err)
 				c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)

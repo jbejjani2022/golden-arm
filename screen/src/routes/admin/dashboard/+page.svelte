@@ -12,6 +12,20 @@
     // Fetch movie and comments data on page load
     onMount(async () => {
         try {
+            const response = await fetch('/api/calendar/all');
+            const data = await response.json();
+
+            if (data.success) {
+                calendars = data.data;
+            } else {
+                error = 'Failed to load calendar data.';
+            }
+        } catch (err) {
+            console.error(err);
+            error = 'Something went wrong while fetching the calendar data.';
+        }
+
+        try {
             const response = await fetch('/api/movie/all');
             const data = await response.json();
 
@@ -40,20 +54,6 @@
         }
 
         try {
-            const response = await fetch('/api/calendar/all');
-            const data = await response.json();
-
-            if (data.success) {
-                calendars = data.data;
-            } else {
-                error = 'Failed to load calendar data.';
-            }
-        } catch (err) {
-            console.error(err);
-            error = 'Something went wrong while fetching the calendar data.';
-        }
-
-        try {
             const response = await fetch('/api/emails');
             const data = await response.json();
 
@@ -67,7 +67,7 @@
             error = 'Something went wrong while fetching the email data.';
         }
     });
-  
+    
     // Add Movie form data and handling
     let showForm = false;
     let newMovie = {

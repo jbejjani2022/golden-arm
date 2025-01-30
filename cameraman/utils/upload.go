@@ -6,17 +6,23 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
+func getFileExtension(fileHeader *multipart.FileHeader) string {
+	return filepath.Ext(fileHeader.Filename)
+}
+
 // Uploads a file to a folder in S3 and returns its public URL
-func UploadToS3(file *multipart.FileHeader, folder string) (string, error) {
+func UploadToS3(file *multipart.FileHeader, folder string, filename string) (string, error) {
 	bucketName := os.Getenv("S3_BUCKET_NAME")
 	region := os.Getenv("AWS_REGION")
-	key := fmt.Sprintf("%s/%s", folder, file.Filename)
+	filename = fmt.Sprintf("%s%s", filename, getFileExtension(file))
+	key := fmt.Sprintf("%s/%s", folder, filename)
 
 	// Open the file
 	f, err := file.Open()
