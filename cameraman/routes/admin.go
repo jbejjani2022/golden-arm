@@ -85,19 +85,15 @@ func AdminLogout(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Logout successful"})
 }
 
-type ValidateSessionRequest struct {
-	SessionToken string `json:"sessionToken"`
-}
-
 // Validates session token
 func ValidateSession(c *gin.Context) {
-	var request ValidateSessionRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
+	sessionToken, err := c.Cookie("sessionToken")
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"valid": false, "message": "Invalid request"})
 		return
 	}
 
-	isValid := internal.ValidateSession(request.SessionToken)
+	isValid := internal.ValidateSession(sessionToken)
 	if !isValid {
 		c.JSON(http.StatusUnauthorized, gin.H{"valid": false, "message": "Invalid session"})
 		return
