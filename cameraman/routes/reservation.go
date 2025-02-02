@@ -30,6 +30,7 @@ type ReservationRequest struct {
 type EmailData struct {
 	To           string
 	Name         string
+	ResID        string
 	MovieTitle   string
 	MovieDate    string
 	MovieRuntime string
@@ -163,6 +164,7 @@ func Reserve(c *gin.Context) {
 	data.To = res.Email
 	data.Name = res.Name
 	data.MovieTitle = movie.Title
+	data.ResID = res.ID.String()
 
 	loc, err := time.LoadLocation("America/New_York")
 	if err != nil {
