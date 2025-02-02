@@ -27,7 +27,7 @@
     <h1>Are you sure you want to cancel your reservation?</h1>
     <div class="button-row">
       <button class="cancel" on:click={() => goto('/')}>Nah</button>
-      <button class="confirm" on:click={() => deleteReservation(reservationId)}>Cancel</button>
+      <button class="confirm" on:click={() => deleteReservation(reservationId)}>Yeah</button>
     </div>
   </div>
 </main>

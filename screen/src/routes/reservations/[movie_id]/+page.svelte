@@ -169,8 +169,8 @@
     </div>
     <div class="movie-details">
       <h1>{movie.Title}</h1>
-      <p class="movie-date">{formatRuntime(movie.Runtime)}</p>
       <p class="movie-date">{formatDate(movie.Date)}</p>
+      <p class="movie-date">{formatRuntime(movie.Runtime)}</p>
     </div>
   </div>
   {:else}
