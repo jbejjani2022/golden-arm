@@ -114,7 +114,9 @@
     <li>
       <a href="/merch" class:active={page.url.pathname === '/merch'}>Merch</a>
     </li>
-    
+    <li>
+      <a href="https://roombook.fas.harvard.edu/EmsWebApp/RoomRequest.aspx?data=ity3Dem%2byxxGFZTQvNr97zkAqLedHLx6" target="_blank">Book the Theater</a>
+    </li>
    
   </ul>
 
@@ -152,6 +154,7 @@
    <a href="/archives" on:click={() => (showMobileMenu = false)}>Past Screenings</a>
    <a href="/filmfest" on:click={() => (showMobileMenu = false)}>Film Festival</a>
    <a href="/merch" on:click={() => (showMobileMenu = false)}>Merch</a>
+    <a href="https://roombook.fas.harvard.edu/EmsWebApp/RoomRequest.aspx?data=ity3Dem%2byxxGFZTQvNr97zkAqLedHLx6" on:click={() => (showMobileMenu = false)}>Book the Theater</a>
  </div>
 {/if}
 </nav> 
@@ -195,13 +198,12 @@
          <img src="/logofr.png" alt="Logo" class="footer-logo-img" />
        </a>
        <div class="footer-info">
-         <p>Have suggestions? We'd love to hear from you!</p>
-          <p>Email us at <a href="mailto:goldenarmtheater@gmail.com">goldenarmtheater@gmail.com</a> or drop a comment below.</p>
+         <p class="footer-elt">Have suggestions? We'd love to hear from you!</p>
+          <p class="footer-elt">Email us at <a href="mailto:goldenarmtheater@gmail.com">goldenarmtheater@gmail.com</a> or drop a comment below.</p>
          <button class="suggestions-button" on:click={confirmComment}>Comment</button>
-       </div>
-       <div class="footer-info">
-         <p>Stay updated on how The Golden Arm is shaping the cinema landscape of the Boston area.</p>
-         <p>Follow us <a href="https://www.instagram.com/eliotgoldenarm/" target="_blank" rel="noopener noreferrer">@eliotgoldenarm</a>.</p>
+    
+         <p class="footer-elt">Stay updated on how The Golden Arm is shaping the cinema landscape of the Boston area.</p>
+         <p class="footer-elt">Follow us <a href="https://www.instagram.com/eliotgoldenarm/" target="_blank" rel="noopener noreferrer">@eliotgoldenarm</a>.</p>
        </div>
      </div>
    </div>
@@ -315,7 +317,7 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 2rem; /* Spacing between footer sections */
+    gap: 3rem; /* Spacing between footer sections */
   }
 
   .footer-section {
@@ -348,10 +350,16 @@
     text-decoration: underline;
   }
 
+  .footer-elt {
+    margin-top: 1.5rem;
+  }
+
   .suggestions-button {
     padding: 8px 16px;
     font-size: 14px;
     border-radius: 5px;
+    margin-top: 0.5rem;
+
   }
 
   /* Mobile styles */
@@ -418,6 +426,7 @@
       display: flex;
       flex-direction: column;  /* Arrange elements vertically */
       align-items: center;     /* Center items horizontally */
+      padding-top: 3rem;
   }
 
   :global(.modal-content input) {
@@ -440,6 +449,7 @@
 
   :global(.cancel-button) {
     background-color: darkgrey;
+    margin-bottom: 20px;
   }
 
   :global(.cancel-button:hover) {
@@ -447,6 +457,7 @@
   }
 
   :global(.form-group) {
+    /* margin-top: 15px; */
     margin-bottom: 15px;
     display: flex;
     align-items: center;

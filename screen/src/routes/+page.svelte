@@ -110,8 +110,10 @@
         <div class="movie-details">
           <h1 class="movie-title">{movie.Title}</h1>
           <div class="movie-screening">
+            
+            <div style="margin-bottom: 0.5rem; margin-top: 0.5rem;">Screening {formatDate(movie.Date)}</div>
             <div style="padding: 0.5rem">{formatRuntime(movie.Runtime)}</div>
-            <div style="margin-bottom: 0.5rem">Screening {formatDate(movie.Date)}</div>
+
             <button class="reserve-button" on:click={() => goto(`/reservations/${movie.ID}`)}>Get Tickets</button>
           </div>
         </div>
@@ -229,7 +231,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
   }
 
   .movie-screening {
@@ -241,8 +243,8 @@
   .movie-title {
     font-size: 2.5rem; /* Make title text larger */
     font-weight: bold; /* Make the title bold */
-    margin-bottom: 5px;
-    margin-top: 5px;
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
 
   }
 
@@ -250,8 +252,8 @@
     cursor: pointer;
     font-size: 1rem;
     display: inline-block; /* Ensures the button only takes as much space as the text needs */
-    margin-top: 10px;
-    margin-bottom: 10px
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
   }
 
   .reserve-button:hover {
@@ -338,7 +340,7 @@
 
   @media screen and (max-width: 768px) {
     .top-text {
-        margin-top: 100px; /* Adjust as needed to increase space */
+        margin-top: 120px; /* Adjust as needed to increase space */
     }
 
     .movie-screening {

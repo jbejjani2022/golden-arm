@@ -247,7 +247,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 80vh;
 }
 
 /* new */
@@ -358,6 +358,7 @@ h1 {
   display: flex;
   justify-content: center; /* Center the rectangle horizontally */
   margin-bottom: 20px; /* Space between the rectangle and the Confirm button */
+  margin-top: 20px; /* Space between the rectangle and the Confirm button */
 }
 
 #screen {
@@ -391,8 +392,9 @@ h1 {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  
   .reservation-page {
-    padding: 0; /* Remove padding for full width */
+    height: 105vh;
   }
 
   .grid {
