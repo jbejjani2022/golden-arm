@@ -367,15 +367,9 @@ func getReservations(movieID uuid.UUID) ([]schema.Reservation, error) {
 /*
 Deletes reservation from database
 
-	curl -X DELETE http://localhost:8080/api/reservation/00000000-0000-0000-0000-000000000000 \
-	-H "Authorization: Bearer YOUR API KEY"
+	curl -X DELETE http://localhost:8080/api/reservation/00000000-0000-0000-0000-000000000000
 */
 func DeleteReservation(c *gin.Context) {
-	if !internal.CheckAuthorization(c) {
-		c.AbortWithError(http.StatusUnauthorized, internal.ErrUnauthorized)
-		return
-	}
-
 	// Ensure reservation_id is provided and is a valid UUID
 	param := c.Param("reservation_id")
 	if param == "" {
