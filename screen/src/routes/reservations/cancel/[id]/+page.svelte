@@ -1,12 +1,13 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import { apiBaseUrl } from '$lib/api';
 
   const reservationId = $page.params.id;
 
   const deleteReservation = async (reservationId: string) => {
       try {
-        const response = await fetch(`/api/reservation/${reservationId}`, {
+        const response = await fetch(`${apiBaseUrl}/reservation/${reservationId}`, {
           method: 'DELETE',
         });
 

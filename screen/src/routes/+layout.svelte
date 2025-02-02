@@ -63,7 +63,7 @@
     }
     // Send suggestion to server
     try {
-      const response = await fetch(`/api/comment`, {
+      const response = await fetch(`${apiBaseUrl}/comment`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json" 

@@ -2,6 +2,7 @@
   import { page } from '$app/state';
   import { onMount } from 'svelte';
   import { formatDate, formatRuntime } from '$lib';
+  import { apiBaseUrl } from '$lib/api';
   
   let movie: any = null;
   let error: string = '';
@@ -9,7 +10,7 @@
   // Fetch movie information
   onMount(async () => {
     try {
-      const response = await fetch(`/api/movie/${page.params.movie_id}`);
+      const response = await fetch(`${apiBaseUrl}/movie/${page.params.movie_id}`);
       const data = await response.json();
 
       if (data.success) {
@@ -28,7 +29,7 @@
   onMount(async () => {
     const movieId = page.params.movie_id;
     try {
-      const response = await fetch(`/api/reserved/${movieId}`);
+      const response = await fetch(`${apiBaseUrl}/reserved/${movieId}`);
       const result = await response.json();
       if (result.success) {
         reservedSeats = result.data.reserved_seats; // Update reserved seats array
@@ -91,7 +92,7 @@
     showResModal = false;
     // Send the reservation
     try {
-      const response = await fetch(`/api/reserve`, {
+      const response = await fetch(`${apiBaseUrl}/reserve`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json" 
@@ -136,7 +137,7 @@
     showCommentModal = false;
     // Send suggestion to server
     try {
-      const response = await fetch(`/api/comment`, {
+      const response = await fetch(`${apiBaseUrl}/comment`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json" 

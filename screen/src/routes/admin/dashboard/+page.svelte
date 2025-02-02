@@ -146,7 +146,7 @@
 
       if (confirmation) {
         try {
-          const response = await fetch(`/api/movie/${movieId}`, {
+          const response = await fetch(`${apiBaseUrl}/movie/${movieId}`, {
             method: 'DELETE',
           });
 
@@ -167,7 +167,7 @@
 
       if (confirmation) {
         try {
-          const response = await fetch(`/api/calendar/${calendarId}`, {
+          const response = await fetch(`${apiBaseUrl}/calendar/${calendarId}`, {
             method: 'DELETE',
           });
 
@@ -188,7 +188,7 @@
 
       if (confirmation) {
         try {
-          const response = await fetch(`/api/comment/${commentId}`, {
+          const response = await fetch(`${apiBaseUrl}/comment/${commentId}`, {
             method: 'DELETE',
           });
 

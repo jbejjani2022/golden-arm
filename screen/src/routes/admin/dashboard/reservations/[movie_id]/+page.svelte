@@ -2,6 +2,7 @@
     import { page } from '$app/state';
     import { onMount } from 'svelte';
     import { formatDate } from '$lib';
+    import { apiBaseUrl } from '$lib/api';
   
     let movieTitle = '';
     let movieDate = '';
@@ -12,12 +13,12 @@
       const { movie_id } = page.params;
   
       try {
-        const response = await fetch(`/api/reservations/${movie_id}`);
+        const response = await fetch(`${apiBaseUrl}/reservations/${movie_id}`);
         const data = await response.json();
   
         if (data.success) {
           try {
-            const movieResponse = await fetch(`/api/movie/${movie_id}`);
+            const movieResponse = await fetch(`${apiBaseUrl}/movie/${movie_id}`);
             const movieData = await movieResponse.json();
             if (movieData.success) {
               console.log('Movie data:', movieData.data);
@@ -44,7 +45,7 @@
   
       if (confirmation) {
         try {
-          const response = await fetch(`/api/reservation/${reservationId}`, {
+          const response = await fetch(`${apiBaseUrl}/reservation/${reservationId}`, {
             method: 'DELETE',
           });
   
