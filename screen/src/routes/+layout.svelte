@@ -108,9 +108,9 @@
     <li>
       <a href="/archives" class:active={page.url.pathname === '/archives'}>Past Screenings</a>
     </li>
-    <li>
+    <!-- <li>
       <a href="/filmfest" class:active={page.url.pathname === '/filmfest'}>Film Festival</a>
-    </li>
+    </li> -->
     <li>
       <a href="/merch" class:active={page.url.pathname === '/merch'}>Merch</a>
     </li>
