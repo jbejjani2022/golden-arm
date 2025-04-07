@@ -152,9 +152,9 @@
  <div class="mobile-menu {showMobileMenu ? 'open' : ''}">
    <a href={`/reservations/${movie.ID}`} on:click={() => (showMobileMenu = false)}>Reserve a Seat</a>
    <a href="/archives" on:click={() => (showMobileMenu = false)}>Past Screenings</a>
-   <a href="/filmfest" on:click={() => (showMobileMenu = false)}>Film Festival</a>
+   <!-- <a href="/filmfest" on:click={() => (showMobileMenu = false)}>Film Festival</a> -->
    <a href="/merch" on:click={() => (showMobileMenu = false)}>Merch</a>
-    <a href="https://roombook.fas.harvard.edu/EmsWebApp/RoomRequest.aspx?data=ity3Dem%2byxxGFZTQvNr97zkAqLedHLx6" on:click={() => (showMobileMenu = false)}>Book the Theater</a>
+   <a href="https://roombook.fas.harvard.edu/EmsWebApp/RoomRequest.aspx?data=ity3Dem%2byxxGFZTQvNr97zkAqLedHLx6" on:click={() => (showMobileMenu = false)}>Book the Theater</a>
  </div>
 {/if}
 </nav> 
