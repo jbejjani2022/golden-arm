@@ -26,8 +26,8 @@ type ReservationRequest struct {
 	Email      string    `json:"email" binding:"required,email"`
 }
 
-// Confirmation email
-type EmailData struct {
+// Reservation confirmation email
+type ResEmailData struct {
 	To           string
 	Name         string
 	ResID        string
@@ -98,9 +98,18 @@ func Reserve(c *gin.Context) {
 	db := schema.GetDBConn()
 	ctx := context.Background()
 
+	// Begin transaction
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to begin transaction"})
+		return
+	}
+	// Ensure rollback if error occurs
+	defer tx.Rollback()
+
 	// Check for conflicting reservation (same seat in same movie)
 	var conflictingRes schema.Reservation
-	err := db.NewSelect().
+	err = tx.NewSelect().
 		Model(&conflictingRes).
 		Where("movie_id = ? AND seat_number = ?", newRes.MovieID, newRes.SeatNumber).
 		Scan(ctx)
@@ -108,7 +117,7 @@ func Reserve(c *gin.Context) {
 	if err == nil {
 		// Conflicting reservation found
 		fmt.Printf("Seat %s already reserved", newRes.SeatNumber)
-		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
+		c.AbortWithError(http.StatusConflict, errors.New("seat already reserved"))
 		return
 	} else if !errors.Is(err, sql.ErrNoRows) {
 		// Handle unexpected errors
@@ -117,7 +126,19 @@ func Reserve(c *gin.Context) {
 		return
 	}
 
-	// Save new reservation
+	// Load movie details first to ensure it exists
+	var movie schema.Movie
+	err = tx.NewSelect().
+		Model(&movie).
+		Where("id = ?", newRes.MovieID).
+		Scan(ctx)
+	if err != nil {
+		fmt.Println("Error loading movie details: ", err)
+		c.AbortWithError(http.StatusNotFound, errors.New("movie not found"))
+		return
+	}
+
+	// Create new reservation
 	res := schema.Reservation{
 		ID:         uuid.New(),
 		MovieID:    newRes.MovieID,
@@ -127,7 +148,8 @@ func Reserve(c *gin.Context) {
 		Email:      newRes.Email,
 	}
 
-	_, err = db.NewInsert().
+	// Save reservation in transaction
+	_, err = tx.NewInsert().
 		Model(&res).
 		Exec(ctx)
 
@@ -136,31 +158,8 @@ func Reserve(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
 		return
 	}
-
-	fmt.Printf("Reservation saved: %v\n", res)
-
-	// Send confirmation email
-	// Load movie details
-	var movie schema.Movie
-	err = db.NewSelect().
-		Model(&movie).
-		Where("id = ?", res.MovieID).
-		Scan(ctx)
-	if err != nil {
-		fmt.Println("Error loading movie details: ", err)
-		// Delete the reservation from the database
-		_, err := db.NewDelete().
-			Model((*schema.Reservation)(nil)).
-			Where("id = ?", res.ID).
-			Exec(ctx)
-		if err != nil {
-			fmt.Printf("Error deleting reservation: %v", err)
-		}
-		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
-		return
-	}
 	// Prepare email data
-	var data EmailData
+	var data ResEmailData
 	data.To = res.Email
 	data.Name = res.Name
 	data.MovieTitle = movie.Title
@@ -178,41 +177,34 @@ func Reserve(c *gin.Context) {
 	data.MovieRuntime, err = formatRuntime(movie.Runtime)
 	if err != nil {
 		fmt.Printf("Error formatting movie runtime: %v", err)
-		_, err := db.NewDelete().
-			Model((*schema.Reservation)(nil)).
-			Where("id = ?", res.ID).
-			Exec(ctx)
-		if err != nil {
-			fmt.Printf("Error deleting reservation: %v", err)
-		}
 		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
 		return
 	}
 	data.SeatNumber = res.SeatNumber
 	data.PosterURL = movie.PosterURL
 
-	if err := sendConfirmationEmail(data); err != nil {
+	// Send confirmation email
+	if err := sendResConfirmationEmail(data); err != nil {
 		fmt.Printf("Error sending confirmation email: %v", err)
-		_, err := db.NewDelete().
-			Model((*schema.Reservation)(nil)).
-			Where("id = ?", res.ID).
-			Exec(ctx)
-		if err != nil {
-			fmt.Printf("Error deleting reservation: %v", err)
-		}
-		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to send confirmation email: %v", err)})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Reservation confirmed"})
+	// Only commit if email was sent successfully
+	if err := tx.Commit(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to commit transaction"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"success": true, "data": res})
 }
 
 //go:embed templates/*
-var emailTemplate embed.FS
+var resEmailTemplate embed.FS
 
-func sendConfirmationEmail(data EmailData) error {
+func sendResConfirmationEmail(data ResEmailData) error {
 	// Parse and fill the HTML email template
-	tmpl, err := template.ParseFS(emailTemplate, "templates/email.html")
+	tmpl, err := template.ParseFS(resEmailTemplate, "templates/res_email.html")
 	if err != nil {
 		return fmt.Errorf("failed to parse email template: %w", err)
 	}
