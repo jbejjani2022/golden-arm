@@ -86,5 +86,41 @@ func CreateTables() {
 		log.Fatalf("Failed to create comment table: %v", err)
 	}
 
+	// Create the Merchandise table
+	if _, err := db.NewCreateTable().
+		Model(&Merchandise{}).
+		IfNotExists().
+		Exec(ctx); err != nil {
+		log.Fatalf("Failed to create merchandise table: %v", err)
+	}
+
+	// Create the MerchandiseSize table
+	if _, err := db.NewCreateTable().
+		Model(&MerchandiseSize{}).
+		IfNotExists().
+		ForeignKey(`("merchandise_id") REFERENCES "merchandises"("id") ON DELETE CASCADE`).
+		Exec(ctx); err != nil {
+		log.Fatalf("Failed to create merchandise size table: %v", err)
+	}
+
+	// Create the Order table
+	if _, err := db.NewCreateTable().
+		Model(&Order{}).
+		IfNotExists().
+		Exec(ctx); err != nil {
+		log.Fatalf("Failed to create order table: %v", err)
+	}
+
+	// Create the OrderItem table with nullable foreign keys
+	if _, err := db.NewCreateTable().
+		Model(&OrderItem{}).
+		IfNotExists().
+		ForeignKey(`("order_id") REFERENCES "orders"("id") ON DELETE CASCADE`).
+		ForeignKey(`("merchandise_id") REFERENCES "merchandises"("id") ON DELETE SET NULL`).
+		ForeignKey(`("movie_id") REFERENCES "movies"("id") ON DELETE SET NULL`).
+		Exec(ctx); err != nil {
+		log.Fatalf("Failed to create order item table: %v", err)
+	}
+
 	log.Println("✅ Tables created successfully.")
 }
