@@ -98,7 +98,7 @@ func AddMerchandise(c *gin.Context) {
 		// Merch item image file
 		imageFile, _ := c.FormFile("image")
 		if imageFile != nil {
-			newMerch.ImageURL, err = utils.UploadToS3(imageFile, "Merchandise", c.PostForm("name"))
+			newMerch.ImageURL, err = utils.UploadToS3(imageFile, "Merchandise", imageFile.Filename)
 			if err != nil {
 				fmt.Println("Error uploading merch image file:", err)
 				c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
@@ -210,6 +210,7 @@ func AddMerchandise(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
+		"success": true,
 		"message": "Merchandise added successfully",
 		"id":      merch.ID,
 	})

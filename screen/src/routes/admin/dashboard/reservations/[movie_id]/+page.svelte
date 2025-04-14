@@ -85,7 +85,6 @@
 <table>
     <thead>
     <tr>
-        <th>ID</th>
         <th>Seat Number</th>
         <th>Name</th>
         <th>Email</th>
@@ -96,13 +95,12 @@
     <tbody>
     {#each reservations as res (res.ID)}
         <tr>
-        <td>{res.ID}</td>
         <td>{res.SeatNumber}</td>
         <td>{res.Name}</td>
         <td>{res.Email}</td>
         <td>{formatDate(res.Date)}</td>
         <td>
-            <button on:click={() => deleteReservation(res.ID)} style="color: red; border: none; background: none; cursor: pointer;">X</button>
+            <button class="link-button delete" on:click={() => deleteReservation(res.ID)}>Delete</button>
         </td>
         </tr>
     {/each}
@@ -129,6 +127,24 @@
 
     th {
         background-color: #f4f4f4;
+    }
+
+    .link-button {
+        background: none;
+        border: none;
+        padding: 0;
+        color: #0066cc;
+        cursor: pointer;
+        font: inherit;
+        margin-right: 1rem;
+    }
+
+    .link-button.delete {
+        color: red;
+    }
+
+    .link-button:hover {
+        text-decoration: none;
     }
 </style>
   

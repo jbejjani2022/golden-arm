@@ -274,7 +274,6 @@
 <table>
     <thead>
         <tr>
-            <th>ID</th>
             <th>Title</th>
             <th>Screening Date</th>
             <th>Runtime</th>
@@ -285,7 +284,6 @@
     <tbody>
         {#each paginatedMovies as movie (movie.ID)}
             <tr>
-                <td>{movie.ID}</td>
                 <td>{movie.Title}</td>
                 <td>{formatDate(movie.Date)}</td>
                 <td>{movie.Runtime}</td>
@@ -294,8 +292,8 @@
                   <a href={movie.MenuURL} target="_blank">Menu</a>
                 </td>
                 <td>
-                    <a href={`/admin/dashboard/reservations/${movie.ID}`} style="margin-left: 10px;">Reservations</a>
-                    <button on:click={() => deleteMovie(movie.ID)} style="color: red; border: none; background: none; cursor: pointer;">X</button>
+                    <a href={`/admin/dashboard/reservations/${movie.ID}`}>Reservations</a>
+                    <button class="link-button delete" on:click={() => deleteMovie(movie.ID)}>Delete</button>
                 </td>
             </tr>
         {/each}
@@ -357,7 +355,6 @@
 <table>
     <thead>
         <tr>
-            <th>ID</th>
             <th>Name</th>
             <th>Email</th>
             <th>Comment</th>
@@ -368,13 +365,12 @@
     <tbody>
         {#each paginatedComments as comment (comment.ID)}
             <tr>
-                <td>{comment.ID}</td>
                 <td>{comment.Name}</td>
                 <td>{comment.Email}</td>
                 <td>{comment.Comment}</td>
                 <td>{formatDate(comment.Date)}</td>
                 <td>
-                    <button on:click={() => deleteComment(comment.ID)} style="color: red; border: none; background: none; cursor: pointer;">X</button>
+                    <button on:click={() => deleteComment(comment.ID)} class="link-button delete">Delete</button>
                 </td>
             </tr>
         {/each}
@@ -400,7 +396,6 @@
 <table>
     <thead>
         <tr>
-            <th>ID</th>
             <th>Date Range</th>
             <th>Date Added</th>
             <th>Assets</th>
@@ -410,14 +405,13 @@
     <tbody>
         {#each paginatedCalendars as calendar (calendar.ID)}
             <tr>
-                <td>{calendar.ID}</td>
                 <td>{formatDate(calendar.StartDate)} - {formatDate(calendar.EndDate)}</td>
                 <td>{formatDate(calendar.Date)}</td>
                 <td>
                   <a href={calendar.ImageURL} target="_blank">Image</a>
                 </td>
                 <td>
-                    <button on:click={() => deleteCalendar(calendar.ID)} style="color: red; border: none; background: none; cursor: pointer;">X</button>
+                    <button class="link-button delete" on:click={() => deleteCalendar(calendar.ID)}>Delete</button>
                 </td>
             </tr>
         {/each}
@@ -522,6 +516,24 @@
 
   .date-range-container span {
     padding: 0 0.5rem;
+  }
+
+  .link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #0066cc;
+    cursor: pointer;
+    font: inherit;
+    margin-right: 1rem;
+  }
+
+  .link-button.delete {
+    color: red;
+  }
+
+  .link-button:hover {
+    text-decoration: none;
   }
 </style>
   
