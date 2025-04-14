@@ -2,11 +2,71 @@
     import { onMount } from 'svelte';
     import Pagination from '../Pagination.svelte';
 
+    interface Size {
+        Size: string;
+        Quantity: number;
+    }
+
+    interface MerchItemFromServer {
+        ID: string;
+        Name: string;
+        Description: string;
+        Price: number;
+        ImageURL: string;
+        sizes: Size[];
+        Inventory?: Record<string, number>;
+    }
+
+    interface OrderItem {
+        id: string;
+        merchandise_id?: string;
+        movie_id?: string;
+        quantity: number;
+        size?: string;
+        price: number;
+        merchandise?: MerchItemFromServer;
+        movie?: {
+            Title: string;
+            Date: string;
+        };
+    }
+
+    interface Order {
+        id: string;
+        name: string;
+        email: string;
+        date: string;
+        total: number;
+        paid: boolean;
+        items: OrderItem[];
+    }
+
     let merchandise: Array<any> = [];
+    let orders: Order[] = [];
     let error: string = '';
 
-    // Fetch merchandise data on page load
+    // Fetch merchandise and orders data on page load
     onMount(async () => {
+        await Promise.all([fetchMerchandise(), fetchOrders()]);
+    });
+
+    const fetchOrders = async () => {
+        try {
+            const response = await fetch('/api/order/all');
+            const data = await response.json();
+
+            if (data.success) {
+                orders = data.data;
+            } else {
+                error = 'Failed to load orders data.';
+            }
+        } catch (err) {
+            console.error(err);
+            error = 'Something went wrong while fetching orders data.';
+        }
+    };
+
+    const fetchMerchandise = async () => {
         try {
             const response = await fetch('/api/merch/all');
             const data = await response.json();
@@ -35,7 +95,7 @@
             console.error(err);
             error = 'Something went wrong while fetching the merchandise data.';
         }
-    });
+    };
     
     // Add Merchandise form data and handling
     let showAddForm = false;
@@ -147,6 +207,53 @@
         showEditForm = true;
     };
 
+    const toggleOrderPaid = async (orderId: string, paid: boolean) => {
+        try {
+            const response = await fetch(`/api/order/status/${orderId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ paid }),
+            });
+
+            if (response.ok) {
+                // Update local state
+                orders = orders.map(order => 
+                    order.id === orderId 
+                        ? { ...order, paid: paid }
+                        : order
+                );
+            } else {
+                error = 'Failed to update order status.';
+            }
+        } catch (err) {
+            console.error(err);
+            error = 'Something went wrong while updating order status.';
+        }
+    };
+
+    const deleteOrder = async (orderId: string) => {
+        const confirmation = confirm('Are you sure you want to delete this order?');
+        
+        if (confirmation) {
+            try {
+                const response = await fetch(`/api/order/${orderId}`, {
+                    method: 'DELETE',
+                });
+
+                if (response.ok) {
+                    orders = orders.filter(order => order.id !== orderId);
+                } else {
+                    error = 'Failed to delete order.';
+                }
+            } catch (err) {
+                console.error(err);
+                error = 'Something went wrong while deleting the order.';
+            }
+        }
+    };
+
     const handleEditMerch = async () => {
         if (!editingMerch) return;
 
@@ -228,6 +335,57 @@
         currentPage = page;
     };
 </script>
+
+<h2>Orders</h2>
+{#if orders.length > 0}
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Date</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Paid</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#each orders as order (order.id)}
+                <tr>
+                    <td>{order.name}</td>
+                    <td>{order.email}</td>
+                    <td>{new Date(order.date).toLocaleString()}</td>
+                    <td>
+                        {#each order.items as item}
+                            {#if item.merchandise}
+                                {item.merchandise.Name} ({item.size}) x{item.quantity}<br>
+                            {:else if item.movie}
+                                {item.movie.Title} x{item.quantity}<br>
+                            {/if}
+                        {/each}
+                    </td>
+                    <td>${order.total.toFixed(2)}</td>
+                    <td>
+                        <button 
+                            class="link-button {order.paid ? 'paid' : 'unpaid'}"
+                            on:click={() => toggleOrderPaid(order.id, !order.paid)}
+                        >
+                            {order.paid ? 'Paid' : 'Unpaid'}
+                        </button>
+                    </td>
+                    <td>
+                        <button class="link-button delete" on:click={() => deleteOrder(order.id)}>Delete</button>
+                    </td>
+                </tr>
+            {/each}
+        </tbody>
+    </table>
+</div>
+{:else}
+    <p>No orders found.</p>
+{/if}
 
 <h2>Merchandise</h2>
 
@@ -460,6 +618,14 @@
         color: red;
     }
 
+    .link-button.paid {
+        color: #2ecc71;
+    }
+
+    .link-button.unpaid {
+        color: #e74c3c;
+    }
+
     .link-button:hover {
         text-decoration: underline;
     }
@@ -485,9 +651,4 @@
         margin-bottom: 1rem;
     }
 
-    .current-value {
-        color: #666;
-        font-size: 0.9em;
-        font-weight: normal;
-    }
 </style>
