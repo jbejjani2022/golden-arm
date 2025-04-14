@@ -219,14 +219,9 @@ func AddMerchandise(c *gin.Context) {
 /*
 Gets all merchandise items in the database with their associated sizes
 
-	curl -X GET http://localhost:8080/api/merch/all -H "Authorization: Bearer YOUR API KEY"
+	curl -X GET http://localhost:8080/api/merch/all
 */
 func GetAllMerchandise(c *gin.Context) {
-	if !internal.CheckAuthorization(c) {
-		c.AbortWithError(http.StatusUnauthorized, internal.ErrUnauthorized)
-		return
-	}
-
 	type MerchandiseWithSizes struct {
 		schema.Merchandise
 		Sizes []schema.MerchandiseSize `json:"sizes"`
