@@ -89,7 +89,7 @@ func ValidateSession(c *gin.Context) {
 }
 
 /*
-Gets list of all unique emails of anyone who has made a reservation or commented on the site
+Gets list of all unique emails of anyone who has made a reservation, commented, or ordered merch or poster
 
 	curl -X GET http://localhost:8080/api/emails -H "Authorization: Bearer DO NOT USE IN PRODUCTION"
 */
@@ -104,6 +104,7 @@ func GetEmails(c *gin.Context) {
 
 	var reservationEmails []string
 	var commentEmails []string
+	var orderEmails []string
 
 	// Query unique emails from the reservations table
 	err := db.NewSelect().
@@ -121,7 +122,7 @@ func GetEmails(c *gin.Context) {
 	err = db.NewSelect().
 		Model((*schema.Comment)(nil)).
 		ColumnExpr("DISTINCT email").
-		Scan(c, &commentEmails)
+		Scan(ctx, &commentEmails)
 
 	if err != nil {
 		fmt.Printf("Error fetching comment emails: %v", err)
@@ -129,20 +130,37 @@ func GetEmails(c *gin.Context) {
 		return
 	}
 
-	// Combine both email lists and remove duplicates
+	// Query unique emails from the orders table
+	err = db.NewSelect().
+		Model((*schema.Order)(nil)).
+		ColumnExpr("DISTINCT email").
+		Scan(ctx, &orderEmails)
+
+	if err != nil {
+		fmt.Printf("Error fetching order emails: %v", err)
+		c.AbortWithError(http.StatusInternalServerError, internal.ErrInternalServer)
+		return
+	}
+
+	// Combine all email lists and remove duplicates
 	emailSet := make(map[string]struct{})
+
 	for _, email := range reservationEmails {
 		emailSet[email] = struct{}{}
 	}
 	for _, email := range commentEmails {
 		emailSet[email] = struct{}{}
 	}
+	for _, email := range orderEmails {
+		emailSet[email] = struct{}{}
+	}
 
-	// Convert the set back to a slice
+	// Convert the set to a slice
 	var uniqueEmails []string
 	for email := range emailSet {
 		uniqueEmails = append(uniqueEmails, email)
 	}
+
 	if uniqueEmails == nil {
 		uniqueEmails = []string{}
 	}
