@@ -229,14 +229,9 @@ func GetMovie(c *gin.Context) {
 /*
 Gets all movies in the database
 
-	curl -X GET http://localhost:8080/api/movie/all -H "Authorization: Bearer YOUR API KEY"
+	curl -X GET http://localhost:8080/api/movie/all
 */
 func GetAllMovies(c *gin.Context) {
-	if !internal.CheckAuthorization(c) {
-		c.AbortWithError(http.StatusUnauthorized, internal.ErrUnauthorized)
-		return
-	}
-
 	var movies []schema.Movie
 	db := schema.GetDBConn()
 	ctx := context.Background()
