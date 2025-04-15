@@ -348,47 +348,6 @@
 </div>
 {/if}
 
-<!-- Comments Table -->
-<h2>Comments</h2>
-{#if comments.length > 0}
-<div class="table-container">
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Comment</th>
-            <th>Date</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {#each paginatedComments as comment (comment.ID)}
-            <tr>
-                <td>{comment.Name}</td>
-                <td>{comment.Email}</td>
-                <td>{comment.Comment}</td>
-                <td>{formatDate(comment.Date)}</td>
-                <td>
-                    <button on:click={() => deleteComment(comment.ID)} class="link-button delete">Delete</button>
-                </td>
-            </tr>
-        {/each}
-    </tbody>
-</table>
-  <div class="pagination-wrapper">
-  <Pagination
-      currentPage={commentCurrentPage}
-      totalPages={commentTotalPages}
-      totalItems={comments.length}
-      onPageChange={handleCommentPageChange}
-    />
-  </div>
-</div>
-{:else}
-  <p>No comments found.</p>
-{/if}
-
 <!-- Calendars Table -->
 <h2>Calendars</h2>
 {#if calendars.length > 0}
@@ -468,6 +427,47 @@
 </div>
 {/if}
 
+<!-- Comments Table -->
+<h2>Comments</h2>
+{#if comments.length > 0}
+<div class="table-container">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Comment</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {#each paginatedComments as comment (comment.ID)}
+            <tr>
+                <td>{comment.Name}</td>
+                <td>{comment.Email}</td>
+                <td>{comment.Comment}</td>
+                <td>{formatDate(comment.Date)}</td>
+                <td>
+                    <button on:click={() => deleteComment(comment.ID)} class="link-button delete">Delete</button>
+                </td>
+            </tr>
+        {/each}
+    </tbody>
+</table>
+  <div class="pagination-wrapper">
+  <Pagination
+      currentPage={commentCurrentPage}
+      totalPages={commentTotalPages}
+      totalItems={comments.length}
+      onPageChange={handleCommentPageChange}
+    />
+  </div>
+</div>
+{:else}
+  <p>No comments found.</p>
+{/if}
+
 <style>
   table {
       width: 100%;
@@ -533,7 +533,7 @@
   }
 
   .link-button:hover {
-    text-decoration: none;
+    text-decoration: underline;
   }
 </style>
   

@@ -45,6 +45,19 @@
     let orders: Order[] = [];
     let error: string = '';
 
+    // Orders pagination
+    const ORDERS_PER_PAGE = 8;
+    let orderCurrentPage = 1;
+    $: sortedOrders = orders.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    $: orderTotalPages = Math.ceil(sortedOrders.length / ORDERS_PER_PAGE);
+    $: paginatedOrders = sortedOrders.slice(
+        (orderCurrentPage - 1) * ORDERS_PER_PAGE,
+        orderCurrentPage * ORDERS_PER_PAGE
+    );
+    const handleOrderPageChange = (page: number) => {
+        orderCurrentPage = page;
+    };
+
     // Fetch merchandise and orders data on page load
     onMount(async () => {
         await Promise.all([fetchMerchandise(), fetchOrders()]);
@@ -82,7 +95,7 @@
                     }
                     return {
                         ...item,
-                        Inventory: item.sizes.reduce((acc: Record<string, number>, size: Size) => {
+                        Inventory: (item.sizes || []).reduce((acc: Record<string, number>, size: Size) => {
                             acc[size.Size] = size.Quantity;
                             return acc;
                         }, {})
@@ -108,7 +121,8 @@
             { size: 'S', quantity: 0 },
             { size: 'M', quantity: 0 },
             { size: 'L', quantity: 0 }
-        ]
+        ],
+        isClothing: false
     };
 
     const handleAddMerch = async () => {
@@ -117,11 +131,13 @@
         formData.append('description', newMerch.Description);
         formData.append('price', newMerch.Price.toString());
         if (newMerch.ImageFile) formData.append('image', newMerch.ImageFile);
-        
-        // Add sizes with quantities
-        newMerch.Sizes.forEach(s => {
-            formData.append('sizes', `${s.size},${s.quantity}`);
-        });
+        formData.append('isClothing', newMerch.isClothing ? 'true' : 'false');
+        // Only add sizes if clothing
+        if (newMerch.isClothing) {
+            newMerch.Sizes.forEach(s => {
+                formData.append('sizes', `${s.size},${s.quantity}`);
+            });
+        }
 
         try {
             const response = await fetch('/api/merch', {
@@ -139,7 +155,7 @@
                     showAddForm = false; // Close the form
                     merchandise = (newData.data as MerchItemFromServer[]).map(item => ({
                         ...item,
-                        Inventory: item.sizes.reduce((acc: Record<string, number>, size: Size) => {
+                        Inventory: (item.sizes || []).reduce((acc: Record<string, number>, size: Size) => {
                             acc[size.Size] = size.Quantity;
                             return acc;
                         }, {})
@@ -352,7 +368,7 @@
             </tr>
         </thead>
         <tbody>
-            {#each orders as order (order.id)}
+            {#each paginatedOrders as order (order.id)}
                 <tr>
                     <td>{order.name}</td>
                     <td>{order.email}</td>
@@ -382,6 +398,16 @@
             {/each}
         </tbody>
     </table>
+    <div class="table-footer">
+        <div class="pagination-wrapper">
+            <Pagination
+                currentPage={orderCurrentPage}
+                totalPages={orderTotalPages}
+                totalItems={orders.length}
+                onPageChange={handleOrderPageChange}
+            />
+        </div>
+    </div>
 </div>
 {:else}
     <p>No orders found.</p>
@@ -470,14 +496,21 @@
                 <input type="number" id="price" bind:value={newMerch.Price} required min="0" step="0.01"/>
             </div>
             <div class="form-group">
-                <span id="inventory-label">Inventory:</span>
-                {#each newMerch.Sizes as size}
-                    <div class="size-input">
-                        <label for="add-size-{size.size}">{size.size}:</label>
-                        <input type="number" id="add-size-{size.size}" bind:value={size.quantity} min="0" required aria-labelledby="inventory-label" />
-                    </div>
-                {/each}
+                <label>Is this a clothing item? <span style="color:red">*</span></label>
+                <label><input type="radio" name="isClothing" bind:group={newMerch.isClothing} value={true} required /> Yes</label>
+                <label><input type="radio" name="isClothing" bind:group={newMerch.isClothing} value={false} required /> No</label>
             </div>
+            {#if newMerch.isClothing}
+                <div class="form-group">
+                    <span id="inventory-label">Inventory:</span>
+                    {#each newMerch.Sizes as size}
+                        <div class="size-input">
+                            <label for="add-size-{size.size}">{size.size}:</label>
+                            <input type="number" id="add-size-{size.size}" bind:value={size.quantity} min="0" required aria-labelledby="inventory-label" />
+                        </div>
+                    {/each}
+                </div>
+            {/if}
             <div class="form-group">
                 <label for="imageFile">Image:</label>
                 <input type="file" id="imageFile" accept="image/*" on:change={(event) => newMerch.ImageFile = (event.target as HTMLInputElement).files?.[0] || null} required />
@@ -508,15 +541,17 @@
                 <label for="edit-price">Price:</label>
                 <input type="number" id="edit-price" bind:value={editingMerch.Price} min="0" step="0.01"/>
             </div>
-            <div class="form-group">
-                <span id="edit-inventory-label">Inventory:</span>
-                {#each editingMerch.Sizes as size}
-                    <div class="size-input">
-                        <label for="edit-size-{size.size}">{size.size}:</label>
-                        <input type="number" id="edit-size-{size.size}" bind:value={size.quantity} min="0" aria-labelledby="edit-inventory-label" />
-                    </div>
-                {/each}
-            </div>
+            {#if editingMerch && editingMerch.Sizes && editingMerch.Sizes.length > 0}
+                <div class="form-group">
+                    <span id="edit-inventory-label">Inventory:</span>
+                    {#each editingMerch.Sizes as size}
+                        <div class="size-input">
+                            <label for="edit-size-{size.size}">{size.size}:</label>
+                            <input type="number" id="edit-size-{size.size}" bind:value={size.quantity} min="0" aria-labelledby="edit-inventory-label" />
+                        </div>
+                    {/each}
+                </div>
+            {/if}
             <div class="form-group">
                 <label for="edit-imageFile">New Image (optional):</label>
                 <input type="file" id="edit-imageFile" accept="image/*" on:change={(event) => {
