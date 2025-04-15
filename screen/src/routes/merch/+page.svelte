@@ -40,12 +40,47 @@
 
   let merchItems: MerchItem[] = [];
   let movies: Movie[] = [];
-  let cart: CartItem[] = [];
   let showOrderSummary = false;
   let totalAmount = 0;
+  let userName = '';
+  let userEmail = '';
 
   const POSTER_PRICE = 10;
   const sizes = ['S', 'M', 'L', 'XL'];
+
+  function getCurrentCart(): CartItem[] {
+    const merchCart = merchItems
+      .filter(item => {
+        // If there are multiple inventory keys, require size selection
+        if (Object.keys(item.inventory).length > 1) {
+          return item.selectedSize && item.quantity && item.quantity > 0;
+        }
+        // If only one inventory key (e.g., stickers), just require quantity
+        return item.quantity && item.quantity > 0;
+      })
+      .map(item => ({
+        merchId: item.ID,
+        name: item.Name,
+        image_url: item.ImageURL,
+        size: Object.keys(item.inventory).length > 1 ? item.selectedSize : Object.keys(item.inventory)[0] || undefined,
+        quantity: item.quantity!,
+        price: item.Price
+      }));
+    const movieCart = movies
+      .filter(movie => movie.quantity && movie.quantity > 0)
+      .map(movie => ({
+        movieId: movie.ID,
+        name: movie.Title,
+        image_url: movie.PosterURL,
+        quantity: movie.quantity!,
+        price: POSTER_PRICE
+      }));
+    return [...merchCart, ...movieCart];
+  }
+
+  function updateTotal() {
+    totalAmount = getCurrentCart().reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  }
 
   onMount(async () => {
     try {
@@ -63,87 +98,62 @@
       }
       merchItems = merchData.map((item: any) => ({
         ...item,
-        inventory: item.sizes.reduce((acc: { [key: string]: number }, size: MerchSize) => {
+        inventory: (item.sizes || []).reduce((acc: { [key: string]: number }, size: MerchSize) => {
           acc[size.Size] = size.Quantity;
           return acc;
-        }, {})
+        }, {}),
+        selectedSize: '',
+        quantity: 0
       }));
       const movieJson = await moviesResp.json();
-      movies = movieJson.data || [];
+      movies = (movieJson.data || []).map((movie: any) => ({ ...movie, quantity: 0 }));
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   });
 
-  function addMerchToCart(item: MerchItem, size: string, quantity: number) {
-    if (quantity <= 0 || !item.inventory[size]) return;
-
-    const existingItem = cart.find(i => i.merchId === item.ID && i.size === size);
-    if (existingItem) {
-      existingItem.quantity = quantity;
-      cart = [...cart];
-    } else {
-      cart = [...cart, {
-        merchId: item.ID,
-        name: item.Name,
-        image_url: item.ImageURL,
-        size,
-        quantity,
-        price: item.Price
-      }];
-    }
+  function handleMerchChange() {
     updateTotal();
   }
-
-  function addPosterToCart(movie: Movie, quantity: number) {
-    if (quantity <= 0) return;
-
-    const existingItem = cart.find(i => i.movieId === movie.ID);
-    if (existingItem) {
-      existingItem.quantity = quantity;
-      cart = [...cart];
-    } else {
-      cart = [...cart, {
-        movieId: movie.ID,
-        name: movie.Title,
-        image_url: movie.PosterURL,
-        quantity,
-        price: POSTER_PRICE
-      }];
-    }
+  function handleMovieChange() {
     updateTotal();
-  }
-
-  function updateTotal() {
-    totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   }
 
   async function submitOrder() {
+    const items = getCurrentCart().map(item => ({
+      merchandise_id: item.merchId || null,
+      movie_id: item.movieId || null,
+      size: item.size || null,
+      quantity: item.quantity
+    }));
     const orderData = {
-      items: cart.map(item => ({
-        merch_id: item.merchId || null,
-        movie_id: item.movieId || null,
-        size: item.size || null,
-        quantity: item.quantity
-      }))
+      name: userName,
+      email: userEmail,
+      items
     };
 
     try {
-      const response = await fetch('/api/orders', {
+      const response = await fetch('/api/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
       });
 
       if (response.ok) {
-        cart = [];
+        // Reset selections
+        merchItems = merchItems.map(item => ({ ...item, selectedSize: '', quantity: 0 }));
+        movies = movies.map(movie => ({ ...movie, quantity: 0 }));
+        userName = '';
+        userEmail = '';
         showOrderSummary = false;
+        updateTotal();
         alert('Order placed successfully!');
       } else {
-        throw new Error('Failed to place order');
+        const errorText = await response.text();
+        alert('Failed to place order. Server says: ' + errorText);
+        throw new Error('Failed to place order: ' + errorText);
       }
     } catch (error) {
-      console.error('Error submitting order:', error);
       alert('Failed to place order. Please try again.');
     }
   }
@@ -160,30 +170,20 @@
             <h3>{item.Name}</h3>
             <p class="description">{item.Description}</p>
             <p class="price">${item.Price}</p>
-            
             <div class="controls">
-              <select bind:value={item.selectedSize}>
-                <option value="">Select Size</option>
-                {#each sizes as size}
-                  <option value={size} disabled={!item.inventory[size]}>
-                    {size} {item.inventory[size] > 0 ? '' : '(not available)'}
-                  </option>
-                {/each}
-              </select>
-              
-              <input 
-                type="number" 
-                bind:value={item.quantity} 
-                min="0" 
-                max={item.selectedSize ? item.inventory[item.selectedSize] : 0}
-              />
-              
-              <button 
-                on:click={() => item.selectedSize && item.quantity && addMerchToCart(item, item.selectedSize, item.quantity)}
-                disabled={!item.selectedSize || !item.quantity}
-              >
-                Add to Cart
-              </button>
+              {#if Object.keys(item.inventory).length > 1}
+                <select bind:value={item.selectedSize} on:change={handleMerchChange}>
+                  <option value="">Select Size</option>
+                  {#each Object.keys(item.inventory) as size}
+                    <option value={size} disabled={!item.inventory[size]}>
+                      {size} {item.inventory[size] > 0 ? '' : '(not available)'}
+                    </option>
+                  {/each}
+                </select>
+                <input type="number" min="0" max={item.selectedSize ? item.inventory[item.selectedSize] : 0} bind:value={item.quantity} on:input={handleMerchChange} placeholder="Qty" disabled={!item.selectedSize} />
+              {:else}
+                <input type="number" min="0" max={item.inventory ? Object.values(item.inventory)[0] : 99} bind:value={item.quantity} on:input={handleMerchChange} placeholder="Qty" />
+              {/if}
             </div>
           </div>
         {/each}
@@ -200,15 +200,11 @@
             <div class="controls">
               <input 
                 type="number" 
+                min="0" 
                 bind:value={movie.quantity} 
-                min="0"
+                on:input={handleMovieChange}
+                placeholder="Qty" 
               />
-              <button 
-                on:click={() => movie.quantity && addPosterToCart(movie, movie.quantity)}
-                disabled={!movie.quantity}
-              >
-                Add to Cart
-              </button>
             </div>
           </div>
         {/each}
@@ -218,8 +214,8 @@
     <div class="checkout-section">
       <button 
         class="checkout-button" 
-        on:click={() => showOrderSummary = true}
-        disabled={cart.length === 0}
+        on:click={() => { updateTotal(); showOrderSummary = true; }}
+        disabled={getCurrentCart().length === 0}
       >
         Check Out (${totalAmount})
       </button>
@@ -227,10 +223,13 @@
   {:else}
     <section class="order-summary">
       <h2>Order Summary</h2>
-      
-      {#if cart.some(item => item.merchId)}
+      <div class="order-user-fields">
+        <label>Name <input type="text" bind:value={userName} required /></label>
+        <label>Email <input type="email" bind:value={userEmail} required /></label>
+      </div>
+      {#if getCurrentCart().some(item => item.merchId)}
         <div class="summary-section">
-          {#each cart.filter(item => item.merchId) as item}
+          {#each getCurrentCart().filter(item => item.merchId) as item}
             <div class="summary-item">
               <img src={item.image_url} alt={item.name} />
               <div class="details">
@@ -243,10 +242,9 @@
           {/each}
         </div>
       {/if}
-
-      {#if cart.some(item => item.movieId)}
+      {#if getCurrentCart().some(item => item.movieId)}
         <div class="summary-section">
-          {#each cart.filter(item => item.movieId) as item}
+          {#each getCurrentCart().filter(item => item.movieId) as item}
             <div class="summary-item">
               <img src={item.image_url} alt={item.name} />
               <div class="details">
@@ -258,12 +256,10 @@
           {/each}
         </div>
       {/if}
-
       <div class="total">Total: ${totalAmount}</div>
-      
       <div class="summary-controls">
         <button class="back-button" on:click={() => showOrderSummary = false}>Back to Shop</button>
-        <button class="submit-button" on:click={submitOrder}>Submit Order</button>
+        <button class="submit-button" on:click={submitOrder} disabled={!userName || !userEmail}>Submit Order</button>
       </div>
     </section>
   {/if}
@@ -365,11 +361,26 @@
   .checkout-button {
     font-size: 1.25rem;
     padding: 1rem 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   }
 
-  .order-summary {
-    max-width: 800px;
-    margin: 0 auto;
+  .order-user-fields {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  .order-user-fields label {
+    display: flex;
+    flex-direction: column;
+    font-size: 1rem;
+    color: #fff;
+  }
+  .order-user-fields input {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: none;
+    font-size: 1rem;
   }
 
   .summary-section {
