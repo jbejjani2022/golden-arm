@@ -111,10 +111,6 @@ func AddMerchandise(c *gin.Context) {
 		// Process sizes from form data
 		// Each size is submitted as "sizes=S,10"
 		sizesValues := c.PostFormArray("sizes")
-		if len(sizesValues) == 0 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "At least one size must be provided"})
-			return
-		}
 
 		newMerch.Sizes = []SizeInfo{}
 		for _, sizeValue := range sizesValues {
@@ -152,11 +148,6 @@ func AddMerchandise(c *gin.Context) {
 
 		if newMerch.Price <= 0 {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Price must be greater than 0"})
-			return
-		}
-
-		if len(newMerch.Sizes) == 0 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "At least one size must be provided"})
 			return
 		}
 	}
