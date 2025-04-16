@@ -67,6 +67,14 @@
   const POSTER_PRICE = 10;
   const sizes = ['S', 'M', 'L', 'XL'];
 
+  function handleCheckoutClick() {
+    updateTotal();
+    showOrderSummary = true;
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 0);
+  }
+
   function getCurrentCart(): CartItem[] {
     const merchCart = merchItems
       .filter(item => {
@@ -229,7 +237,7 @@
     <div class="checkout-section">
       <button 
         class="checkout-button" 
-        on:click={() => { updateTotal(); showOrderSummary = true; }}
+        on:click={handleCheckoutClick}
         disabled={getCurrentCart().length === 0}
       >
         Check Out (${totalAmount})
@@ -248,7 +256,9 @@
               </div>
               <div class="details">
                 <div class="summary-title-wrap"><h4>{item.name}</h4></div>
-                <p>Size: {item.size}</p>
+                {#if item.size}
+                  <p>Size: {item.size}</p>
+                {/if}
                 <p>Quantity: {item.quantity}</p>
                 <p>Price: ${item.price * item.quantity}</p>
               </div>
@@ -275,8 +285,8 @@
       {/if}
       <div class="total">Total: ${totalAmount}</div>
       <div class="order-user-fields">
-        <label>Name <input type="text" bind:value={userName} required /></label>
-        <label>Email <input type="email" bind:value={userEmail} required /></label>
+        <label>Name: <input type="text" bind:value={userName} required placeholder="Enter your name" /></label>
+        <label>Email: <input type="email" bind:value={userEmail} required placeholder="Enter your email" /></label>
       </div>
       <div class="summary-controls">
         <button class="back-button" on:click={() => showOrderSummary = false}>Back to Shop</button>
@@ -390,6 +400,16 @@
   z-index: 10;
   pointer-events: none;
   transition: opacity 0.18s;
+}
+@media screen and (max-width: 768px) {
+  .faq-tooltip {
+    min-width: 20vw;
+    max-width: 120vw;
+    white-space: normal;
+    word-break: normal;
+    left: 0;
+    transform: none;
+  }
 }
 .faq-tooltip-wrap:hover .faq-tooltip, .faq-tooltip-wrap:focus-within .faq-tooltip {
   visibility: visible;
@@ -660,21 +680,27 @@ input.qty-input {
 
   .order-user-fields {
     display: flex;
-    gap: 2rem;
+    flex-direction: column;
+    gap: 1rem;
     margin-bottom: 2rem;
   }
   .order-user-fields label {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
     font-size: 1rem;
     color: #fff;
+    width: auto;
   }
   .order-user-fields input {
-    margin-top: 0.5rem;
-    padding: 0.5rem;
+    margin-top: 0;
+    padding: 0.4rem 0.6rem;
     border-radius: 4px;
     border: none;
     font-size: 1rem;
+    width: 180px;
+    max-width: 60vw;
   }
 
   .order-summary {
@@ -712,6 +738,7 @@ input.qty-input {
     max-width: 98vw;
     box-sizing: border-box;
     box-shadow: 0 2px 8px #0002;
+    text-align: center;
   }
 
   .summary-img-wrap {
@@ -736,8 +763,17 @@ input.qty-input {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    align-items: flex-start;
+    align-items: center;
     min-width: 0;
+    text-align: center;
+  }
+  .details p {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    margin-top: 0.18em;
+    margin-bottom: 0.18em;
   }
 
   .summary-title-wrap {
@@ -745,7 +781,8 @@ input.qty-input {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.7rem;
+    text-align: center;
   }
   .summary-title-wrap h4 {
     margin: 0;
@@ -773,26 +810,95 @@ input.qty-input {
   }
 
   @media screen and (max-width: 768px) {
+  h2 {
+    margin-top: 2.2rem;
+  }
+  .checkout-section {
+    margin-top: 4rem;
+  }
+  /* Set border-box globally */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body, main.merch {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 100vw;
+  }
   main.merch {
     margin-top: 4rem;
-    padding: 1rem;
+    padding: 0;
+    width: 100%;
+    max-width: 100vw;
   }
   .merch-grid {
     flex-direction: column;
     align-items: center;
-    gap: 1.25rem;
+    gap: 1rem;
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 auto;
+    padding: 0;
+  }
+  .merch-card {
+    width: 95vw;
+    max-width: 360px;
+    min-width: 0;
+    box-sizing: border-box;
+    margin: 0.5rem auto;
   }
   .poster-grid {
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.25rem;
-}
-  .merch-card {
-    width: 98vw;
-    max-width: 99vw;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    width: 92vw;
+    max-width: 360px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  .poster-img-wrap {
+    max-width: 40vw;
     min-width: 0;
+    box-sizing: border-box;
+    margin: 0 auto;
   }
   .poster-img {
+    max-width: 80vw;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    margin: 0 auto;
+  }
+  .order-summary {
+    width: 96vw;
+    max-width: 380px;
+    margin: 0.5rem auto;
+    box-sizing: border-box;
+    padding: 0.5rem 0.5rem;
+  }
+  .summary-item {
+    flex-direction: column;
+    align-items: stretch;
+    width: 95vw;
+    max-width: 360px;
+    margin: 0.5rem auto;
+    padding: 1rem 0.5rem;
+    gap: 0.75rem;
+    box-sizing: border-box;
+  }
+  .summary-img-wrap {
+    margin: 0 auto 1rem auto;
+    min-width: 0;
     max-width: 90vw;
+    box-sizing: border-box;
+  }
+  .summary-img-wrap img {
+    width: 90vw;
+    max-width: 170px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
   }
 }
 </style>
