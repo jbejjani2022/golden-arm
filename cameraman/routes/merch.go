@@ -61,7 +61,7 @@ Adds new merchandise item to the database, including its available sizes; suppor
 
 	For file upload submissions:
 
-	curl -X POST http://localhost:8080/api/merch -H "Authorization: Bearer YOUR_API_KEY" \
+	curl -X POST http://localhost:8080/api/merch -H "Authorization: Bearer YOUR API KEY" \
 		-F "name=Movie T-Shirt" \
 		-F "description=Put a description here" \
 		-F "price=15.00" \
@@ -397,7 +397,7 @@ Updates an existing merchandise item and its associated sizes
 	For file upload submissions:
 
 	curl -X PUT http://localhost:8080/api/merch/00000000-0000-0000-0000-000000000000 \
-		-H "Authorization: Bearer YOUR_API_KEY" \
+		-H "Authorization: Bearer YOUR API KEY" \
 		-F "name=Updated Movie T-Shirt" \
 		-F "description=Updated description" \
 		-F "price=19.99" \
