@@ -174,7 +174,7 @@
         userEmail = '';
         showOrderSummary = false;
         updateTotal();
-        alert('Order placed successfully!');
+        alert('Order placed successfully! See your email for payment and pickup details.');
       } else {
         const errorText = await response.text();
         alert('Failed to place order. Server says: ' + errorText);
