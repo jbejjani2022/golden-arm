@@ -212,7 +212,7 @@
     </section>
 
     <section class="posters">
-  <h2 class="poster-header">Movie Posters <span class="faq-tooltip-wrap"><span class="faq-icon" tabindex="0" aria-label="Movie posters FAQ">?</span><span class="faq-tooltip">Movie posters printed on demand</span></span></h2>
+  <h2 class="poster-header">Movie Posters <span class="faq-tooltip-wrap"><span class="faq-icon" tabindex="0" aria-label="Movie posters FAQ">?</span><span class="faq-tooltip">Movie posters are 15 x 22 inches and printed to order on high quality paper.</span></span></h2>
   <div class="poster-price-line">$10 each</div>
   <div class="poster-grid">
     {#each movies as movie}
