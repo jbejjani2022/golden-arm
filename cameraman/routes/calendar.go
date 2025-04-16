@@ -112,7 +112,7 @@ For JSON-based submissions:
 
 For file upload submissions:
 
-	curl -X POST http://localhost:8080/api/calendar -H "Authorization: Bearer YOUR_API_KEY" \
+	curl -X POST http://localhost:8080/api/calendar -H "Authorization: Bearer YOUR API KEY" \
 		-F "start_date=2025-01-01T00:00:00Z" \
 		-F "end_date=2025-02-01T00:00:00Z" \
 		-F "image=@/path/to/image.jpg"

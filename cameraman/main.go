@@ -73,6 +73,7 @@ func main() {
 
 	router.PUT("/api/merch/:merch_id", routes.UpdateMerchandise)
 	router.PUT("/api/order/status/:order_id", routes.UpdateOrderStatus)
+	router.PUT("/api/movie/:movie_id", routes.UpdateMovie)
 
 	router.DELETE("/api/movie/:movie_id", routes.DeleteMovie)
 	router.DELETE("/api/reservation/:reservation_id", routes.DeleteReservation)
