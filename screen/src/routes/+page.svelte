@@ -79,6 +79,8 @@
     padding: '2rem',
     gap: '1.5rem',
     pagination: true,
+    lazyLoad: 'nearby',
+    pauseOnHover: false,
     width: '100%', // use full container width
     breakpoints: {
       768: {
@@ -149,7 +151,7 @@
     <SplideTrack>
       {#each archive as movie}
         <SplideSlide>
-          <img src={movie.PosterURL} alt={movie.Title}>
+          <img data-splide-lazy={movie.PosterURL} alt={movie.Title}>
         </SplideSlide>
       {/each}
     </SplideTrack>
