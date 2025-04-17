@@ -56,12 +56,108 @@
     
     // Add Movie form data and handling
     let showForm = false;
+    let showEditForm = false;
     let newMovie = {
       Title: '',
       Date: '',
       Runtime: 0,
       PosterFile: null as File | null,
       MenuFile: null as File | null
+    };
+
+    type MovieEditType = {
+      ID: string;
+      Title: string;
+      Date: string;
+      Runtime: number;
+      PosterURL: string;
+      MenuURL: string;
+      PosterFile: File | null;
+      MenuFile: File | null;
+    };
+
+    let editMovie: MovieEditType = {
+      ID: '',
+      Title: '',
+      Date: '',
+      Runtime: 0,
+      PosterURL: '',
+      MenuURL: '',
+      PosterFile: null,
+      MenuFile: null
+    };
+    let originalEditMovie: MovieEditType = {
+      ID: '',
+      Title: '',
+      Date: '',
+      Runtime: 0,
+      PosterURL: '',
+      MenuURL: '',
+      PosterFile: null,
+      MenuFile: null
+    };
+
+    function openEditMovie(movie: any) {
+      editMovie = {
+        ID: movie.ID,
+        Title: movie.Title,
+        Date: movie.Date ? movie.Date.slice(0, 16) : '', // for datetime-local input
+        Runtime: movie.Runtime,
+        PosterURL: movie.PosterURL,
+        MenuURL: movie.MenuURL,
+        PosterFile: null,
+        MenuFile: null
+      };
+      originalEditMovie = { ...editMovie };
+      showEditForm = true;
+    }
+
+    const handleEditMovie = async () => {
+      const formData = new FormData();
+      let hasChanges = false;
+      // Always send title
+      formData.append('title', editMovie.Title);
+      if (editMovie.Date !== originalEditMovie.Date) {
+        formData.append('date', new Date(editMovie.Date).toISOString());
+        hasChanges = true;
+      }
+      if (editMovie.Runtime !== originalEditMovie.Runtime) {
+        formData.append('runtime', editMovie.Runtime.toString());
+        hasChanges = true;
+      }
+      if (editMovie.PosterFile) {
+        formData.append('poster', editMovie.PosterFile);
+        hasChanges = true;
+      }
+      if (editMovie.MenuFile) {
+        formData.append('menu', editMovie.MenuFile);
+        hasChanges = true;
+      }
+      // If MenuFile is not provided but MenuURL was removed, allow clearing
+      if (!editMovie.MenuFile && !editMovie.MenuURL && originalEditMovie.MenuURL) {
+        formData.append('menu_url', '');
+        hasChanges = true;
+      }
+      if (!hasChanges) {
+        showEditForm = false;
+        return;
+      }
+      try {
+        const response = await fetch(`/api/movie/${editMovie.ID}`, {
+          method: 'PUT',
+          body: formData,
+        });
+        const result = await response.json();
+        if (result.success) {
+          window.location.reload();
+        } else {
+          error = 'Failed to update movie.';
+        }
+      } catch (err) {
+        console.error(err);
+        error = 'Something went wrong while updating the movie.';
+      }
+      showEditForm = false;
     };
 
     const handleAddMovie = async () => {
@@ -260,7 +356,6 @@
 <table>
     <thead>
         <tr>
-            <th>ID</th>
             <th>Title</th>
             <th>Screening Date</th>
             <th>Runtime</th>
@@ -271,18 +366,22 @@
     <tbody>
         {#each paginatedMovies as movie (movie.ID)}
             <tr>
-                <td>{movie.ID}</td>
                 <td>{movie.Title}</td>
                 <td>{formatDate(movie.Date)}</td>
                 <td>{movie.Runtime}</td>
                 <td>
-                  <a href={movie.PosterURL} target="_blank">Poster</a>,
-                  <a href={movie.MenuURL} target="_blank">Menu</a>
+                  <a href={movie.PosterURL} target="_blank">Poster</a>{movie.MenuURL ? `, ` : ''}
+                  {#if movie.MenuURL}
+                    <a href={movie.MenuURL} target="_blank">Menu</a>
+                  {/if}
                 </td>
                 <td>
-                    <a href={`/admin/dashboard/reservations/${movie.ID}`} style="margin-left: 10px;">Reservations</a>
-                    <button on:click={() => deleteMovie(movie.ID)} style="color: red; border: none; background: none; cursor: pointer;">X</button>
-                </td>
+  <div class="actions-flex">
+    <a href={`/admin/dashboard/reservations/${movie.ID}`}>Reservations</a>
+    <button class="link-button" on:click={() => openEditMovie(movie)}>Edit</button>
+    <button class="link-button delete" on:click={() => deleteMovie(movie.ID)}>Delete</button>
+  </div>
+</td>
             </tr>
         {/each}
     </tbody>
@@ -326,8 +425,8 @@
         <input type="file" id="posterFile" accept="image/jpg, image/png" on:change={(event) => newMovie.PosterFile = (event.target as HTMLInputElement).files?.[0] || null} required />
       </div>
       <div class="form-group">
-        <label for="menuFile">Menu Image:</label>
-        <input type="file" id="menuFile" accept="image/jpg, image/png" on:change={(event) => newMovie.MenuFile = (event.target as HTMLInputElement).files?.[0] || null} required />
+        <label for="menuFile">Menu Image: <span style="font-weight: normal; font-style: italic;">(optional)</span></label>
+        <input type="file" id="menuFile" accept="image/jpg, image/png" on:change={(event) => newMovie.MenuFile = (event.target as HTMLInputElement).files?.[0] || null} />
       </div>      
       <button type="submit">Submit</button>
       <button type="button" class="cancel-button" on:click={() => showForm = false}>Cancel</button>
@@ -336,47 +435,37 @@
 </div>
 {/if}
 
-<!-- Comments Table -->
-<h2>Comments</h2>
-{#if comments.length > 0}
-<div class="table-container">
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Comment</th>
-            <th>Date</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {#each paginatedComments as comment (comment.ID)}
-            <tr>
-                <td>{comment.ID}</td>
-                <td>{comment.Name}</td>
-                <td>{comment.Email}</td>
-                <td>{comment.Comment}</td>
-                <td>{formatDate(comment.Date)}</td>
-                <td>
-                    <button on:click={() => deleteComment(comment.ID)} style="color: red; border: none; background: none; cursor: pointer;">X</button>
-                </td>
-            </tr>
-        {/each}
-    </tbody>
-</table>
-  <div class="pagination-wrapper">
-  <Pagination
-      currentPage={commentCurrentPage}
-      totalPages={commentTotalPages}
-      totalItems={comments.length}
-      onPageChange={handleCommentPageChange}
-    />
+<!-- Edit Movie Form Popup -->
+{#if showEditForm}
+<div class="modal">
+  <div class="modal-content">
+    <h2>Edit Movie</h2>
+    <form on:submit|preventDefault={handleEditMovie}>
+      <div class="form-group">
+        <label for="edit-title">Title:</label>
+        <input type="text" id="edit-title" bind:value={editMovie.Title} required />
+      </div>
+      <div class="form-group">
+        <label for="edit-date">Date:</label>
+        <input type="datetime-local" id="edit-date" bind:value={editMovie.Date} required />
+      </div>
+      <div class="form-group">
+        <label for="edit-runtime">Runtime (minutes):</label>
+        <input type="number" id="edit-runtime" bind:value={editMovie.Runtime} required min="1"/>
+      </div>
+      <div class="form-group">
+        <label for="edit-posterFile">Poster Image: <span style="font-weight: normal; font-style: italic;">(leave blank to keep current)</span></label>
+        <input type="file" id="edit-posterFile" accept="image/jpg, image/png" on:change={(event) => editMovie.PosterFile = (event.target as HTMLInputElement).files?.[0] || null} />
+      </div>
+      <div class="form-group">
+        <label for="edit-menuFile">Menu Image: <span style="font-weight: normal; font-style: italic;">(leave blank to keep current)</span></label>
+        <input type="file" id="edit-menuFile" accept="image/jpg, image/png" on:change={(event) => editMovie.MenuFile = (event.target as HTMLInputElement).files?.[0] || null} />
+      </div>      
+      <button type="submit">Save</button>
+      <button type="button" class="cancel-button" on:click={() => showEditForm = false}>Cancel</button>
+    </form>
   </div>
 </div>
-{:else}
-  <p>No comments found.</p>
 {/if}
 
 <!-- Calendars Table -->
@@ -386,7 +475,6 @@
 <table>
     <thead>
         <tr>
-            <th>ID</th>
             <th>Date Range</th>
             <th>Date Added</th>
             <th>Assets</th>
@@ -396,14 +484,13 @@
     <tbody>
         {#each paginatedCalendars as calendar (calendar.ID)}
             <tr>
-                <td>{calendar.ID}</td>
                 <td>{formatDate(calendar.StartDate)} - {formatDate(calendar.EndDate)}</td>
                 <td>{formatDate(calendar.Date)}</td>
                 <td>
                   <a href={calendar.ImageURL} target="_blank">Image</a>
                 </td>
                 <td>
-                    <button on:click={() => deleteCalendar(calendar.ID)} style="color: red; border: none; background: none; cursor: pointer;">X</button>
+                    <button class="link-button delete" on:click={() => deleteCalendar(calendar.ID)}>Delete</button>
                 </td>
             </tr>
         {/each}
@@ -460,6 +547,47 @@
 </div>
 {/if}
 
+<!-- Comments Table -->
+<h2>Comments</h2>
+{#if comments.length > 0}
+<div class="table-container">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Comment</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {#each paginatedComments as comment (comment.ID)}
+            <tr>
+                <td>{comment.Name}</td>
+                <td>{comment.Email}</td>
+                <td>{comment.Comment}</td>
+                <td>{formatDate(comment.Date)}</td>
+                <td>
+                    <button on:click={() => deleteComment(comment.ID)} class="link-button delete">Delete</button>
+                </td>
+            </tr>
+        {/each}
+    </tbody>
+</table>
+  <div class="pagination-wrapper">
+  <Pagination
+      currentPage={commentCurrentPage}
+      totalPages={commentTotalPages}
+      totalItems={comments.length}
+      onPageChange={handleCommentPageChange}
+    />
+  </div>
+</div>
+{:else}
+  <p>No comments found.</p>
+{/if}
+
 <style>
   table {
       width: 100%;
@@ -508,6 +636,30 @@
 
   .date-range-container span {
     padding: 0 0.5rem;
+  }
+
+  .link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #0066cc;
+    cursor: pointer;
+    font: inherit;
+    margin-right: 1rem;
+  }
+
+  .link-button.delete {
+    color: red;
+  }
+
+  .link-button:hover {
+    text-decoration: underline;
+  }
+  .actions-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
   }
 </style>
   

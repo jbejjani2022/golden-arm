@@ -60,6 +60,7 @@
       <button class="email-button" on:click={copyEmailList} style="padding: 10px 20px; cursor: pointer;" title="Copy all unique emails from reservations and comments to clipboard.">Get Full Email List</button>
       <div class="nav-wrapper">
         <a href="/admin/dashboard">Dashboard</a>
+        <a href="/admin/dashboard/merch">Merch</a>
         <a href="/admin" on:click|preventDefault={logout}>Logout</a>
       </div>
     </nav>

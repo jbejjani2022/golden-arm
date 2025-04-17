@@ -63,6 +63,8 @@ func main() {
 	router.GET("/api/emails", routes.GetEmails)
 	router.GET("/api/calendar", routes.GetCalendar)
 	router.GET("/api/calendar/all", routes.GetAllCalendars)
+	router.GET("/api/merch/all", routes.GetAllMerchandise)
+	router.GET("/api/order/all", routes.GetAllOrders)
 
 	router.POST("/api/reserve", routes.Reserve)
 	router.POST("/api/movie", routes.AddMovie)
@@ -71,11 +73,19 @@ func main() {
 	router.POST("/api/admin/login", routes.AdminLogin)
 	router.POST("/api/admin/logout", routes.AdminLogout)
 	router.POST("/api/admin/validate-session", routes.ValidateSession)
+	router.POST("/api/merch", routes.AddMerchandise)
+	router.POST("/api/order", routes.AddOrder)
+
+	router.PUT("/api/merch/:merch_id", routes.UpdateMerchandise)
+	router.PUT("/api/order/status/:order_id", routes.UpdateOrderStatus)
+	router.PUT("/api/movie/:movie_id", routes.UpdateMovie)
 
 	router.DELETE("/api/movie/:movie_id", routes.DeleteMovie)
 	router.DELETE("/api/reservation/:reservation_id", routes.DeleteReservation)
 	router.DELETE("/api/comment/:comment_id", routes.DeleteComment)
 	router.DELETE("/api/calendar/:calendar_id", routes.DeleteCalendar)
+	router.DELETE("/api/merch/:merch_id", routes.DeleteMerchandise)
+	router.DELETE("/api/order/:order_id", routes.DeleteOrder)
 
 	port := os.Getenv("PORT")
 	if port == "" {

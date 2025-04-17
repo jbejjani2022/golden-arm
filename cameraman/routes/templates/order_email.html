@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - Golden Arm</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .order-details {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+            display: flex;
+            align-items: center;
+        }
+        .item:last-child {
+            border-bottom: none;
+        }
+        .item img {
+            width: 80px;
+            height: auto;
+            margin-right: 15px;
+        }
+        .item-details {
+            flex-grow: 1;
+        }
+        .total {
+            text-align: right;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Thank you for your order!</h1>
+        <p>Dear {{.Order.Name}},</p>
+        <p>We've received your order, and we're excited to get it to you.</p>
+    </div>
+
+    <div class="order-details">
+        <h2>Order Summary</h2>
+        {{range .Order.Items}}
+        <div class="item">
+            {{if .MerchandiseID}}
+            <img src="{{.Merchandise.ImageURL}}" alt="{{.Merchandise.Name}}">
+            <div class="item-details">
+                <h3>{{.Merchandise.Name}}</h3>
+                <p>Quantity: {{.Quantity}}</p>
+                {{if .Size}}<p>Size: {{.Size}}</p>{{end}}
+                <p>Price: ${{mul .Price .Quantity}}</p>
+            </div>
+            {{else}}
+            <img src="{{.Movie.PosterURL}}" alt="{{.Movie.Title}} Poster">
+            <div class="item-details">
+                <h3>"{{.Movie.Title}}" Poster</h3>
+                <p>Quantity: {{.Quantity}}</p>
+                <p>Price: ${{mul .Price .Quantity}}</p>
+            </div>
+            {{end}}
+        </div>
+        {{end}}
+
+        <div class="total">
+            <p>Total: ${{.Response.Total}}</p>
+        </div>
+    </div>
+
+    <p><strong>To complete your order, Venmo @goldenarmtheater your total. Then, pick up your items at the <a href="https://goldenarmtheater.com">next Golden Arm screening</a>.</strong></p>
+    <p>Note that we can only reserve merch and print any posters you requested once payment has been received.</p>
+    <p>If you don't have Venmo, or if you are unable to come to the next screening for pickup, reply to this email to arrange an alternative payment or pickup plan.</p>
+    <p>If you have any questions or concerns, please don't hesitate to contact us.</p>
+
+    <p>To many more films ahead,</p>
+    <p><strong>The Golden Arm</strong></p>
+    <a href="https://www.instagram.com/eliotgoldenarm?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">@eliotgoldenarm</a>
+</body>
+</html>

@@ -43,8 +43,10 @@
           <h2>{movie.Title}</h2>
           <p>{formatDate(movie.Date)}</p>
           <div class="images">
-            <img src={movie.PosterURL} alt="{movie.Title} poster" class="poster" />
-            <img src={movie.MenuURL} alt="{movie.Title} menu" class="menu below" />
+            <img src={movie.PosterURL} alt="{movie.Title} poster" class="poster" loading="lazy" />
+            {#if movie.MenuURL}
+              <img src={movie.MenuURL} alt="{movie.Title} menu" class="menu below" loading="lazy" />
+            {/if}
           </div>          
         </div>
       {/each}
