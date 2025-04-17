@@ -191,32 +191,36 @@
     <section class="merch-items">
       <h2>The Golden Arm Shop</h2>
       <div class="merch-grid">
-  {#each merchItems as item}
-    <div class="merch-card">
-      <img src={item.ImageURL} alt={item.Name} loading="lazy" class="clickable-image" on:click={() => openImageModal(item.ImageURL, item.Name)} />
-      <div class="merch-title-row">
-        <h3>{item.Name}</h3>
-        <span class="price">${item.Price}</span>
-      </div>
-      <div class="merch-desc">{item.Description}</div>
-      <div class="merch-controls">
-        {#if Object.keys(item.inventory).length > 1}
-          <select class="size-select" bind:value={item.selectedSize} on:change={handleMerchChange}>
-  <option value="" class="select-size-placeholder">Select Size</option>
-            {#each sizes.filter(size => item.inventory[size] !== undefined) as size}
-  <option value={size} disabled={!item.inventory[size]}>
-    {size} {item.inventory[size] > 0 ? '' : '(not available)'}
-  </option>
-{/each}
-          </select>
-          <input class="qty-input" type="number" min="0" max={item.selectedSize ? item.inventory[item.selectedSize] : 0} bind:value={item.quantity} on:input={handleMerchChange} placeholder="Qty" disabled={!item.selectedSize} />
+        {#if merchItems.length === 0}
+          <h3>Merch coming soon...👀</h3>
         {:else}
-          <input class="qty-input" type="number" min="0" max={item.inventory ? Object.values(item.inventory)[0] : 99} bind:value={item.quantity} on:input={handleMerchChange} placeholder="Qty" />
+        {#each merchItems as item}
+          <div class="merch-card">
+            <img src={item.ImageURL} alt={item.Name} loading="lazy" class="clickable-image" on:click={() => openImageModal(item.ImageURL, item.Name)} />
+            <div class="merch-title-row">
+              <h3>{item.Name}</h3>
+              <span class="price">${item.Price}</span>
+            </div>
+            <div class="merch-desc">{item.Description}</div>
+            <div class="merch-controls">
+              {#if Object.keys(item.inventory).length > 1}
+                <select class="size-select" bind:value={item.selectedSize} on:change={handleMerchChange}>
+                  <option value="" class="select-size-placeholder">Select Size</option>
+                  {#each sizes.filter(size => item.inventory[size] !== undefined) as size}
+                    <option value={size} disabled={!item.inventory[size]}>
+                      {size} {item.inventory[size] > 0 ? '' : '(not available)'}
+                    </option>
+                  {/each}
+                </select>
+                <input class="qty-input" type="number" min="0" max={item.selectedSize ? item.inventory[item.selectedSize] : 0} bind:value={item.quantity} on:input={handleMerchChange} placeholder="Qty" disabled={!item.selectedSize} />
+              {:else}
+                <input class="qty-input" type="number" min="0" max={item.inventory ? Object.values(item.inventory)[0] : 99} bind:value={item.quantity} on:input={handleMerchChange} placeholder="Qty" />
+              {/if}
+            </div>
+          </div>
+        {/each}
         {/if}
       </div>
-    </div>
-  {/each}
-</div>
     </section>
 
     <section class="posters">
