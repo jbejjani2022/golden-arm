@@ -28,7 +28,7 @@
   <section class="theater-info">
     <h1>The Golden Arm Archive</h1>
     <p>
-      Discover our past screenings.
+      Discover our past screenings and crafted drinks.
     </p>
   </section>
 
