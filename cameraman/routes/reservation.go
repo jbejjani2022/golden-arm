@@ -11,10 +11,13 @@ import (
 	"golden-arm/schema"
 	"html/template"
 	"net/http"
-	"net/smtp"
 	"os"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/sesv2"
+	"github.com/aws/aws-sdk-go-v2/service/sesv2/types"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -203,6 +206,15 @@ func Reserve(c *gin.Context) {
 var resEmailTemplate embed.FS
 
 func sendResConfirmationEmail(data ResEmailData) error {
+	// Load AWS config
+	cfg, err := config.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		return fmt.Errorf("failed to load AWS config: %w", err)
+	}
+
+	// Create SESv2 client
+	client := sesv2.NewFromConfig(cfg)
+
 	// Parse and fill the HTML email template
 	tmpl, err := template.ParseFS(resEmailTemplate, "templates/res_email.html")
 	if err != nil {
@@ -214,26 +226,41 @@ func sendResConfirmationEmail(data ResEmailData) error {
 		return fmt.Errorf("failed to execute email template: %w", err)
 	}
 
-	// Configure SMTP settings
-	smtpHost := "smtp.gmail.com"
-	smtpPort := "587" // Common port for TLS
-	smtpUsername := os.Getenv("SMTP_USERNAME")
-	smtpPassword := os.Getenv("SMTP_PASSWORD")
-
-	// Prepare email message
-	from := smtpUsername
+	// Compose email
+	from := os.Getenv("SENDER")
+	replyTo := os.Getenv("REPLYTO")
+	to := data.To
+	cc := replyTo // Optional: admin copy
 	subject := fmt.Sprintf("You're set to watch \"%s\" @ The Golden Arm: %s", data.MovieTitle, data.MovieDate)
-	message := fmt.Sprintf("Subject: %s\r\nFrom: %s\r\nTo: %s\r\nContent-Type: text/html\r\n\r\n%s",
-		subject, from, data.To, body.String())
 
-	// Connect to the SMTP server
-	auth := smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost)
-	err = smtp.SendMail(smtpHost+":"+smtpPort, auth, from, []string{data.To}, []byte(message))
-	if err != nil {
-		return fmt.Errorf("failed to send email: %w", err)
+	// Compose the SES email input
+	input := &sesv2.SendEmailInput{
+		FromEmailAddress: aws.String(from),
+		Destination: &types.Destination{
+			ToAddresses: []string{to},
+			CcAddresses: []string{cc},
+		},
+		ReplyToAddresses: []string{replyTo},
+		Content: &types.EmailContent{
+			Simple: &types.Message{
+				Subject: &types.Content{
+					Data: aws.String(subject),
+				},
+				Body: &types.Body{
+					Html: &types.Content{
+						Data: aws.String(body.String()),
+					},
+				},
+			},
+		},
 	}
 
-	fmt.Printf("Confirmation email sent to %s\n", data.To)
+	out, err := client.SendEmail(context.TODO(), input)
+	if err != nil {
+		return fmt.Errorf("failed to send reservation confirmation email: %w", err)
+	}
+
+	fmt.Printf("Reservation confirmation email sent to %s (SES Message ID: %s)\n", to, aws.ToString(out.MessageId))
 	return nil
 }
 
