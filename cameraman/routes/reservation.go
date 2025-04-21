@@ -227,7 +227,7 @@ func sendResConfirmationEmail(data ResEmailData) error {
 	}
 
 	// Compose email
-	from := os.Getenv("SENDER")
+	from := os.Getenv("RESERVATIONS_SENDER")
 	replyTo := os.Getenv("REPLYTO")
 	to := data.To
 	cc := replyTo // Optional: admin copy
