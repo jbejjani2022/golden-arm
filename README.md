@@ -37,7 +37,8 @@ DB_NAME="?"
 API_KEY="?"
 ADMIN_PASSKEY="?"
 
-SENDER="?"  # address from which emails are sent - should be a domain verified in SES
+RESERVATIONS_SENDER="?"  # address from which reservation confirmation emails are sent
+ORDERS_SENDER="?"  # address from which order confirmation emails are sent
 REPLYTO="?" # monitored admin inbox
 
 AWS_ACCESS_KEY_ID="?"
