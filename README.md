@@ -39,8 +39,8 @@ DB_NAME="?"
 API_KEY="?"
 ADMIN_PASSKEY="?"
 
-SMTP_USERNAME="?"
-SMTP_PASSWORD="?"
+SENDER="?"  # address from which emails are sent - should be a domain verified in SES
+REPLYTO="?" # monitored admin inbox
 
 AWS_ACCESS_KEY_ID="?"
 AWS_SECRET_ACCESS_KEY="?"

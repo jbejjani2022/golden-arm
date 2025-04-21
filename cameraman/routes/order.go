@@ -8,13 +8,16 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"net/smtp"
 	"os"
 	"time"
 
 	"golden-arm/internal"
 	"golden-arm/schema"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/sesv2"
+	"github.com/aws/aws-sdk-go-v2/service/sesv2/types"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
@@ -290,15 +293,22 @@ func updateInventory(ctx context.Context, tx bun.Tx, items []schema.OrderItem) e
 var orderEmailTemplate embed.FS
 
 func sendOrderConfirmationEmail(data OrderEmailData) error {
-	// Create base template and register functions
+	// Load AWS config
+	cfg, err := config.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		return fmt.Errorf("failed to load AWS config: %w", err)
+	}
+
+	// Create SESv2 client
+	client := sesv2.NewFromConfig(cfg)
+
+	// Prepare template
 	base := template.New("order_email.html")
 	base.Funcs(template.FuncMap{
 		"mul": func(price float64, quantity int) float64 {
 			return price * float64(quantity)
 		},
 	})
-
-	// Parse the HTML email template
 	tmpl, err := base.ParseFS(orderEmailTemplate, "templates/order_email.html")
 	if err != nil {
 		return fmt.Errorf("failed to parse email template: %w", err)
@@ -309,26 +319,40 @@ func sendOrderConfirmationEmail(data OrderEmailData) error {
 		return fmt.Errorf("failed to execute email template: %w", err)
 	}
 
-	// Configure SMTP settings
-	smtpHost := "smtp.gmail.com"
-	smtpPort := "587" // Common port for TLS
-	smtpUsername := os.Getenv("SMTP_USERNAME")
-	smtpPassword := os.Getenv("SMTP_PASSWORD")
-
-	// Prepare email message
-	from := smtpUsername
+	// Compose email
+	from := os.Getenv("SENDER")
+	replyTo := os.Getenv("REPLYTO")
+	to := data.Order.Email
+	cc := replyTo // Optional: admin copy
 	subject := "Confirming your order at The Golden Arm"
-	message := fmt.Sprintf("Subject: %s\r\nFrom: %s\r\nTo: %s\r\nCC: %s\r\nContent-Type: text/html\r\n\r\n%s",
-		subject, from, data.Order.Email, from, body.String())
 
-	// Connect to the SMTP server
-	auth := smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost)
-	err = smtp.SendMail(smtpHost+":"+smtpPort, auth, from, append([]string{data.Order.Email}, from), []byte(message))
+	input := &sesv2.SendEmailInput{
+		FromEmailAddress: aws.String(from),
+		Destination: &types.Destination{
+			ToAddresses: []string{to},
+			CcAddresses: []string{cc},
+		},
+		ReplyToAddresses: []string{replyTo},
+		Content: &types.EmailContent{
+			Simple: &types.Message{
+				Subject: &types.Content{
+					Data: aws.String(subject),
+				},
+				Body: &types.Body{
+					Html: &types.Content{
+						Data: aws.String(body.String()),
+					},
+				},
+			},
+		},
+	}
+
+	out, err := client.SendEmail(context.TODO(), input)
 	if err != nil {
 		return fmt.Errorf("failed to send email: %w", err)
 	}
 
-	fmt.Printf("Confirmation email sent to %s\n", data.Order.Email)
+	fmt.Printf("Confirmation email sent to %s (SES Message ID: %s)\n", to, aws.ToString(out.MessageId))
 	return nil
 }
 
@@ -518,24 +542,24 @@ func GetAllOrders(c *gin.Context) {
 	}
 
 	type OrderItem struct {
-		ID            uuid.UUID       `json:"id"`
-		MerchandiseID *uuid.UUID      `json:"merchandise_id,omitempty"`
-		MovieID       *uuid.UUID      `json:"movie_id,omitempty"`
-		Quantity      int             `json:"quantity"`
-		Size          string          `json:"size,omitempty"`
-		Price         float64         `json:"price"`
+		ID            uuid.UUID           `json:"id"`
+		MerchandiseID *uuid.UUID          `json:"merchandise_id,omitempty"`
+		MovieID       *uuid.UUID          `json:"movie_id,omitempty"`
+		Quantity      int                 `json:"quantity"`
+		Size          string              `json:"size,omitempty"`
+		Price         float64             `json:"price"`
 		Merchandise   *schema.Merchandise `json:"merchandise,omitempty"`
-		Movie         *schema.Movie      `json:"movie,omitempty"`
+		Movie         *schema.Movie       `json:"movie,omitempty"`
 	}
 
 	type OrderWithItems struct {
-		ID     uuid.UUID    `json:"id"`
-		Name   string       `json:"name"`
-		Email  string       `json:"email"`
-		Date   time.Time    `json:"date"`
-		Total  float64      `json:"total"`
-		Paid   bool         `json:"paid"`
-		Items  []OrderItem  `json:"items"`
+		ID    uuid.UUID   `json:"id"`
+		Name  string      `json:"name"`
+		Email string      `json:"email"`
+		Date  time.Time   `json:"date"`
+		Total float64     `json:"total"`
+		Paid  bool        `json:"paid"`
+		Items []OrderItem `json:"items"`
 	}
 
 	var orders []schema.Order
