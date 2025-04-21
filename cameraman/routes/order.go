@@ -320,7 +320,7 @@ func sendOrderConfirmationEmail(data OrderEmailData) error {
 	}
 
 	// Compose email
-	from := os.Getenv("SENDER")
+	from := os.Getenv("ORDERS_SENDER")
 	replyTo := os.Getenv("REPLYTO")
 	to := data.Order.Email
 	cc := replyTo // Optional: admin copy
