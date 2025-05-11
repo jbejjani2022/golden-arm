@@ -101,10 +101,13 @@
   <!-- Navigation Links -->
   <ul class="navbar-links">
     <li>
+      <a href="/about" class:active={page.url.pathname === '/about'}>About</a>
+    </li>
+    <li>
       {#if movie?.ID}
       <a href={`/reservations/${movie.ID}`} class:active={page.url.pathname === `/reservations/${movie.ID}`}>Reserve a Seat</a>
     {/if}    
-  </li>
+    </li>
     <li>
       <a href="/archives" class:active={page.url.pathname === '/archives'}>Past Screenings</a>
     </li>
@@ -150,6 +153,7 @@
  <!-- Mobile Menu -->
  {#if showMobileMenu}
  <div class="mobile-menu {showMobileMenu ? 'open' : ''}">
+   <a href="/about" on:click={() => (showMobileMenu = false)}>About</a>
    <a href={`/reservations/${movie.ID}`} on:click={() => (showMobileMenu = false)}>Reserve a Seat</a>
    <a href="/archives" on:click={() => (showMobileMenu = false)}>Past Screenings</a>
    <!-- <a href="/filmfest" on:click={() => (showMobileMenu = false)}>Film Festival</a> -->
