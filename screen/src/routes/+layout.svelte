@@ -198,13 +198,11 @@
          <img src="/logofr.png" alt="Logo" class="footer-logo-img" />
        </a>
        <div class="footer-info">
-         <p>Have suggestions? We'd love to hear from you!</p>
-          <p>Email us at <a href="mailto:goldenarmtheater@gmail.com">goldenarmtheater@gmail.com</a> or drop a comment below.</p>
-         <button class="suggestions-button" on:click={confirmComment}>Comment</button>
-       </div>
-       <div class="footer-info">
-         <p>Stay updated on how The Golden Arm is shaping the cinema landscape of the Boston area <a href="https://www.instagram.com/eliotgoldenarm/" target="_blank" rel="noopener noreferrer">@eliotgoldenarm</a>.</p>
-       </div>
+        <p class="footer-elt">Have suggestions? We'd love to hear from you!</p>
+         <p class="footer-elt">Email us at <a href="mailto:goldenarmtheater@gmail.com">goldenarmtheater@gmail.com</a> or drop a comment below.</p>
+        <button class="suggestions-button" on:click={confirmComment}>Comment</button>
+        <p class="footer-elt">Stay updated on how The Golden Arm is shaping the cinema landscape of the Boston area <a href="https://www.instagram.com/eliotgoldenarm/" target="_blank" rel="noopener noreferrer">@eliotgoldenarm</a>.</p>
+      </div>
      </div>
    </div>
  </footer>
