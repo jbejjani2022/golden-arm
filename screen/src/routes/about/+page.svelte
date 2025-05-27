@@ -23,7 +23,7 @@
 
 <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
     <div class="top-text">MEET THE TEAM BEHIND THE SCREEN.</div>
-    <img src="/team.jpg" alt="Golden Arm Theater team members posing for a group photo" class="team-image" />
+    <img src="/team1.jpg" alt="Golden Arm Theater team members posing for a group photo" class="team-image" />
     <div class="team-caption">
         Photography by Owen Ebose, Harvard '25.<br>
         <span class="caption-names">Left to right: Joey Bejjani, Renée Perpignan, Xander Patton, Alexandre Benoit (bottom).</span>
@@ -53,10 +53,10 @@
             <a href="/about" class="links">Alexandre Benoit</a> '26 is a student in History and Literature and Art, Film, and Visual Studies. As co-manager, he plans screenings and organizes panels with special guests. He is also the Golden Arm's acclaimed Chef du Popcorn.
         </p>
         <p>
-            <a href="https://github.com/jbejjani2022" class="links">Joey Bejjani</a> '26 studies Computer Science and Statistics. He engineers and maintains the <a href="https://github.com/jbejjani2022/golden-arm" class="links">software</a> behind the Golden Arm. He likes music, too—you'll find him with the <a href="https://bachsocietyorchestra.org" class="links">Bach Society Orchestra</a>.
+            <a href="https://github.com/jbejjani2022" class="links">Joey Bejjani</a> '26 studies Computer Science and Statistics. He engineers and maintains the <a href="https://github.com/jbejjani2022/golden-arm" class="links">software</a> behind the Golden Arm. He likes music, too—you'll find him with the <a href="https://bachsocietyorchestra.org" class="links">Bach Society Orchestra</a> and <a href="https://jbejjani2022.github.io/eliot-quartet" class="links"> The Eliot Quartet</a>.
         </p>
         <p>
-            <a href="/about" class="links">Renée Perpignan</a> '26 studies Computer Science and Government. Aside from building interfaces for the users of <a href="https://goldenarmtheater.com" class="links">goldenarmtheater.com</a>, she makes your custom movie name tag when you {#if movie?.ID}<a href={`/reservations/${movie.ID}`} class="links">book a seat</a>{:else}book a seat{/if}. You'll also find her <a href="https://www.youtube.com/@reneesophia9077/videos" class="links">making music</a> and DJing.
+            <a href="/about" class="links">Renée Perpignan</a> '26 studies Computer Science and Government. Aside from building interfaces for the users of <a href="/" class="links">goldenarmtheater.com</a>, she makes your custom movie name tag when you {#if movie?.ID}<a href={`/reservations/${movie.ID}`} class="links">book a seat</a>{:else}book a seat{/if}. You'll also find her <a href="https://www.youtube.com/@reneesophia9077/videos" class="links">making music</a> and DJing.
         </p>
         <p>
             <br>
@@ -73,6 +73,7 @@
             <img src="/signature.svg" alt="Golden Arm Team signature" class="signature" />
         </p>
     </div>
+    <img src="/team2.jpg" alt="Golden Arm Theater team members posing for a group photo" class="team-image" />
 </div>
 
 <style>
@@ -93,7 +94,7 @@
     }
 
     .team-image {
-        max-width: 900px;
+        max-width: 1000px;
         width: 100%;
         height: auto;
         margin-bottom: 10px;
@@ -112,9 +113,9 @@
     }
 
     .team-description {
-        font-size: 20px;
+        font-size: 18px;
         margin-bottom: 40px;
-        max-width: 1050px;
+        max-width: 1000px;
         text-align: left;
         align-items: flex-start;
         box-sizing: border-box;
