@@ -105,6 +105,11 @@
     <section class="top-text">
       ELIOT HOUSE'S STUDENT-RUN THEATER SHOWCASING WEEKLY FILMS.
     </section>
+    <section class="top-text">
+      The Golden Arm is closed for the summer. See you in September!
+      <br>
+      Learn more about us <a href="/about" class="links">here</a>.
+    </section>
   
     {#if movie}
       <section class="movie-info">
@@ -207,6 +212,18 @@
     max-width: 1200px;
     margin: 0 auto;
     margin-bottom: 3rem;
+  }
+
+  .links {
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: normal;
+    transition: color 0.3s;
+  }
+
+  .links:hover {
+    color: #caac3e;
+    text-decoration: underline;
   }
 
   .top-text {
@@ -326,17 +343,17 @@
 
   /* See All link styling */
   .see-all-link {
-    font-size: 1rem; /* Smaller text */
-    color: #fff; /* Link color (blue) */
-    text-decoration: none; /* Removes underline */
-    font-weight: normal; /* Normal font weight */
-    transition: color 0.3s; /* Smooth color transition on hover */
+    font-size: 1rem;
+    color: #fff;
+    text-decoration: none;
+    font-weight: normal;
+    transition: color 0.3s;
   }
 
   /* Hover effect for the link */
   .see-all-link:hover {
-    color: #caac3e; /* Darker blue on hover */
-    text-decoration: underline; /* Optional underline on hover */
+    color: #caac3e;
+    text-decoration: underline;
   }
 
 
