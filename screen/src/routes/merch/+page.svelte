@@ -11,6 +11,7 @@
   let dragStart = { x: 0, y: 0 };
   let imgOffset = { x: 0, y: 0 };
   let imgCurrent = { x: 0, y: 0 };
+  let termsAccepted = false;
 
   function openImageModal(url: string, alt: string) {
     modalImageUrl = url;
@@ -174,7 +175,7 @@
         userEmail = '';
         showOrderSummary = false;
         updateTotal();
-        alert('Order placed successfully! See your email for payment and pickup details.');
+        alert('Order placed successfully. See your email for confirmation details.');
       } else {
         const errorText = await response.text();
         alert('Failed to place order. Server says: ' + errorText);
@@ -292,9 +293,19 @@
         <label>Name: <input type="text" bind:value={userName} required placeholder="Enter your name" /></label>
         <label>Email: <input type="email" bind:value={userEmail} required placeholder="Enter your email" /></label>
       </div>
+      <div class="order-instructions">
+        <p>
+          Venmo <a href="https://venmo.com/goldenarmtheater" class="links">@goldenarmtheater</a> the total to proceed with your order.
+          You may pick up your order at the <a href="/" class="links">next screening</a>, with at least one week's notice. If you don't have Venmo or are unable to come to a screening for pickup, submit your order and <a href="mailto:goldenarmtheater@gmail.com" class="links">email us</a> to arrange an alternative payment or pickup plan.
+        </p>
+        <label class="checkbox-label">
+          <input type="checkbox" bind:checked={termsAccepted} class="large-checkbox" />
+          <span>I have Venmoed <a href="https://venmo.com/goldenarmtheater" class="links">@goldenarmtheater</a> the total or reached out to arrange an alternative.</span>
+        </label>
+      </div>
       <div class="summary-controls">
         <button class="back-button" on:click={() => showOrderSummary = false}>Back to Shop</button>
-        <button class="submit-button" on:click={submitOrder} disabled={!userName || !userEmail}>Submit Order</button>
+        <button class="submit-button" on:click={submitOrder} disabled={!userName || !userEmail || !termsAccepted}>Submit Order</button>
       </div>
     </section>
   {/if}
@@ -335,6 +346,26 @@
 </main>
 
 <style>
+  .links {
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: normal;
+    transition: color 0.3s;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .large-checkbox {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin: 0.2rem 0 0 0;
+  }
+
   main.merch {
     padding: 2rem;
     color: #ffffff;
@@ -904,5 +935,12 @@ input.qty-input {
     display: block;
     margin: 0 auto;
   }
+}
+
+.order-instructions {
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto 1.5rem auto;
+  line-height: 1.5;
 }
 </style>

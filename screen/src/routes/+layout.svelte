@@ -338,7 +338,7 @@
   }
 
   .footer-info {
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 
   .footer-info a {
@@ -368,7 +368,7 @@
     }
 
     .footer-info {
-      font-size: 0.8rem;
+      font-size: 0.9rem;
     }
 
     :global(.modal-content) {
@@ -482,12 +482,6 @@
 }
 
 /* Logo Row */
-.navbar-logo-row {
-  width: 100%;
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
 .navbar-logo img {
   left: 10px;
   height: 5rem;
@@ -495,12 +489,6 @@
 }
 
 /* Navigation Links */
-.navbar-links-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
 .navbar-links {
   list-style: none;
   display: flex;
