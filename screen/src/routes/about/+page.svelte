@@ -23,7 +23,7 @@
 
 <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
     <div class="top-text">MEET THE TEAM BEHIND THE SCREEN.</div>
-    <img src="/team1.jpg" alt="Golden Arm Theater team members posing for a group photo" class="team-image" />
+    <img src="/team1.jpg" alt="Golden Arm Theater team members posing for a group photo" class="team-image" loading="lazy" />
     <div class="team-caption">
         Photography by Owen Ebose, Harvard '25.<br>
         <span class="caption-names">Left to right: Joey Bejjani, Renée Perpignan, Xander Patton, Alexandre Benoit (bottom).</span>
@@ -73,7 +73,7 @@
             <img src="/signature.svg" alt="Golden Arm Team signature" class="signature" />
         </p>
     </div>
-    <img src="/team2.jpg" alt="Golden Arm Theater team members posing for a group photo" class="team-image" />
+    <img src="/team2.jpg" alt="Golden Arm Theater team members posing for a group photo" class="team-image" loading="lazy" />
 </div>
 
 <style>

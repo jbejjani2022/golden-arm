@@ -203,8 +203,7 @@
          <button class="suggestions-button" on:click={confirmComment}>Comment</button>
        </div>
        <div class="footer-info">
-         <p>Stay updated on how The Golden Arm is shaping the cinema landscape of the Boston area.</p>
-         <p>Follow us <a href="https://www.instagram.com/eliotgoldenarm/" target="_blank" rel="noopener noreferrer">@eliotgoldenarm</a>.</p>
+         <p>Stay updated on how The Golden Arm is shaping the cinema landscape of the Boston area <a href="https://www.instagram.com/eliotgoldenarm/" target="_blank" rel="noopener noreferrer">@eliotgoldenarm</a>.</p>
        </div>
      </div>
    </div>
