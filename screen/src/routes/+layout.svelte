@@ -1,9 +1,21 @@
 <script lang="ts">
-  import { page } from '$app/state';
+  import { page } from '$app/stores';
   import { onMount } from 'svelte';
+  import { afterNavigate } from '$app/navigation';
 
-  // Check if the current path starts with '/admin'
-  const isAdmin = page.url.pathname.startsWith('/admin');
+  // reactive: true when path starts with /admin
+  $: isAdmin = $page.url.pathname.startsWith('/admin');
+
+  function updateBodyMode() {
+    document.body.classList.toggle('admin-mode', isAdmin);
+    document.body.classList.toggle('user-mode', !isAdmin);
+  }
+
+  // run on first paint
+  onMount(updateBodyMode);
+
+  // run after every client-side navigation
+  afterNavigate(updateBodyMode);
 
   // Navbar mobile
   let showMobileMenu = false;
@@ -100,21 +112,21 @@
   <!-- Navigation Links -->
   <ul class="navbar-links">
     <li>
-      <a href="/about" class:active={page.url.pathname === '/about'}>About</a>
+      <a href="/about" class:active={$page.url.pathname === '/about'}>About</a>
     </li>
     <li>
       {#if movie?.ID}
-      <a href={`/reservations/${movie.ID}`} class:active={page.url.pathname === `/reservations/${movie.ID}`}>Reserve a Seat</a>
+      <a href={`/reservations/${movie.ID}`} class:active={$page.url.pathname === `/reservations/${movie.ID}`}>Reserve a Seat</a>
     {/if}    
     </li>
     <li>
-      <a href="/archives" class:active={page.url.pathname === '/archives'}>Past Screenings</a>
+      <a href="/archives" class:active={$page.url.pathname === '/archives'}>Past Screenings</a>
     </li>
     <li>
-      <a href="/filmfest" class:active={page.url.pathname === '/filmfest'}>Film Festival</a>
+      <a href="/filmfest" class:active={$page.url.pathname === '/filmfest'}>Film Festival</a>
     </li>
     <li>
-      <a href="/merch" class:active={page.url.pathname === '/merch'}>Merch</a>
+      <a href="/merch" class:active={$page.url.pathname === '/merch'}>Merch</a>
     </li>
     
    
@@ -213,13 +225,28 @@
 <style>
   .layout{
     display: flex;
-  flex-direction: column;
+    flex-direction: column;
   }
 
-  :root {
+  :global(:root) {
     --gold: #edbc0d;
     --dark-gold: #b08d00;
     --dark: #1f1f1f;
+    --light: #fff;
+    --text-light: #f0f0f0;
+    --text-dark: #000;
+  }
+
+  :global(body.user-mode) {
+    background-color: var(--dark);
+    color: var(--text-light);
+  }
+
+  :global(body.admin-mode) {
+    background-color: var(--light);
+    color: var(--text-dark);
+    max-width: 1400px;
+    padding: 20px;
   }
 
   @font-face {
@@ -241,8 +268,6 @@
     margin: 0 auto;
     padding: 0;
     font-family: Ubuntu, Arial, sans-serif;
-    background-color: var(--dark);
-    color: #f0f0f0;
     min-height: 100vh;
     text-align: center;
   }
