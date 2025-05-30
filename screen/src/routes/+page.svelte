@@ -102,12 +102,14 @@
   <!-- Home Page Layout -->
   <main>
     <section class="top-text">
-      ELIOT HOUSE'S STUDENT-RUN THEATER SHOWCASING WEEKLY FILMS.
-    </section>
-    <section class="top-text">
-      The Golden Arm is closed for the summer. See you in September!
-      <br>
-      Learn more about us <a href="/about" class="links">here</a>.
+      <div class="announcement">
+        ELIOT HOUSE'S STUDENT-RUN THEATER SHOWCASING WEEKLY FILMS.
+      </div>
+      <div class="announcement">
+        The Golden Arm is closed for the summer. See you in September!
+        <br>
+        Learn more about us <a href="/about" class="links">here</a>.
+      </div>
     </section>
   
     {#if movie}
@@ -229,6 +231,14 @@
     font-weight: bold;
     margin-top: 20px;
     margin-bottom: 40px;
+  }
+
+  .announcement {
+    margin-bottom: 2.0rem;
+  }
+
+  .announcement:last-child {
+    margin-bottom: 0;
   }
 
   .movie-info {
