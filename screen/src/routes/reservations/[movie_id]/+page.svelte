@@ -240,40 +240,39 @@
 </main>
 
 <style>
-
-  
 .reservation-page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100vh;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 2rem 0;
 }
 
 /* new */
 .movie-info {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 24px;
+  margin-bottom: 32px;
 }
 
 .movie-icon img {
-  width: 80px;
-  height: 80px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   object-fit: cover;
 }
 
 .movie-details h1 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: bold;
 }
 
 .movie-details .movie-date {
-  margin: 4px 0 0;
-  font-size: 0.9rem;
+  margin: 8px 0 0;
+  font-size: 1.1rem;
   color: gray;
 }
 
@@ -285,40 +284,45 @@ h1 {
 .grid {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
   margin: 0 auto;
-  width: 100%; /* Take full width */
-  max-width: 600px; /* Limit the width on larger screens */
+  width: 100%;
+  max-width: 800px;
 }
-
 
 .row {
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  justify-content: center; /* Centers the seats horizontally within the row */
+  gap: 16px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+  justify-content: center;
 }
 
 .seat {
-  position: relative; /* Needed for label positioning */
-
-  width: 50px;
-  height: 50px;
-  background-color: transparent; /* Optional: Remove any background color */
-  border: none; /* Remove any borders if unnecessary */
+  position: relative;
+  width: 70px;
+  height: 70px;
+  background-color: transparent;
+  border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: visible; /* Allow the image to show fully */
+  overflow: visible;
+}
+
+.seat img {
+  width: 70px;
+  height: 70px;
+  transition: transform 0.2s ease;
 }
 
 .reserve-button {
   display: inline-block;
-  padding: 12px 24px;
+  padding: 16px 32px;
   text-decoration: none;
-  margin-top: 20px;
+  margin-top: 40px;
+  font-size: 1.2rem;
 }
 
 /* seatstuff */
@@ -331,14 +335,6 @@ h1 {
   transition: transform 0.2s ease-in-out;
   font-size: 12px; /* Adjust font size for seat labels */
   text-align: center; /* Center-align the text */
-}
-
-.seat img {
-  /* transform: rotate(180deg); */
-
-  width: 50px;
-  height: 50px;
-  transition: transform 0.2s ease;
 }
 
 .seat:hover {
@@ -358,19 +354,20 @@ h1 {
   display: flex;
   justify-content: center; /* Center the rectangle horizontally */
   margin-bottom: 20px; /* Space between the rectangle and the Confirm button */
+  margin-top: 40px;
 }
 
 #screen {
-  background-color: white; /* Rectangle background color */
-  color: black; /* Text color */
-  width: 300px; /* Width of the rectangle */
-  height: 30px; /* Height of the rectangle */
+  background-color: white;
+  color: black;
+  width: 400px;
+  height: 40px;
   display: flex;
-  justify-content: center; /* Center text horizontally */
-  align-items: center; /* Center text vertically */
-  font-size: 18px; /* Font size of the text */
-  border-radius: 10px; /* Optional: Rounded corners */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Optional: Add a subtle shadow */
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* seat space */
@@ -388,19 +385,33 @@ h1 {
   padding-top: 15px;
 }
 
+.reservation-page h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .reservation-page {
-    padding: 0; /* Remove padding for full width */
+    padding: 0;
+    height: 100vh;
+    justify-content: center;
   }
 
   .grid {
-    margin: 0; /* Remove margins for full-width display */
+    margin: 0;
+    max-width: 600px;
+    gap: 10px;
+  }
+
+  .row {
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
   }
 
   .seat {
-    width: 40px; /* Slightly smaller seats on mobile */
+    width: 40px;
     height: 40px;
   }
 
@@ -410,12 +421,48 @@ h1 {
   }
 
   .seat-label {
-    /* bottom: px; Adjust label for smaller seats */
-    font-size: 12px; /* Slightly smaller font */
+    font-size: 12px;
   }
 
   .movie-info {
-  margin-top: 5rem;
-}
+    margin-top: 5rem;
+    gap: 0px;
+    margin-bottom: 20px;
+  }
+
+  .movie-icon img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .movie-details h1 {
+    font-size: 1.5rem;
+  }
+
+  .movie-details .movie-date {
+    margin: 4px 0 0;
+    font-size: 0.9rem;
+  }
+
+  #screen-container {
+    margin-bottom: 32px;
+  }
+
+  .reservation-page h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .reserve-button {
+    margin-top: 12px;
+    padding: 12px 24px;
+    font-size: 1rem;
+  }
+
+  #screen {
+    width: 300px;
+    height: 30px;
+    font-size: 18px;
+  }
 }
 </style>
