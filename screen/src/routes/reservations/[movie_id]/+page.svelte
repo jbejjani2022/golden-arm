@@ -254,26 +254,26 @@
 .movie-info {
   display: flex;
   align-items: center;
-  gap: 24px;
-  margin-bottom: 32px;
+  gap: 20px;
+  margin-bottom: 28px;
 }
 
 .movie-icon img {
-  width: 120px;
-  height: 120px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   object-fit: cover;
 }
 
 .movie-details h1 {
   margin: 0;
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: bold;
 }
 
 .movie-details .movie-date {
-  margin: 8px 0 0;
-  font-size: 1.1rem;
+  margin: 6px 0 0;
+  font-size: 0.95rem;
   color: gray;
 }
 
@@ -285,24 +285,24 @@ h1 {
 .grid {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
   margin: 0 auto;
   width: 100%;
-  max-width: 800px;
+  max-width: 650px;
 }
 
 .row {
   display: flex;
-  gap: 16px;
-  margin-top: 24px;
-  margin-bottom: 24px;
+  gap: 14px;
+  margin-top: 20px;
+  margin-bottom: 20px;
   justify-content: center;
 }
 
 .seat {
   position: relative;
-  width: 70px;
-  height: 70px;
+  width: 55px;
+  height: 55px;
   background-color: transparent;
   border: none;
   cursor: pointer;
@@ -313,17 +313,17 @@ h1 {
 }
 
 .seat img {
-  width: 70px;
-  height: 70px;
+  width: 55px;
+  height: 55px;
   transition: transform 0.2s ease;
 }
 
 .reserve-button {
   display: inline-block;
-  padding: 16px 32px;
+  padding: 14px 28px;
   text-decoration: none;
   margin-top: 40px;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
 /* seatstuff */
@@ -361,12 +361,12 @@ h1 {
 #screen {
   background-color: white;
   color: black;
-  width: 400px;
-  height: 40px;
+  width: 320px;
+  height: 32px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 20px;
+  font-size: 17px;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -387,7 +387,7 @@ h1 {
 }
 
 .reservation-page h3 {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   margin-bottom: 1rem;
 }
 
@@ -428,7 +428,7 @@ h1 {
 
   .movie-info {
     margin-top: 5rem;
-    gap: 0px;
+    gap: 12px;
     margin-bottom: 20px;
   }
 
@@ -456,7 +456,6 @@ h1 {
   }
 
   .reserve-button {
-    margin-top: 12px;
     padding: 12px 24px;
     font-size: 1rem;
   }
