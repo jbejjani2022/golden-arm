@@ -106,7 +106,7 @@
       <div class="announcement">
         ELIOT HOUSE'S STUDENT-RUN THEATER SHOWCASING WEEKLY FILMS.
       </div>
-      <div class="announcement">
+      <div class="sub-announcement">
         Learn more about us <a href="/about" class="links">here</a>.
       </div>
     </section>
@@ -236,9 +236,12 @@
 
   .announcement {
     margin-bottom: 2.0rem;
+    font-size: 2.0rem;
   }
 
-  .announcement:last-child {
+  .sub-announcement {
+    margin-bottom: 2.0rem;
+    font-size: 1.5rem;
     margin-bottom: 0;
   }
 
@@ -368,6 +371,10 @@
   @media screen and (max-width: 768px) {
     .top-text {
         margin-top: 120px; /* Adjust as needed to increase space */
+    }
+
+    .announcement {
+      font-size: 1.5rem;
     }
 
     .movie-screening {
