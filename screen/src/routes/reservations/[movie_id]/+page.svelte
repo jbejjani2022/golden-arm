@@ -48,11 +48,12 @@
     selected: boolean;
   }
 
-  // Create custom rows for the grid: 5 seats, 7 seats, 6 seats
+  // Create custom rows for the grid: 5 seats, 5 seats, 4 seats, 4 seats
   let seats: Seat[][] = [
-    Array.from({ length: 5 }, (_, col) => ({ num: `C${col + 1}`, selected: false })),
-    Array.from({ length: 7 }, (_, col) => ({ num: `B${col + 1}`, selected: false })),
-    Array.from({ length: 6 }, (_, col) => ({ num: `A${col + 1}`, selected: false })),
+    Array.from({ length: 4 }, (_, col) => ({ num: `D${col + 1}`, selected: false })),
+    Array.from({ length: 4 }, (_, col) => ({ num: `C${col + 1}`, selected: false })),
+    Array.from({ length: 5 }, (_, col) => ({ num: `B${col + 1}`, selected: false })),
+    Array.from({ length: 5 }, (_, col) => ({ num: `A${col + 1}`, selected: false })),
   ];
 
   let selectedSeat: Seat | null = null;
@@ -183,9 +184,6 @@
   {#each seats as row, rowIndex}
     <div class="row">
       {#each row as seat, colIndex}
-        {#if rowIndex === 2 && colIndex === 3}
-          <div class="seat-space"></div> <!-- Add space in the middle of the 6 chairs -->
-        {/if}
         <button
           class="seat {reservedSeats.includes(seat.num) ? 'reserved' : ''}"
           disabled={reservedSeats.includes(seat.num)} 
@@ -286,7 +284,7 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  margin: 0 auto;
+  margin: 24px auto 0;
   width: 100%;
   max-width: 650px;
 }
@@ -294,8 +292,8 @@ h1 {
 .row {
   display: flex;
   gap: 14px;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 8px;
+  margin-bottom: 8px;
   justify-content: center;
 }
 
@@ -371,10 +369,6 @@ h1 {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* seat space */
-.seat-space {
-  width: 20px; /* Adjust the gap width */
-}
 
 .seat-label {
   position: absolute; /* Position label absolutely to center it */
@@ -401,15 +395,15 @@ h1 {
   }
 
   .grid {
-    margin: 0;
+    margin: 20px auto 0;
     max-width: 600px;
     gap: 10px;
   }
 
   .row {
     gap: 10px;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 8px;
+    margin-bottom: 8px;
   }
 
   .seat {
