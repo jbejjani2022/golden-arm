@@ -106,8 +106,6 @@
         ELIOT HOUSE'S STUDENT-RUN THEATER SHOWCASING WEEKLY FILMS.
       </div>
       <div class="announcement">
-        The Golden Arm is closed for the summer. See you in September!
-        <br>
         Learn more about us <a href="/about" class="links">here</a>.
       </div>
     </section>
