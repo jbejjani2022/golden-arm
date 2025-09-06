@@ -450,12 +450,20 @@ h1 {
   .reserve-button {
     padding: 12px 24px;
     font-size: 1rem;
+    margin-top: 20px;
   }
 
   #screen {
     width: 300px;
     height: 30px;
     font-size: 18px;
+  }
+}
+
+/* Desktop styles - reduce space below confirm button */
+@media (min-width: 769px) {
+  .reservation-page {
+    padding: 2rem 0 0 0;
   }
 }
 </style>
