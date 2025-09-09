@@ -295,12 +295,12 @@
       </div>
       <div class="order-instructions">
         <p>
-          Venmo <a href="https://venmo.com/goldenarmtheater" class="links">@goldenarmtheater</a> the total to proceed with your order.
+          Venmo <a href="https://venmo.com/TheGoldenArm">@TheGoldenArm</a> the total to proceed with your order.
           You may pick up your order at the <a href="/" class="links">next screening</a>, with at least one week's notice. If you don't have Venmo or are unable to come to a screening for pickup, submit your order and <a href="mailto:goldenarmtheater@gmail.com" class="links">email us</a> to arrange an alternative payment or pickup plan.
         </p>
         <label class="checkbox-label">
           <input type="checkbox" bind:checked={termsAccepted} class="large-checkbox" />
-          <span>I have Venmoed <a href="https://venmo.com/goldenarmtheater" class="links">@goldenarmtheater</a> the total or reached out to arrange an alternative.</span>
+          <span>I have Venmoed <a href="https://venmo.com/TheGoldenArm">@TheGoldenArm</a> the total or reached out to arrange an alternative.</span>
         </label>
       </div>
       <div class="summary-controls">
