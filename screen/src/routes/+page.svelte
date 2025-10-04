@@ -1,45 +1,66 @@
 <script lang="ts">
   import { formatDate, formatRuntime } from '$lib';
-  import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
   import { apiBaseUrl } from '$lib/api';
   import { Splide, SplideSlide, SplideTrack } from '@splidejs/svelte-splide';
+  import type { Options } from '@splidejs/splide';
   import '@splidejs/svelte-splide/css';
 
   let movie: any = null;
   let calendar: any = null;
   let error: string = '';
+  let reservedSeats: string[] = [];
+  const MAX_SEATS = 18;
+  let fetchedReservedForId: number | null = null;
+  $: fullyBooked = reservedSeats.length >= MAX_SEATS;
 
-  // Fetch the next movie using the /api/movie/next endpoint
+  // Fetch movie and calendar in parallel
   onMount(async () => {
-    try {
-      const response = await fetch(`${apiBaseUrl}/movie/next`);
-      const data = await response.json();
+    const [movieRes, calRes] = await Promise.allSettled([
+      fetch(`${apiBaseUrl}/movie/next`).then((r) => r.json()),
+      fetch(`${apiBaseUrl}/calendar`).then((r) => r.json())
+    ]);
 
+    if (movieRes.status === 'fulfilled') {
+      const data = movieRes.value;
       if (data.success) {
         movie = data.data;
       } else {
         error = 'Failed to load the next movie.';
       }
-    } catch (err) {
-      console.error(err);
+    } else {
+      console.error(movieRes.reason);
       error = 'Something went wrong while fetching the movie data.';
     }
 
-    try {
-      const response = await fetch(`${apiBaseUrl}/calendar`);
-      const data = await response.json();
-
+    if (calRes.status === 'fulfilled') {
+      const data = calRes.value;
       if (data.success) {
         calendar = data.data;
       } else {
         error = 'Failed to load the calendar.';
       }
-    } catch (err) {
-      console.error(err);
+    } else {
+      console.error(calRes.reason);
       error = 'Something went wrong while fetching the calendar.';
     }
   });
+
+  // Fetch reserved seats once movie loads
+  $: if (movie && movie.ID && fetchedReservedForId !== movie.ID) {
+    fetchedReservedForId = movie.ID;
+    (async () => {
+      try {
+        const response = await fetch(`/api/reserved/${movie.ID}`);
+        const result = await response.json();
+        if (result.success) {
+          reservedSeats = result.data.reserved_seats || [];
+        }
+      } catch (err) {
+        console.error('Error fetching reserved seats:', err);
+      }
+    })();
+  }
 
   // Past screening carousel
   type Movie = {
@@ -66,7 +87,7 @@
     }
   });
 
-  const options = {
+  const options: Options = {
     type: 'loop',
     drag: true,
     snap: true,
@@ -117,17 +138,18 @@
         <div class="movie-details">
           <h1 class="movie-title">{movie.Title}</h1>
           <div class="movie-screening">
-            
-            <div style="margin-bottom: 0.5rem; margin-top: 0.5rem;">Screening {formatDate(movie.Date)}</div>
+            <div style="margin-bottom: 0.5rem; margin-top: 0.5rem;">{formatDate(movie.Date)}</div>
             <div style="padding: 0.5rem">{formatRuntime(movie.Runtime)}</div>
-
-            <button class="reserve-button" on:click={() => goto(`/reservations/${movie.ID}`)}>Get Tickets</button>
+            <a class="reserve-button" href={`/reservations/${movie.ID}`} data-sveltekit-preload-data="hover">Get Tickets</a>
           </div>
         </div>
 
         <!-- Right side: Movie Poster -->
         <div class="movie-poster">
-          <img src={movie.PosterURL} alt="Movie poster for {movie.Title}" />
+          <img src={movie.PosterURL} alt="Movie poster for {movie.Title}" decoding="async" fetchpriority="high" />
+          {#if fullyBooked}
+            <div class="sold-out-overlay">SOLD OUT</div>
+          {/if}
         </div>
       </section>
     {:else}
@@ -164,11 +186,6 @@
       {/each}
     </SplideTrack>
   </div>
-
-    <div class="splide__progress">
-      <div class="splide__progress__bar">
-      </div>
-    </div>
   </Splide>
   {:else}
     <p>Archive is empty...</p>
@@ -180,7 +197,7 @@
   <div class="separator"></div>
   {#if calendar}
     <div class="calendar-image">
-      <img src={calendar.ImageURL} alt="Calendar" />
+      <img src={calendar.ImageURL} alt="Calendar" loading="lazy" decoding="async" />
     </div>
   {:else}
     <p>Calendar not found.</p>
@@ -282,8 +299,15 @@
     cursor: pointer;
     font-size: 1rem;
     display: inline-block; /* Ensures the button only takes as much space as the text needs */
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 12px 24px;
+    background-color: var(--gold);
+    color: black;
+    font-weight: bold;
+    text-decoration: none;
+    border: none;
+    border-radius: 18px;
   }
 
   .reserve-button:hover {
@@ -294,6 +318,7 @@
     flex: 1; /* Take up the other half of the screen */
     max-width: 30%;
     min-width: 300px;
+    position: relative;
   }
 
   .movie-poster img {
@@ -301,6 +326,19 @@
     height: auto;
     border-radius: 5px;
 
+  }
+
+  .sold-out-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--gold);
+    font-size: 3rem;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    pointer-events: none;
+    user-select: none;
   }
 
   /* .error {

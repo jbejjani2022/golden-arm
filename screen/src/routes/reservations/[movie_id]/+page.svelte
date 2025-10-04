@@ -48,6 +48,9 @@
     selected: boolean;
   }
 
+  const MAX_SEATS = 18;
+  $: fullyBooked = reservedSeats.length >= MAX_SEATS;
+
   // Create custom rows for the grid: 5 seats, 5 seats, 4 seats, 4 seats
   let seats: Seat[][] = [
     Array.from({ length: 5 }, (_, col) => ({ num: `D${col + 1}`, selected: false })),
@@ -178,6 +181,10 @@
   {:else}
   <p>Loading movie information...</p>
   {/if}
+
+{#if fullyBooked}
+<h3 class="sold-out">SOLD OUT</h3>
+{/if}
 
 <h3>Select Your Seat</h3>
 <div class="grid">
@@ -383,6 +390,11 @@ h1 {
 .reservation-page h3 {
   font-size: 1.6rem;
   margin-bottom: 1rem;
+}
+
+.reservation-page h3.sold-out {
+  color: var(--gold);
+  margin: 0.25rem 0;
 }
 
 /* Responsive Design */
