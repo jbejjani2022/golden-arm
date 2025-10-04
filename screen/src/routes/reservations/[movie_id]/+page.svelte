@@ -50,10 +50,10 @@
 
   // Create custom rows for the grid: 5 seats, 5 seats, 4 seats, 4 seats
   let seats: Seat[][] = [
-    Array.from({ length: 4 }, (_, col) => ({ num: `D${col + 1}`, selected: false })),
-    Array.from({ length: 4 }, (_, col) => ({ num: `C${col + 1}`, selected: false })),
-    Array.from({ length: 5 }, (_, col) => ({ num: `B${col + 1}`, selected: false })),
-    Array.from({ length: 5 }, (_, col) => ({ num: `A${col + 1}`, selected: false })),
+    Array.from({ length: 5 }, (_, col) => ({ num: `D${col + 1}`, selected: false })),
+    Array.from({ length: 5 }, (_, col) => ({ num: `C${col + 1}`, selected: false })),
+    Array.from({ length: 4 }, (_, col) => ({ num: `B${col + 1}`, selected: false })),
+    Array.from({ length: 4 }, (_, col) => ({ num: `A${col + 1}`, selected: false })),
   ];
 
   let selectedSeat: Seat | null = null;
