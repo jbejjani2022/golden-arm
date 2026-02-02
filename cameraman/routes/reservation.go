@@ -41,23 +41,6 @@ type ResEmailData struct {
 	PosterURL    string
 }
 
-// Theater seat layout (must match frontend seating map)
-var Seats = []string{
-	"A1", "A2", "A3", "A4",
-	"B1", "B2", "B3", "B4",
-	"C1", "C2", "C3", "C4", "C5",
-	"D1", "D2", "D3", "D4", "D5",
-}
-
-func contains(slice []string, item string) bool {
-	for _, element := range slice {
-		if element == item {
-			return true
-		}
-	}
-	return false
-}
-
 // Formats a movie runtime in minutes into a string like "1h 30m" or "30m"
 func formatRuntime(runtime int) (string, error) {
 	if runtime < 0 {
@@ -90,13 +73,6 @@ func Reserve(c *gin.Context) {
 	var newRes ReservationRequest
 	if err := c.ShouldBindJSON(&newRes); err != nil {
 		fmt.Println(err)
-		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
-		return
-	}
-
-	// Validate that the requested seat exists
-	if !contains(Seats, newRes.SeatNumber) {
-		fmt.Println("Invalid seat number")
 		c.AbortWithError(http.StatusBadRequest, internal.ErrBadRequest)
 		return
 	}

@@ -43,20 +43,22 @@
 
   // Define the Seat interface
   interface Seat {
-    num: string;
-    selected: boolean;
+  id: string;       // internal unique ID (not shown)
+  selected: boolean;
   }
-
-  const MAX_SEATS = 18;
-  $: fullyBooked = reservedSeats.length >= MAX_SEATS;
 
   // Create custom rows for the grid: 5 seats, 5 seats, 4 seats, 4 seats
   let seats: Seat[][] = [
-    Array.from({ length: 5 }, (_, col) => ({ num: `D${col + 1}`, selected: false })),
-    Array.from({ length: 5 }, (_, col) => ({ num: `C${col + 1}`, selected: false })),
-    Array.from({ length: 4 }, (_, col) => ({ num: `B${col + 1}`, selected: false })),
-    Array.from({ length: 4 }, (_, col) => ({ num: `A${col + 1}`, selected: false })),
+    Array.from({ length: 3 }, (_, col) => ({ id: `r1-${col + 1}`, selected: false })),
+    Array.from({ length: 4 }, (_, col) => ({ id: `r2-${col + 1}`, selected: false })),
+    Array.from({ length: 5 }, (_, col) => ({ id: `r3-${col + 1}`, selected: false })),
+    Array.from({ length: 5 }, (_, col) => ({ id: `r4-${col + 1}`, selected: false })),
+    Array.from({ length: 4 }, (_, col) => ({ id: `r5-${col + 1}`, selected: false })),
+    Array.from({ length: 4 }, (_, col) => ({ id: `r6-${col + 1}`, selected: false })),
   ];
+
+  $: MAX_SEATS = seats.flat().length;
+  $: fullyBooked = reservedSeats.length >= MAX_SEATS;
 
   let selectedSeat: Seat | null = null;
   let showResModal = false;
@@ -68,7 +70,7 @@
   function toggleSeat(seat: Seat) {
     seats = seats.map(row =>
       row.map(s => {
-        if (s.num === seat.num) {
+        if (s.id === seat.id) {
           s.selected = !s.selected; // Toggle selection
           selectedSeat = s.selected ? s : null;
         } else {
@@ -102,7 +104,7 @@
         },
         body: JSON.stringify({
           movie_id: page.params.movie_id,
-          seat_number: selectedSeat?.num,
+          seat_number: selectedSeat?.id,
           name,
           email,
         })
@@ -111,8 +113,8 @@
       const result = await response.json();
       if (result.success) {
         // mark seat as reserved and deselect
-        reservedSeats.push(selectedSeat?.num || '');
-        toggleSeat(selectedSeat || { num: '', selected: false });
+        reservedSeats.push(selectedSeat?.id || '');
+        toggleSeat(selectedSeat || { id: '', selected: false });
         alert("Reservation confirmed!");
         confirmComment();
       } else {
@@ -191,15 +193,14 @@
     <div class="row">
       {#each row as seat, colIndex}
         <button
-          class="seat {reservedSeats.includes(seat.num) ? 'reserved' : ''}"
-          disabled={reservedSeats.includes(seat.num)} 
+          class="seat {reservedSeats.includes(seat.id) ? 'reserved' : ''}"
+          disabled={reservedSeats.includes(seat.id)} 
           on:click={() => toggleSeat(seat)}
         >
           <img
-          src={reservedSeats.includes(seat.num) ? '/grey-chair.png' : (seat.selected ? "/yellow-chair.png" : "/white-chair.png")}
-            alt="Seat {seat.num}"
+          src={reservedSeats.includes(seat.id) ? '/grey-chair.png' : (seat.selected ? "/yellow-chair.png" : "/white-chair.png")}
+            alt="Seat"
           />
-          <span class="seat-label">{seat.num}</span> <!-- Add seat number here -->
         </button>
       {/each}
     </div>
@@ -215,7 +216,7 @@
 {#if showResModal}
 <div class="modal">
   <div class="modal-content">
-      <h2>Seat {selectedSeat?.num}</h2>
+      <h2>Confirm your seat</h2>
       <div class="form-group">
         <label for="name">Name: </label>
         <input type="text" id="name" bind:value={name} placeholder="Enter your name" required />
@@ -376,16 +377,6 @@ h1 {
 }
 
 
-.seat-label {
-  position: absolute; /* Position label absolutely to center it */
-  z-index: 2; /* Ensure the label is above the image */
-  color: black;
-  font-size: 14px;
-  font-weight: bold;
-  pointer-events: none; /* Prevent interfering with button click */
-  padding-top: 15px;
-}
-
 .reservation-page h3 {
   font-size: 1.6rem;
   margin-bottom: 1rem;
@@ -426,9 +417,7 @@ h1 {
     height: 40px;
   }
 
-  .seat-label {
-    font-size: 12px;
-  }
+ 
 
   .movie-info {
     margin-top: 5rem;
