@@ -1,15 +1,12 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { onMount } from 'svelte';
-  import { page } from '$app/state';
-  import { onMount } from 'svelte';
   import { formatDate, formatRuntime } from '$lib';
   import { apiBaseUrl } from '$lib/api';
   
   let movie: any = null;
   let error: string = '';
 
-  // Fetch movie information
   // Fetch movie information
   onMount(async () => {
     try {
@@ -20,10 +17,7 @@
         movie = data.data;
       } else {
         error = 'Failed to load the movie data.';
-        error = 'Failed to load the movie data.';
       }
-    } catch (err) {
-      console.error(err);
     } catch (err) {
       console.error(err);
       error = 'Something went wrong while fetching the movie data.';
@@ -41,7 +35,6 @@
         reservedSeats = result.data.reserved_seats; // Update reserved seats array
       } else {
         console.error('Failed to load reserved seats data');
-        console.error('Failed to load reserved seats data');
       }
     } catch (err) {
       console.error('Error fetching reserved seats:', err);
@@ -55,7 +48,7 @@
     selected: boolean;
   }
 
-  const MAX_SEATS = 18;
+  const MAX_SEATS = 25;
   $: fullyBooked = reservedSeats.length >= MAX_SEATS;
 
   // Create custom rows for the grid: 7 seats, 5 seats, 5 seats, 4 seats, 4 seats
@@ -126,11 +119,9 @@
         confirmComment();
       } else {
         alert("Failed to confirm reservation.");
-        alert("Failed to confirm reservation.");
       }
     } catch (err) {
       console.error(err);
-      alert("Something went wrong while confirming the reservation.");
       alert("Something went wrong while confirming the reservation.");
     }
   }
@@ -175,22 +166,6 @@
     }
   }
 </script>
-
-<main class="reservation-page">
-  {#if movie}
-  <div class="movie-info">
-    <div class="movie-icon">
-      <img src={movie.PosterURL} alt="Movie poster for {movie.Title}" />
-    </div>
-    <div class="movie-details">
-      <h1>{movie.Title}</h1>
-      <p class="movie-date">{formatDate(movie.Date)}</p>
-      <p class="movie-date">{formatRuntime(movie.Runtime)}</p>
-    </div>
-  </div>
-  {:else}
-  <p>Loading movie information...</p>
-  {/if}
 
 <main class="reservation-page">
   {#if movie}
