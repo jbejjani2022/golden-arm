@@ -1,431 +1,494 @@
 <script lang="ts">
-  import { formatDate, formatRuntime } from '$lib';
+  import { page } from '$app/state';
   import { onMount } from 'svelte';
-  import { Splide, SplideSlide, SplideTrack } from '@splidejs/svelte-splide';
-  import type { Options } from '@splidejs/splide';
-  import '@splidejs/svelte-splide/css';
-
+  import { formatDate, formatRuntime } from '$lib';
+  
   let movie: any = null;
-  let calendar: any = null;
   let error: string = '';
-  let reservedSeats: string[] = [];
-  const MAX_SEATS = 18;
-  let fetchedReservedForId: number | null = null;
-  $: fullyBooked = reservedSeats.length >= MAX_SEATS;
 
-  // Fetch movie and calendar in parallel
-  onMount(async () => {
-    const [movieRes, calRes] = await Promise.allSettled([
-      fetch('/api/movie/next').then((r) => r.json()),
-      fetch('/api/calendar').then((r) => r.json())
-    ]);
-
-    if (movieRes.status === 'fulfilled') {
-      const data = movieRes.value;
-      if (data.success) {
-        movie = data.data;
-      } else {
-        error = 'Failed to load the next movie.';
-      }
-    } else {
-      console.error(movieRes.reason);
-      error = 'Something went wrong while fetching the movie data.';
-    }
-
-    if (calRes.status === 'fulfilled') {
-      const data = calRes.value;
-      if (data.success) {
-        calendar = data.data;
-      } else {
-        error = 'Failed to load the calendar.';
-      }
-    } else {
-      console.error(calRes.reason);
-      error = 'Something went wrong while fetching the calendar.';
-    }
-  });
-
-  // Fetch reserved seats once movie loads
-  $: if (movie && movie.ID && fetchedReservedForId !== movie.ID) {
-    fetchedReservedForId = movie.ID;
-    (async () => {
-      try {
-        const response = await fetch(`/api/reserved/${movie.ID}`);
-        const result = await response.json();
-        if (result.success) {
-          reservedSeats = result.data.reserved_seats || [];
-        }
-      } catch (err) {
-        console.error('Error fetching reserved seats:', err);
-      }
-    })();
-  }
-
-  // Past screening carousel
-  type Movie = {
-    PosterURL: string;
-    Title: string;
-  };
-
-  let archive: Movie[] = [];
-
+  // Fetch movie information
   onMount(async () => {
     try {
-      const response = await fetch('/api/movie/archive');
+      const response = await fetch(`/api/movie/${page.params.movie_id}`);
       const data = await response.json();
 
       if (data.success) {
-        archive = data.data;
+        movie = data.data;
       } else {
-        error = 'Failed to load the movie archive.';
+        error = 'Failed to load the movie data.';
       }
-
     } catch (err) {
       console.error(err);
-      error = 'Something went wrong while fetching the movie archive.';
+      error = 'Something went wrong while fetching the movie data.';
     }
   });
 
-  const options: Options = {
-    type: 'loop',
-    drag: true,
-    snap: true,
-    perPage: 3,
-    perMove: 1,
-    focus: 0,
-    autoplay: true,
-    interval: 4000,
-    speed: 2000,
-    arrows: true,
-    padding: '2rem',
-    gap: '1.5rem',
-    pagination: true,
-    lazyLoad: 'nearby',
-    pauseOnHover: false,
-    width: '100%', // use full container width
-    breakpoints: {
-      768: {
-        perPage: 2,
-        gap: '1rem',
-        padding: '1rem'
-      },
-      480: {
-        perPage: 1,
-        gap: '0.5rem',
-        padding: '0.5rem',
-        arrows: false // hide arrows on mobile
+  let reservedSeats: string[] = []; // Store reserved seats
+
+  onMount(async () => {
+    const movieId = page.params.movie_id;
+    try {
+      const response = await fetch(`/api/reserved/${movieId}`);
+      const result = await response.json();
+      if (result.success) {
+        reservedSeats = result.data.reserved_seats; // Update reserved seats array
+      } else {
+        console.error('Failed to load reserved seats data');
       }
+    } catch (err) {
+      console.error('Error fetching reserved seats:', err);
+    }
+  });
+
+
+  // Define the Seat interface
+  interface Seat {
+    num: string;
+    selected: boolean;
+  }
+
+  const MAX_SEATS = 25;
+  $: fullyBooked = reservedSeats.length >= MAX_SEATS;
+
+  // Create custom rows for the grid: 7 seats, 5 seats, 5 seats, 4 seats, 4 seats
+  let seats: Seat[][] = [
+    Array.from({ length: 7 }, (_, col) => ({ num: `E${col + 1}`, selected: false })),
+    Array.from({ length: 5 }, (_, col) => ({ num: `D${col + 1}`, selected: false })),
+    Array.from({ length: 5 }, (_, col) => ({ num: `C${col + 1}`, selected: false })),
+    Array.from({ length: 4 }, (_, col) => ({ num: `B${col + 1}`, selected: false })),
+    Array.from({ length: 4 }, (_, col) => ({ num: `A${col + 1}`, selected: false })),
+  ];
+
+  let selectedSeat: Seat | null = null;
+  let showResModal = false;
+  let showCommentModal = false;
+  let name = '';
+  let email = '';
+  let comment = '';
+
+  function toggleSeat(seat: Seat) {
+    seats = seats.map(row =>
+      row.map(s => {
+        if (s.num === seat.num) {
+          s.selected = !s.selected; // Toggle selection
+          selectedSeat = s.selected ? s : null;
+        } else {
+          s.selected = false; // Deselect other seats
+        }
+        return s;
+      })
+    );
+  }
+
+  const confirmReservation = () => {
+    showResModal = true;
+  }
+
+  const cancelReservation = () => {
+    showResModal = false;
+  }
+
+  const handleReservation = async () => {
+    if (!name || !email) {
+      alert("Please enter your name and email.");
+      return;
+    }
+    showResModal = false;
+    // Send the reservation
+    try {
+      const response = await fetch(`/api/reserve`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json" 
+        },
+        body: JSON.stringify({
+          movie_id: page.params.movie_id,
+          seat_number: selectedSeat?.num,
+          name,
+          email,
+        })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        // mark seat as reserved and deselect
+        reservedSeats.push(selectedSeat?.num || '');
+        toggleSeat(selectedSeat || { num: '', selected: false });
+        alert("Reservation confirmed!");
+        confirmComment();
+      } else {
+        alert("Failed to confirm reservation.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong while confirming the reservation.");
     }
   }
 
+  const confirmComment = () => {
+    showCommentModal = true;
+  }
+
+  const cancelComment = () => {
+    showCommentModal = false;
+  }
+
+  const handleComment = async () => {
+    if (!comment) {
+      alert("Please tell us what you'd like to see next!");
+      return;
+    }
+    showCommentModal = false;
+    // Send suggestion to server
+    try {
+      const response = await fetch(`/api/comment`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json" 
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          comment,
+        })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert("Thank you for your suggestion!");
+      } else {
+        alert("Failed to submit comment.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong while submitting the comment.");
+    }
+  }
 </script>
-  
-  <!-- Home Page Layout -->
-  <main>
-    <section class="top-text">
-      <div class="announcement">
-        ELIOT HOUSE'S STUDENT-RUN THEATER SHOWCASING WEEKLY FILMS.
-      </div>
-      <div class="sub-announcement">
-        Learn more about us <a href="/about" class="links">here</a>.
-      </div>
-    </section>
-  
-    {#if movie}
-      <section class="movie-info">
-        <!-- Left side: Movie Info -->
-        <div class="movie-details">
-          <h1 class="movie-title">{movie.Title}</h1>
-          <div class="movie-screening">
-            <div style="padding: 0.5rem">{formatDate(movie.Date)}</div>
-            <div style="padding: 0.5rem">{formatRuntime(movie.Runtime)}</div>
-            <a class="reserve-button" href={`/reservations/${movie.ID}`} data-sveltekit-preload-data="hover">Get Tickets</a>
-          </div>
-        </div>
 
-        <!-- Right side: Movie Poster -->
-        <div class="movie-poster">
-          <img src={movie.PosterURL} alt="Movie poster for {movie.Title}" decoding="async" fetchpriority="high" />
-          {#if fullyBooked}
-            <div class="sold-out-overlay">SOLD OUT</div>
-          {/if}
-        </div>
-      </section>
-    {:else}
-      <p>Loading movie information...</p>
-    {/if}
-
-  <div class="row-header">
-    <h2 class="header-title">Past Screenings</h2>
-    <a href="/archives" class="see-all-link">See All</a>
-  </div>
-    <!-- Separator line -->
-  <div class="separator"></div>
-
-  {#if archive.length > 0}
-  <!-- <Splide aria-label="Past screening posters">
-    {#each archive as movie}
-    <SplideSlide>
-      <img src={movie.PosterURL} alt={movie.Title}>
-    </SplideSlide>
-    {/each}
-  </Splide> -->
-
-  <Splide 
-    options={ options } 
-    hasTrack={ false } 
-    aria-label="Past screening posters"
-  >
-  <div style="position: relative">
-    <SplideTrack>
-      {#each archive as movie}
-        <SplideSlide>
-          <img data-splide-lazy={movie.PosterURL} alt={movie.Title}>
-        </SplideSlide>
-      {/each}
-    </SplideTrack>
-  </div>
-  </Splide>
-  {:else}
-    <p>Archive is empty...</p>
-  {/if}
-
-  <div class="row-header">
-    <h2 class="header-title">Calendar</h2>
-  </div>
-  <div class="separator"></div>
-  {#if calendar}
-    <div class="calendar-image">
-      <img src={calendar.ImageURL} alt="Calendar" loading="lazy" decoding="async" />
+<main class="reservation-page">
+  {#if movie}
+  <div class="movie-info">
+    <div class="movie-icon">
+      <img src={movie.PosterURL} alt="Movie poster for {movie.Title}" />
     </div>
+    <div class="movie-details">
+      <h1>{movie.Title}</h1>
+      <p class="movie-date">{formatDate(movie.Date)}</p>
+      <p class="movie-date">{formatRuntime(movie.Runtime)}</p>
+    </div>
+  </div>
   {:else}
-    <p>Calendar not found.</p>
+  <p>Loading movie information...</p>
   {/if}
 
+{#if fullyBooked}
+<h3 class="sold-out">SOLD OUT</h3>
+{/if}
+
+<h3>Select a Seat</h3>
+<p class="seat-info">Seats are first come first served</p>
+<div class="grid">
+  {#each seats as row, rowIndex}
+    <div class="row">
+      {#each row as seat, colIndex}
+        <button
+          class="seat {reservedSeats.includes(seat.num) ? 'reserved' : ''}"
+          disabled={reservedSeats.includes(seat.num)} 
+          on:click={() => toggleSeat(seat)}
+        >
+          <img
+          src={reservedSeats.includes(seat.num) ? '/grey-chair.png' : (seat.selected ? "/yellow-chair.png" : "/white-chair.png")}
+            alt="Seat {seat.num}"
+          />
+          <span class="seat-label">{seat.num}</span> <!-- Add seat number here -->
+        </button>
+      {/each}
+    </div>
+  {/each}
+</div>
+
+<div id="screen-container">
+  <div id="screen">Screen</div>
+</div>
+
+<button class="reserve-button" on:click={confirmReservation} disabled={!selectedSeat}>Confirm</button>
+
+{#if showResModal}
+<div class="modal">
+  <div class="modal-content">
+      <h2>Seat {selectedSeat?.num}</h2>
+      <div class="form-group">
+        <label for="name">Name: </label>
+        <input type="text" id="name" bind:value={name} placeholder="Enter your name" required />
+      </div>
+      <div class="form-group">
+        <label for="email">Email: </label>
+        <input type="email" id="email" bind:value={email} placeholder="Enter your email" required />
+      </div>
+      <button type="submit" on:click={handleReservation}>Reserve</button>
+      <button type="button" class="cancel-button" on:click={cancelReservation}>Cancel</button>
+  </div>
+</div>
+{/if}
+
+{#if showCommentModal}
+<div class="modal">
+  <div class="modal-content">
+      <h2>What would you like to see next at The Golden Arm?</h2>
+      <div class="form-group">
+        <input type="text" id="comment" bind:value={comment} placeholder="Enter movie suggestions!" required />
+      </div>
+      <button type="submit" on:click={handleComment}>Send</button>
+      <button type="button" class="cancel-button" on:click={cancelComment}>Cancel</button>
+  </div>
+</div>
+{/if}
 </main>
-  
+
 <style>
-  /* Update the Splide slide styles */
-  :global(.splide__slide) {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.reservation-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+/* new */
+.movie-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.movie-icon img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.movie-details h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: bold;
+}
+
+.movie-details .movie-date {
+  margin: 6px 0 0;
+  font-size: 0.95rem;
+  color: gray;
+}
+
+h1 {
+  text-align: center;
+}
+
+/* Seat Grid */
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 24px auto 0;
+  width: 100%;
+  max-width: 650px;
+}
+
+.row {
+  display: flex;
+  gap: 14px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  justify-content: center;
+}
+
+.seat {
+  position: relative;
+  width: 55px;
+  height: 55px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.seat img {
+  width: 55px;
+  height: 55px;
+  transition: transform 0.2s ease;
+}
+
+.reserve-button {
+  display: inline-block;
+  padding: 14px 28px;
+  text-decoration: none;
+  margin-top: 40px;
+  font-size: 1.1rem;
+}
+
+/* seatstuff */
+.seat {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  font-size: 12px; /* Adjust font size for seat labels */
+  text-align: center; /* Center-align the text */
+}
+
+.seat:hover {
+  transform: scale(1.1); /* Enlarges seat on hover */
+}
+
+.reserved {
+  cursor: not-allowed; /* Change cursor to not-allowed */
+}
+
+.reserved:hover {
+  transform: none; /* Disable enlarging on hover */
+}
+
+/* screen */
+#screen-container {
+  display: flex;
+  justify-content: center; /* Center the rectangle horizontally */
+  margin-bottom: 20px; /* Space between the rectangle and the Confirm button */
+  margin-top: 40px;
+}
+
+#screen {
+  background-color: white;
+  color: black;
+  width: 320px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 17px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+
+.seat-label {
+  position: absolute; /* Position label absolutely to center it */
+  z-index: 2; /* Ensure the label is above the image */
+  color: black;
+  font-size: 14px;
+  font-weight: bold;
+  pointer-events: none; /* Prevent interfering with button click */
+  padding-top: 15px;
+}
+
+.reservation-page h3 {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+}
+
+.reservation-page h3.sold-out {
+  color: var(--gold);
+  margin: 0.25rem 0;
+}
+
+.seat-info {
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--gold);
+  margin: 0.5rem 0 0 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .reservation-page {
+    padding: 6rem 0 2rem 0;
+    min-height: 100vh;
+    justify-content: flex-start;
   }
 
-  :global(.splide__slide img) {
-    width: 100%;
-    object-fit: cover;
-    border-radius: 5px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
+  .grid {
+    margin: 20px auto 0;
+    max-width: 600px;
+    gap: 6px;
   }
 
-  :global(.splide__slide:hover img) {
-    transform: scale(1.05);
+  .row {
+    gap: 10px;
+    margin-top: 4px;
+    margin-bottom: 4px;
   }
 
-  :global(.splide) {
-    max-width: 1200px;
-    margin: 0 auto;
-    margin-bottom: 3rem;
+  .seat-info {
+    font-size: 0.85rem;
   }
 
-  .links {
-    color: var(--gold);
-    text-decoration: none;
-    font-weight: normal;
-    transition: color 0.3s;
+  .seat {
+    width: 40px;
+    height: 40px;
   }
 
-  .links:hover {
-    color: #caac3e;
-    text-decoration: underline;
+  .seat img {
+    width: 40px;
+    height: 40px;
   }
 
-  .top-text {
-    font-family: Telegraf-Ultrabold, sans-serif;
-    font-size: 30px;
-    font-weight: bold;
-    margin-top: 20px;
-    margin-bottom: 40px;
-  }
-
-  .announcement {
-    margin-bottom: 2.0rem;
-    font-size: 2.0rem;
-  }
-
-  .sub-announcement {
-    margin-bottom: 2.0rem;
-    font-size: 1.5rem;
-    margin-bottom: 0;
+  .seat-label {
+    font-size: 12px;
   }
 
   .movie-info {
-    flex-wrap: wrap; /* Enables wrapping if content doesn't fit */
-    display: flex; /* Use flexbox to align items side by side */
-    justify-content: space-evenly; /* Space out the elements */
-    /* min-width: 300px; Ensures a minimum width */
-    justify-content: center;
-    align-items: center; /* Vertically center the content */
-    gap: 15%; /* Increase space between text and poster */
-    padding: 20px;
+    margin-top: 0;
+    gap: 12px;
+    margin-bottom: 20px;
   }
 
-  .movie-details {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 1rem;
+  .movie-icon img {
+    width: 80px;
+    height: 80px;
   }
 
-  .movie-screening {
-    margin-bottom: 10px;
+  .movie-details h1 {
+    font-size: 1.5rem;
+  }
+
+  .movie-details .movie-date {
+    margin: 4px 0 0;
+    font-size: 0.9rem;
+  }
+
+  #screen-container {
+    margin-bottom: 32px;
+  }
+
+  .reservation-page h3 {
     font-size: 1.2rem;
-
-  }
-
-  .movie-title {
-    font-size: 2.5rem; /* Make title text larger */
-    font-weight: bold; /* Make the title bold */
-    margin-bottom: 5px;
-    margin-top: 5px;
-
+    margin-bottom: 0.5rem;
   }
 
   .reserve-button {
-    cursor: pointer;
-    font-size: 1rem;
-    display: inline-block; /* Ensures the button only takes as much space as the text needs */
-    margin-top: 10px;
-    margin-bottom: 10px;
     padding: 12px 24px;
-    background-color: var(--gold);
-    color: black;
-    font-weight: bold;
-    text-decoration: none;
-    border: none;
-    border-radius: 18px;
-  }
-
-  .reserve-button:hover {
-    background-color: var(--dark-gold);
-  }
-
-  .movie-poster {
-    flex: 1; /* Take up the other half of the screen */
-    max-width: 30%;
-    min-width: 300px;
-    position: relative;
-  }
-
-  .movie-poster img {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
-
-  }
-
-  .sold-out-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: var(--gold);
-    font-size: 3rem;
-    font-weight: bold;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
-    pointer-events: none;
-    user-select: none;
-  }
-
-  /* .error {
-    color: #ff5252;
-    font-size: 16px;
-  } */
-
-  /* Separator line styling */
-  .separator {
-    width: 100%; /* Ensures it spans the full width of the container */
-    height: 2px; /* Thickness of the line */
-    background-color: #ddd; /* Color of the line */
-    margin: 1rem 0; /* Optional: Adds spacing around the line */
-    border: none; /* Removes any default borders */
-  }
-
-  /* Row header container */
-  .row-header {
-    display: flex;
-    justify-content: space-between; /* Aligns the elements to opposite ends */
-    align-items: center; /* Centers vertically */
-    width: 100%;
-    margin-bottom: 1rem; /* Adds space below the row */
-    margin-top: 1.5rem;
-  }
-
-  /* Calendar styling */
-  .calendar-image {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 2rem auto;
-    max-width: 90%;  /* Prevents calendar from being too wide on large screens */
-  }
-
-  .calendar-image img {
-    width: 100%;
-    height: auto;  /* Maintains aspect ratio */
-    max-width: 800px;  /* Adjust this value based on your needs */
-    object-fit: contain;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-  }
-
-  /* Title styling */
-  .header-title {
-    font-size: 1.5rem; /* Larger text */
-    /* font-weight: bold; Bold font */
-    margin: 0; /* Removes default margin */
-    color: #fff; /* Dark text color */
-  }
-
-  /* See All link styling */
-  .see-all-link {
     font-size: 1rem;
-    color: #fff;
-    text-decoration: none;
-    font-weight: normal;
-    transition: color 0.3s;
+    margin-top: 20px;
   }
 
-  /* Hover effect for the link */
-  .see-all-link:hover {
-    color: #caac3e;
-    text-decoration: underline;
+  #screen {
+    width: 300px;
+    height: 30px;
+    font-size: 18px;
   }
-
-
-  @media screen and (max-width: 768px) {
-    .top-text {
-        margin-top: 100px; /* Adjust as needed to increase space */
-    }
-
-    .announcement {
-      font-size: 1.5rem;
-    }
-
-    .movie-screening {
-      font-size: 13px;
-    }
-
 }
 
-/* for da ipad kids */
-@media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait), 
-       screen and (min-width: 1024px) and (max-width: 1366px) and (orientation: landscape) {
-    .top-text {
-        margin-top: 80px; /* Adjust this value as needed */
-        padding-top: 20px; /* Optional: Additional padding for spacing */
-    }
+/* Desktop styles - reduce space below confirm button */
+@media (min-width: 769px) {
+  .reservation-page {
+    padding: 2rem 0 0 0;
+  }
 }
 </style>

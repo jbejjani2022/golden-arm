@@ -47,6 +47,7 @@ var Seats = []string{
 	"B1", "B2", "B3", "B4",
 	"C1", "C2", "C3", "C4", "C5",
 	"D1", "D2", "D3", "D4", "D5",
+	"E1", "E2", "E3", "E4", "E5", "E6", "E7",
 }
 
 func contains(slice []string, item string) bool {
