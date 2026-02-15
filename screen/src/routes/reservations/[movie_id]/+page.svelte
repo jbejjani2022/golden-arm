@@ -1,12 +1,15 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { onMount } from 'svelte';
+  import { page } from '$app/state';
+  import { onMount } from 'svelte';
   import { formatDate, formatRuntime } from '$lib';
   import { apiBaseUrl } from '$lib/api';
   
   let movie: any = null;
   let error: string = '';
 
+  // Fetch movie information
   // Fetch movie information
   onMount(async () => {
     try {
@@ -17,7 +20,10 @@
         movie = data.data;
       } else {
         error = 'Failed to load the movie data.';
+        error = 'Failed to load the movie data.';
       }
+    } catch (err) {
+      console.error(err);
     } catch (err) {
       console.error(err);
       error = 'Something went wrong while fetching the movie data.';
@@ -35,6 +41,7 @@
         reservedSeats = result.data.reserved_seats; // Update reserved seats array
       } else {
         console.error('Failed to load reserved seats data');
+        console.error('Failed to load reserved seats data');
       }
     } catch (err) {
       console.error('Error fetching reserved seats:', err);
@@ -51,8 +58,9 @@
   const MAX_SEATS = 18;
   $: fullyBooked = reservedSeats.length >= MAX_SEATS;
 
-  // Create custom rows for the grid: 5 seats, 5 seats, 4 seats, 4 seats
+  // Create custom rows for the grid: 7 seats, 5 seats, 5 seats, 4 seats, 4 seats
   let seats: Seat[][] = [
+    Array.from({ length: 7 }, (_, col) => ({ num: `E${col + 1}`, selected: false })),
     Array.from({ length: 5 }, (_, col) => ({ num: `D${col + 1}`, selected: false })),
     Array.from({ length: 5 }, (_, col) => ({ num: `C${col + 1}`, selected: false })),
     Array.from({ length: 4 }, (_, col) => ({ num: `B${col + 1}`, selected: false })),
@@ -118,9 +126,11 @@
         confirmComment();
       } else {
         alert("Failed to confirm reservation.");
+        alert("Failed to confirm reservation.");
       }
     } catch (err) {
       console.error(err);
+      alert("Something went wrong while confirming the reservation.");
       alert("Something went wrong while confirming the reservation.");
     }
   }
@@ -182,11 +192,28 @@
   <p>Loading movie information...</p>
   {/if}
 
+<main class="reservation-page">
+  {#if movie}
+  <div class="movie-info">
+    <div class="movie-icon">
+      <img src={movie.PosterURL} alt="Movie poster for {movie.Title}" />
+    </div>
+    <div class="movie-details">
+      <h1>{movie.Title}</h1>
+      <p class="movie-date">{formatDate(movie.Date)}</p>
+      <p class="movie-date">{formatRuntime(movie.Runtime)}</p>
+    </div>
+  </div>
+  {:else}
+  <p>Loading movie information...</p>
+  {/if}
+
 {#if fullyBooked}
 <h3 class="sold-out">SOLD OUT</h3>
 {/if}
 
-<h3>Select Your Seat</h3>
+<h3>Select a Seat</h3>
+<p class="seat-info">Seats are first come first served</p>
 <div class="grid">
   {#each seats as row, rowIndex}
     <div class="row">
@@ -290,7 +317,7 @@ h1 {
 .grid {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 8px;
   margin: 24px auto 0;
   width: 100%;
   max-width: 650px;
@@ -299,8 +326,8 @@ h1 {
 .row {
   display: flex;
   gap: 14px;
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin-top: 4px;
+  margin-bottom: 4px;
   justify-content: center;
 }
 
@@ -397,25 +424,35 @@ h1 {
   margin: 0.25rem 0;
 }
 
+.seat-info {
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--gold);
+  margin: 0.5rem 0 0 0;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
-  
   .reservation-page {
-    padding: 0;
-    height: 100vh;
-    justify-content: center;
+    padding: 6rem 0 2rem 0;
+    min-height: 100vh;
+    justify-content: flex-start;
   }
 
   .grid {
     margin: 20px auto 0;
     max-width: 600px;
-    gap: 10px;
+    gap: 6px;
   }
 
   .row {
     gap: 10px;
-    margin-top: 8px;
-    margin-bottom: 8px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+
+  .seat-info {
+    font-size: 0.85rem;
   }
 
   .seat {
@@ -433,7 +470,7 @@ h1 {
   }
 
   .movie-info {
-    margin-top: 5rem;
+    margin-top: 0;
     gap: 12px;
     margin-bottom: 20px;
   }
