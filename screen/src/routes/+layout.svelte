@@ -226,6 +226,7 @@
   .layout{
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
   }
 
   :global(:root) {
@@ -275,7 +276,7 @@
   .content-wrapper {
     width: 90%;
     margin: 0 auto;
-    min-height: 100vh;
+    flex: 1;
     display: flex;
     flex-direction: column;
   }

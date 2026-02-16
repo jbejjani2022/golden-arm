@@ -252,8 +252,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  min-height: 100vh;
-  padding: 2rem 0;
+  padding: 2rem 0 1rem 0;
 }
 
 /* new */
@@ -408,8 +407,7 @@ h1 {
 /* Responsive Design */
 @media (max-width: 768px) {
   .reservation-page {
-    padding: 6rem 0 0rem 0;
-    min-height: 100vh;
+    padding: 6rem 0 1rem 0;
     justify-content: flex-start;
   }
 
@@ -488,7 +486,7 @@ h1 {
 /* Desktop styles - reduce space below confirm button */
 @media (min-width: 769px) {
   .reservation-page {
-    padding: 2rem 0 0 0;
+    padding: 2rem 0 1rem 0;
   }
 }
 </style>
