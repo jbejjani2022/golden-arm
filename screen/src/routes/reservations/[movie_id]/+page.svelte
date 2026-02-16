@@ -187,7 +187,7 @@
 <h3 class="sold-out">SOLD OUT</h3>
 {/if}
 
-<h3>Select a Seat</h3>
+<h3>Book a Seat</h3>
 <p class="seat-info">Seats are first come first served</p>
 <div class="grid">
   {#each seats as row, rowIndex}
@@ -262,7 +262,7 @@
   display: flex;
   align-items: center;
   gap: 20px;
-  margin-bottom: 28px;
+  margin-bottom: 8px;
 }
 
 .movie-icon img {
@@ -409,7 +409,7 @@ h1 {
 /* Responsive Design */
 @media (max-width: 768px) {
   .reservation-page {
-    padding: 6rem 0 2rem 0;
+    padding: 6rem 0 0rem 0;
     min-height: 100vh;
     justify-content: flex-start;
   }
@@ -447,7 +447,7 @@ h1 {
   .movie-info {
     margin-top: 0;
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
   }
 
   .movie-icon img {
