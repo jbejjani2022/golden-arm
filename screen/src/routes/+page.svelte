@@ -9,7 +9,7 @@
   let calendar: any = null;
   let error: string = '';
   let reservedSeats: string[] = [];
-  const MAX_SEATS = 18;
+  const MAX_SEATS = 25;
   let fetchedReservedForId: number | null = null;
   $: fullyBooked = reservedSeats.length >= MAX_SEATS;
 
