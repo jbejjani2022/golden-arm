@@ -12,6 +12,16 @@ export function formatDate(dateString: string): string {
     return date.toLocaleString('en-US', options);
 }
 
+export function formatDateFriendly(dateString: string): string {
+    const date = new Date(dateString);
+    const weekday = date.toLocaleDateString('en-US', { weekday: 'long' });
+    const month = date.toLocaleDateString('en-US', { month: 'short' });
+    const day = date.getDate();
+    const year = date.getFullYear();
+    const time = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    return `${weekday}, ${month}. ${day}, ${year}, ${time}`;
+}
+
 export function formatRuntime(runtime: number): string {
     if (runtime < 0) {
         throw new Error("Runtime cannot be negative");
