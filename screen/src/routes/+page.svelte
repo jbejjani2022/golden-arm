@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { formatDate, formatRuntime } from '$lib';
+  import { formatDateFriendly, formatRuntime } from '$lib';
   import { onMount } from 'svelte';
   import { apiBaseUrl } from '$lib/api';
   import { Splide, SplideSlide, SplideTrack } from '@splidejs/svelte-splide';
@@ -138,7 +138,7 @@
         <div class="movie-details">
           <h1 class="movie-title">{movie.Title}</h1>
           <div class="movie-screening">
-            <div style="margin-bottom: 0.5rem; margin-top: 0.5rem;">{formatDate(movie.Date)}</div>
+            <div style="padding: 0.5rem">{formatDateFriendly(movie.Date)}</div>
             <div style="padding: 0.5rem">{formatRuntime(movie.Runtime)}</div>
             <a class="reserve-button" href={`/reservations/${movie.ID}`} data-sveltekit-preload-data="hover">Get Tickets</a>
           </div>

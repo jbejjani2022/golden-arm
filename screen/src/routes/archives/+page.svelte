@@ -132,11 +132,9 @@
 
 {#if menuModal.open}
   <div class="modal-overlay" on:click={closeMenu} on:keydown={(e) => e.key === 'Escape' && closeMenu()} role="button" tabindex="-1">
-    <div class="modal-content" on:click|stopPropagation role="dialog" aria-label="{menuModal.title} menu">
-      <div class="modal-img-wrapper">
-        <button class="modal-close" on:click={closeMenu}>&times;</button>
-        <img src={menuModal.url} alt="{menuModal.title} menu" />
-      </div>
+    <div class="menu-modal" on:click|stopPropagation role="dialog" aria-label="{menuModal.title} menu">
+      <button class="modal-close" on:click={closeMenu}>&times;</button>
+      <img src={menuModal.url} alt="{menuModal.title} menu" />
     </div>
   </div>
 {/if}
@@ -281,19 +279,13 @@
     padding: 2rem;
   }
 
-  .modal-content {
-    display: flex;
-    justify-content: center;
-    max-width: 600px;
-    width: 100%;
-  }
-
-  .modal-img-wrapper {
+  .menu-modal {
     position: relative;
     display: inline-block;
+    max-width: 600px;
   }
 
-  .modal-img-wrapper img {
+  .menu-modal img {
     display: block;
     max-width: 100%;
     max-height: 85vh;
@@ -303,19 +295,13 @@
 
   .modal-close {
     position: absolute;
-    top: -0.75rem;
-    right: -0.75rem;
-    background: rgba(0, 0, 0, 0.7);
+    top: -2.25rem;
+    right: -2.5rem;
+    background: none;
     border: none;
     color: #fff;
-    font-size: 1.4rem;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 30%;
+    font-size: 1.6rem;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     line-height: 1;
   }
 
@@ -330,7 +316,7 @@
 
   @media (max-width: 768px) {
     h1 {
-      margin-top: 4.5rem;
+      margin-top: 5.5rem;
     }
 
     .movie-grid {
